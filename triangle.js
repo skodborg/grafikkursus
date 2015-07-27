@@ -10,11 +10,15 @@ window.onload = function init()
   if ( !gl ) { alert( "WebGL isn't available" ); }
 
   // Debug
+  function logGLCall(functionName, args) {   
+   console.log("gl." + functionName + "(" + 
+      WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");   
+  } 
 
-  ctx = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl"));
+  // Update gl context to show every WebGL function call
+  gl = WebGLDebugUtils.makeDebugContext(gl, undefined, logGLCall);
   
-  var vertices = new Float32Array([-1, -1, 0, 1, 1, -1]);
-  var vertices2 = new Float32Array([1, 0.5, 1, 1, -0.5, -1]);
+  var vertices = new Float32Array([-1, -1, 0, 1, 1, -1, 0, 0, 1, 1, 0, -1]);
   
   //  Configure WebGL
   
@@ -31,7 +35,6 @@ window.onload = function init()
   var bufferId = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
   gl.bufferData( gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW );
-  gl.bufferData( gl.ARRAY_BUFFER, vertices2, gl.STATIC_DRAW);
 
   // Associate out shader variables with our data buffer
   
