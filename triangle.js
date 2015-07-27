@@ -1,6 +1,7 @@
 
 var gl;
 var points;
+var colorLocation;
 
 window.onload = function init()
 {
@@ -17,8 +18,12 @@ window.onload = function init()
 
   // Update gl context to show every WebGL function call
   gl = WebGLDebugUtils.makeDebugContext(gl, undefined, logGLCall);
-  
-  var vertices = new Float32Array([-1, -1, 0, 1, 1, -1, 0, 0, 1, 1, 0, -1]);
+
+  var myVertices = [[-1, -1, 0, 1, 1, 0]];
+  var newVertices = [[0, 0, 1, 1, 0, -1]];
+
+  var vertices = flatten(myVertices);   
+  var vertices2 = flatten(newVertices);   
   
   //  Configure WebGL
   
@@ -29,6 +34,8 @@ window.onload = function init()
   
   var program = initShaders( gl, "vertex-shader", "fragment-shader" );
   gl.useProgram( program );
+
+  colorLocation = gl.getUniformLocation(program, "u_color");
   
   // Load the data into the GPU
   
@@ -42,11 +49,20 @@ window.onload = function init()
   gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vPosition );
   
+  
   render();
+
+  // load new data into the buffer
+  gl.bufferData( gl.ARRAY_BUFFER, vertices2, gl.STATIC_DRAW );
+
+  // render the new triangle without clearing
+  render();
+
 };
 
 
 function render() {
-  gl.clear( gl.COLOR_BUFFER_BIT );
-  gl.drawArrays( gl.TRIANGLES, 0, 6 );
+  //gl.clear( gl.COLOR_BUFFER_BIT );
+  gl.uniform4f(colorLocation, Math.random(), Math.random(), Math.random(), 1);
+  gl.drawArrays( gl.TRIANGLES, 0, 3 );
 }
