@@ -35,7 +35,6 @@ function init(canvas)
   gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vPosition );
   
-  
   render();
 
   // load new data into the buffer
@@ -44,8 +43,16 @@ function init(canvas)
   // render the new triangle without clearing
   render();
 
+  myFlashyTriangle = [-1, -1, 0, 1, 1, -1];
+  window.setTimeout("funkyFunction(myFlashyTriangle)", 1000);
+
 };
 
+function funkyFunction(argTriangle) {
+    var vertices = flatten(argTriangle);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    window.setInterval("render()", 100);
+}
 
 function render() {
   //gl.clear( gl.COLOR_BUFFER_BIT );
