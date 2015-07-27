@@ -2,22 +2,9 @@
 var gl;
 var points;
 
-window.onload = function init()
+function init(canvas)
 {
-  var canvas = document.getElementById( "gl-canvas" );
-  
-  gl = WebGLUtils.setupWebGL( canvas );
-  if ( !gl ) { alert( "WebGL isn't available" ); }
-
-  // Debug
-  function logGLCall(functionName, args) {   
-   console.log("gl." + functionName + "(" + 
-      WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");   
-  } 
-
-  // Update gl context to show every WebGL function call
-  gl = WebGLDebugUtils.makeDebugContext(gl, undefined, logGLCall);
-  
+   
   var vertices = new Float32Array([-1, -1, 0, 1, 1, -1, 0, 0, 1, 1, 0, -1]);
   
   //  Configure WebGL
@@ -48,5 +35,5 @@ window.onload = function init()
 
 function render() {
   gl.clear( gl.COLOR_BUFFER_BIT );
-  gl.drawArrays( gl.TRIANGLES, 0, 6 );
+  gl.drawArrays( gl.TRIANGLES, 0, 6);
 }
