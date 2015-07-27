@@ -3,22 +3,8 @@ var gl;
 var points;
 var colorLocation;
 
-window.onload = function init()
+function init(canvas)
 {
-  var canvas = document.getElementById( "gl-canvas" );
-  
-  gl = WebGLUtils.setupWebGL( canvas );
-  if ( !gl ) { alert( "WebGL isn't available" ); }
-
-  // Debug
-  function logGLCall(functionName, args) {   
-   console.log("gl." + functionName + "(" + 
-      WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");   
-  } 
-
-  // Update gl context to show every WebGL function call
-  gl = WebGLDebugUtils.makeDebugContext(gl, undefined, logGLCall);
-
   var myVertices = [[-1, -1, 0, 1, 1, 0]];
   var newVertices = [[0, 0, 1, 1, 0, -1]];
 
