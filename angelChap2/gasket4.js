@@ -100,7 +100,7 @@ function tetra( a, b, c, d )
     triangle( b, c, d, 3 );
 }
 
-function divideTetra( a, b, c, d, count )
+function dividTetra( a, b, c, d, count )
 {
     // check for end of recursion
     
