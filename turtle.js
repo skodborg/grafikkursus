@@ -1,13 +1,10 @@
 
 var gl;
 var points = [];
-
-function init(program)
-{
-  var turtle = new Turtle(0,0, vec2(1,0));
-  turtle.forward(.5);
-  turtle.left(90);
-  turtle.forward(.5);
+var turtle;
+function init(program) {
+  turtle = new Turtle(-1,-1,vec2(1,0));
+  sierpinski(2, 6);
   // Load the data into the GPU
 
   var vBuffer = gl.createBuffer();
@@ -29,8 +26,38 @@ function render() {
   gl.drawArrays( gl.LINES, 0, points.length );
 }
 
-//Turtle specific
+function sierpinski(length, numberOfSubdivisions) {
+  //Base case
+  if(numberOfSubdivisions == 0) {
+    triangle(length);
+  } else {
+    numberOfSubdivisions--;
+    sierpinski(length / 2, numberOfSubdivisions);
+    turtle.forward(length / 2);
+    sierpinski(length / 2, numberOfSubdivisions);
+    turtle.left(120);
+    turtle.forward(length/2);
+    turtle.right(120);
+    sierpinski(length / 2, numberOfSubdivisions);
+    turtle.right(120);
+    turtle.forward(length/2);
+    turtle.left(120);
+  }
 
+  function triangle(length) {
+    turtle.pen(true);
+    turtle.forward(length);
+    turtle.left(120);
+    turtle.forward(length);
+    turtle.left(120);
+    turtle.forward(length);
+    turtle.left(120);
+    turtle.pen(false);
+  }
+}
+
+
+//Turtle Class
 var Turtle = (function () {
   
   var currPoint;
@@ -63,7 +90,7 @@ var Turtle = (function () {
   };
 
   Turtle.prototype.right = function(angle) {
-    left(-angle);
+    this.left(-angle);
   };
 
   Turtle.prototype.pen = function(up_down) {
