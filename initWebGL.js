@@ -24,5 +24,15 @@ window.onload = function initial() {
       break;
 
   }
-  init(canvas);
+
+    //  Configure WebGL
+  gl.viewport( 0, 0, canvas.width, canvas.height );
+  gl.clearColor( 0.3, 0.3, 0.3, 1.0 );
+
+  
+  //  Load shaders and initialize attribute buffers
+  
+  var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+  gl.useProgram( program );
+  init(program);
 };

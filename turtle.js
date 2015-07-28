@@ -1,41 +1,14 @@
 
 var gl;
 var points = [];
-var currPoint;
-var theta;
-var penDown = true;
-var colors = [];
 
-function init(canvas)
+function init(program)
 {
-
-  triangle(vec2(0, 0), vec2(1, 1), vec2(0, -1), rndColor1);
-  triangle(vec2(-1, -1), vec2(0, 1), vec2(1, 0), rndColor2);
-  
-  //  Configure WebGL
-  
-  gl.viewport( 0, 0, canvas.width, canvas.height );
-  gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-
-  
-  //  Load shaders and initialize attribute buffers
-  
-  var program = initShaders( gl, "vertex-shader", "fragment-shader" );
-  gl.useProgram( program );
-
-  
-  // Load the data into the GPU
-
-  var cBuffer = gl.createBuffer();
-  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
-  
-  // Associate out shader variables with our data buffer
-
-  var vColor = gl.getAttribLocation( program, "vColor" );
-    gl.vertexAttribPointer( vColor, 3, gl.FLOAT, false, 0, 0 ); 
-    gl.enableVertexAttribArray( vColor );
-
+  var turtle = new Turtle();
+  turtle.init(0,0, vec2(1,0));
+  turtle.forward(.5);
+  turtle.left(90);
+  turtle.forward(.5);
   // Load the data into the GPU
 
   var vBuffer = gl.createBuffer();
@@ -52,30 +25,50 @@ function init(canvas)
 
 };
 
-function init(x, y, theta) {
-    penDown = true;
-    currPoint = vec2(x,y);
+//Turtle specific
+
+function Turtle() {
+  var currPoint;
+  var direction;
+  var isPenDown = false;
 }
 
-function line(a, b) {
-  points.push(a);
-  points.push(b);
+Turtle.prototype.init = function(x, y, theta) {
+  isPenDown = true;
+  currPoint = vec2(x,y);
+  direction = theta;  
+};
+
+
+Turtle.prototype.forward = function(distance) {
+  var from = currPoint;
+  currPoint = add(currPoint, scale(distance, direction));
+  if(isPenDown) {
+    line(from, currPoint);
+  }
+  
+  function line(a,b) {
+    points.push(a);
+    points.push(b);
+  }
+};
+
+Turtle.prototype.left = function(angle) {
+  var x = direction[0] * Math.cos(radians(angle)) - direction[1] * Math.sin(radians(angle));
+  var y = direction[0] * Math.sin(radians(angle)) + direction[1] * Math.cos(radians(angle));
+  direction = vec2(x,y);
+};
+
+Turtle.prototype.right = function(angle) {
+  left(-angle);
 }
 
-function triangle(a, b, c, color) {
-  colors.push(color);
-  points.push(a);
-  colors.push(color);
-  points.push(b);
-  colors.push(color);
-  points.push(c);
+Turtle.prototype.pen = function(up_down) {
+  isPenDown = up_down;
 }
 
-function getRandomVec3Color() {
-  return vec3(Math.random(), Math.random(), Math.random());
-}
 
 function render() {
   gl.clear( gl.COLOR_BUFFER_BIT );
-  gl.drawArrays( gl.TRIANGLES, 0, points.length );
+  gl.drawArrays( gl.LINES, 0, points.length );
 }
