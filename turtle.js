@@ -1,6 +1,9 @@
 
 var gl;
 var points = [];
+var currPoint;
+var theta;
+var penDown = true;
 var colors = [];
 
 function init(canvas)
@@ -48,6 +51,16 @@ function init(canvas)
   render();
 
 };
+
+function init(x, y, theta) {
+    penDown = true;
+    currPoint = vec2(x,y);
+}
+
+function line(a, b) {
+  points.push(a);
+  points.push(b);
+}
 
 function triangle(a, b, c, color) {
   colors.push(color);
