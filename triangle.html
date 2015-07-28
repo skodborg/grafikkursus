@@ -3,32 +3,34 @@
   <head>
     
     <script id="vertex-shader" type="x-shader/x-vertex">
-      attribute vec4 vPosition;
-      
-      void
-      main()
-      {
-      gl_Position = vPosition;
-      }
-    </script>
+attribute vec3 vPosition;
+attribute vec3 vColor;
+varying vec4 color;
 
-    <script type="text/javascript" src="Common/webgl-debug.js"></script>
-    
-    <script id="fragment-shader" type="x-shader/x-fragment">
-      precision mediump float;
+void
+main()
+{
+    gl_Position = vec4(vPosition, 1.0);
+    color = vec4(vColor, 1.0);
+}
+</script>
 
-      // http://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
-      uniform vec4 u_color;
-      
-      void
-      main()
-      {
-      gl_FragColor = u_color;
-      }
-    </script>
+<script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+   
+varying vec4 color;
+
+void
+main()
+{
+    gl_FragColor = color;
+    //gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+}
+</script>
     
     <script src="initWebGL.js"></script>
     <script type="text/javascript" src="Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="Common/webgl-debug.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
     <script type="text/javascript" src="Common/MV.js"></script>
     <script type="text/javascript" src="triangle.js"></script>
