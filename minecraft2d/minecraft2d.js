@@ -24,11 +24,17 @@ var colors = [
     vec4( 0.0, 1.0, 1.0, 1.0 )   // cyan
 ];
 
+var material = colors[3];
+
 function init(program) {
 
-	$('canvas').on('mousedown', handleMouseDown);
+  $('canvas').on('mousedown', handleMouseDown);
 
-	vBuffer = gl.createBuffer();
+  $('#material').change(function() {
+    material = colors[$('#material option:selected').attr('value')];
+  });
+
+  vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData( gl.ARRAY_BUFFER, 8*maxNumVertices, gl.STATIC_DRAW );
     
@@ -44,7 +50,7 @@ function init(program) {
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vColor );
 
-	render();
+  render();
 }
 
 function createSquare(p) {
@@ -67,12 +73,11 @@ function createSquare(p) {
 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+3), flatten(t4));
 	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
 	  index += 4;
-	  
-	  t = vec4(colors[3]);
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(t));
+
+	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(material));
+	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(material));
+	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(material));
+	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(material));
 
 }
 
