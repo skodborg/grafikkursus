@@ -1,6 +1,6 @@
 var debugLevel = 1;
 
-window.onload = function initial() {
+window.onload = function() {
   var canvas = document.getElementById( "gl-canvas" );
   gl = WebGLUtils.setupWebGL( canvas );
   if ( !gl ) { alert( "WebGL isn't available" ); }

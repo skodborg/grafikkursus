@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    
+<head>
+
     <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec3 vPosition;
 
@@ -12,28 +12,28 @@ main()
 }
 </script>
 
-<script id="fragment-shader" type="x-shader/x-fragment">
+    <script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
 void
 main()
 {
-    gl_FragColor = vec4(0.0,0.8,0.8,1.0);
+    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
 }
 </script>
-    
+
     <script src="initWebGL.js"></script>
     <script type="text/javascript" src="Common/webgl-utils.js"></script>
     <script type="text/javascript" src="Common/webgl-debug.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
     <script type="text/javascript" src="Common/MV.js"></script>
-    <script type="text/javascript" src="Common/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="turtle.js"></script>
-  </head>
-  
-  <body>
-    <canvas id="gl-canvas" width="512" height="512">
-      Oops ... your browser doesn't support the HTML5 canvas element
-    </canvas>
-  </body>
+    <script type="text/javascript" src="minecraft2d.js"></script>
+    <script src="initWebGL.js"></script>
+</head>
+
+<body>
+<canvas id="gl-canvas" width="512" height="512">
+    Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
 </html>
