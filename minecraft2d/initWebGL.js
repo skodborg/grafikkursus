@@ -1,5 +1,5 @@
 var debugLevel = 1;
-
+var gl;
 window.onload = function() {
   var canvas = document.getElementById( "gl-canvas" );
   gl = WebGLUtils.setupWebGL( canvas );

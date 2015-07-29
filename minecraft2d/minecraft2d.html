@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel='stylesheet' href='style.css' />
+<script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
 
-    <script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec3 vPosition;
-
-void
-main()
-{
-    gl_Position = vec4(vPosition, 1.0);
-}
+    void
+    main()
+    {
+        gl_Position = vec4(vPosition, 1.0);
+    }
 </script>
 
-    <script id="fragment-shader" type="x-shader/x-fragment">
+<script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
 void
@@ -27,12 +27,13 @@ main()
     <script type="text/javascript" src="Common/webgl-debug.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
     <script type="text/javascript" src="Common/MV.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="minecraft2d.js"></script>
     <script src="initWebGL.js"></script>
 </head>
 
 <body>
-<canvas id="gl-canvas" width="512" height="512">
+<canvas id="gl-canvas" width="500" height="500">
     Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 </body>
