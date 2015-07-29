@@ -10,7 +10,7 @@ var maxNumVertices  = 3 * maxNumTriangles;
 var USE_WORLD_PREPOPULATION = true;
 
 var index = 0;
-var cIndex = 2;
+var cIndex = 0;
 
 var vBuffer;
 var cBuffer;
@@ -32,6 +32,9 @@ function init(program) {
 
 	$('canvas').on('mousedown', handleMouseDown);
 	$(window).keypress(handleKeyDown);
+	$('#material').change(function() {
+    cIndex = $('#material option:selected').attr('value');
+  });
 
 	prepopulateWorld();
 
