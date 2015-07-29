@@ -29,7 +29,7 @@ varying vec4 fPosition;
 void
 main()
 {
-    float offset = (abs(0.04-(mod(fPosition.x+0.04, 0.08))+abs(0.04-(mod(fPosition.y+0.04, 0.08)))))*10.0;
+    float offset = (sqrt(pow(abs(0.04-(mod(fPosition.x+0.04, 0.08))),2.0) + pow(abs(0.04-(mod(fPosition.y+0.04, 0.08))),2.0)))*10.0;
     vec4 color;
     color.r = fColor.r - offset;
     color.g = fColor.g - offset;
