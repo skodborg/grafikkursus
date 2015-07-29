@@ -1,6 +1,8 @@
 
 var gl;
 var points = [];
+var vRotation = 0.1;
+var vRotataionLoc;
 
 function init(program) {
 
@@ -20,6 +22,8 @@ function init(program) {
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
+
+    vRotataionLoc = gl.getUniformLocation( program, "vRotation" );
 
     render();
 
@@ -48,6 +52,12 @@ function generateDividedTriangle(a, b, c, divisions){
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
+
+    vRotation += 0.1;
+    gl.uniform1f( vRotataionLoc, vRotation );
+
     gl.drawArrays( gl.TRIANGLES, 0, points.length );
+
+    window.requestAnimFrame(render);
 }
 

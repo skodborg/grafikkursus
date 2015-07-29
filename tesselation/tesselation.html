@@ -5,10 +5,12 @@
     <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec3 vPosition;
 
+uniform float vRotation;
+
 void
 main()
 {
-    float rotation = 1.0;
+    float rotation = vRotation;
     float rotationAmount = rotation * length(vPosition);
     float nX = vPosition.x * cos(rotationAmount) - vPosition.y * sin(rotationAmount);
     float nY = vPosition.x * sin(rotationAmount) + vPosition.y * cos(rotationAmount);
