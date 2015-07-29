@@ -5,7 +5,7 @@ var gl;
 var BLOCK_SIZE = 20;
 var GRID_SIZE = 25;
 
-var maxNumTriangles = 200;  
+var maxNumTriangles = 500;  
 var maxNumVertices  = 3 * maxNumTriangles;
 var index = 0;
 
@@ -68,11 +68,9 @@ function createSquare(p) {
 	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
 	  index += 4;
 	  
-	  t = vec4(colors[1]);
+	  t = vec4(colors[3]);
 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(t));
 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(t));
-	 
-	  t = vec4(colors[2]);
 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(t));
 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(t));
 
