@@ -76,23 +76,23 @@ function worldToBuffer(array2d, whatToGet) {
 
 function clickedSquare(p) {
 	var clickedBlock = world[p[0]][p[1]];
-	if (world[p[0]][p[1]] == undefined) {
-		// clicked the sky
-		var newBlock = new Block(p[0], p[1], colors[cIndex]);
-		 world[p[0]][p[1]] = newBlock;
+	if (world[p[0]][p[1]] == undefined) { //We clicked the sky
+		if (getNeighbours(p[0], p[1]).length > 0) {//We do have a neighbour, so we can build box
+			var newBlock = new Block(p[0], p[1], colors[cIndex]);
+			 world[p[0]][p[1]] = newBlock;
 
-		gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
-	  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+			gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+		  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
+		  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 
-	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
-	  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+		  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+		  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
+		  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
-	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+	  	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+		}
 	}
-	else {
-		// clicked a box
+	else { //We clicked on an existing box
 		world[p[0]][p[1]] = undefined;
 
 		gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -107,6 +107,24 @@ function clickedSquare(p) {
 	}
 }
 
+//Get neighbours of a grid element
+function getNeighbours(x, y) {
+	var result = [];
+	if(x > 0 && world[x -1][y] != undefined) {
+		result.push(world[x -1][y]);
+	}
+	if(world[x][y + 1] != undefined) {
+		result.push(world[x][y + 1]);
+	}
+	if(x < GRID_SIZE-1 && world[x + 1][y] != undefined) {
+		result.push(world[x + 1][y]);
+	}
+	if(world[x][y - 1] != undefined) {
+		result.push(world[x][y - 1]);
+	}
+	return result;
+}
+
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
 	var length = worldToBuffer(world, "vertices").length;
@@ -117,7 +135,7 @@ function render() {
 }
 
 function handleMouseDown(event) {
-	clickedSquare(pointToGrid(event.clientX, event.clientY));	
+	clickedSquare(pointToGrid(event.clientX, event.clientY));
 }
 
 function handleKeyDown(event) {
