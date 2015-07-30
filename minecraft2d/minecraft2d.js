@@ -3,6 +3,7 @@ var gl;
 
 var BLOCK_SIZE = 20;
 var GRID_SIZE = 25;
+var BLOCK_WIDTH = 0.08;
 
 var maxNumTriangles = 1000;  
 var maxNumVertices  = 3 * maxNumTriangles;
@@ -39,15 +40,17 @@ function init(program) {
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(world), gl.STATIC_DRAW );
-	
+  console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
+  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
+	console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
+
   var vPosition = gl.getAttribLocation(program, "vPosition");
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
   cBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-  gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(worldColors), gl.STATIC_DRAW );	
+  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(worldColors, "colors"), gl.STATIC_DRAW );	
   
   var vColor = gl.getAttribLocation( program, "vColor" );
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
@@ -56,10 +59,17 @@ function init(program) {
 	render();
 }
 
-function flatten2dArray(array2d) {
+function worldToBuffer(array2d, whatToGet) {
 	var result = [];
 	for (var i = 0; i < array2d.length; i++) {
-		result = result.concat(array2d[i]);
+		for(var j = 0; j < array2d[i].length; j++) {
+			if(whatToGet === "vertices") {
+				result = result.concat(array2d[i][j].getCorners());
+			}
+			if(whatToGet === "colors") {
+				result = result.concat(array2d[i][j].material);	
+			}
+		}
 	}
 	return flatten(result);
 }
@@ -135,10 +145,11 @@ function clickedSquare(p) {
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
-	var length = flatten2dArray(world).length;
-	for (var i = 0; i < length/2; i+=4) {
+	//var length = worldToBuffer(world, "vertices").length;
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	/*for (var i = 0; i < 12; i+=4) {
 		gl.drawArrays( gl.TRIANGLE_STRIP, i, 4);
-	}
+	}*/
   window.requestAnimFrame(render);
 }
 
@@ -172,7 +183,7 @@ function gridCoordToBlock(x, y) {
 	var halfGridSize = GRID_SIZE / 2;
 	var col = (x / halfGridSize) -1;
 	var row = (y / halfGridSize) -1;
-	return [col, row];
+	return vec2(col, row);
 }
 
 // returns grid index corresponding to mouse click
@@ -183,29 +194,17 @@ function pointToGrid(x, y) {
 }
 
 function prepopulateWorld() {
-	var ll = -1;
 	for (var i = 0; i < GRID_SIZE; i++) {
 		var tmp = [];
-		var tmpcolors = [];
 		for (var j = 0; j < GRID_SIZE; j++) {
-			var f = i *0.08;
-			var g = j *0.08;
-
-			tmp.push(vec2(ll+f,ll+g));
-			tmp.push(vec2(ll+f+0.08,ll+g));
-			tmp.push(vec2(ll+f,ll+g+0.08));
-			tmp.push(vec2(ll+f+0.08,ll+g+0.08));
-			tmpcolors.push(colors[6]);
-			tmpcolors.push(colors[6]);
-			tmpcolors.push(colors[6]);
-			tmpcolors.push(colors[6]);
+			var currBlock = new Block(i, j, colors[0]);
+			tmp.push(currBlock);
 		}
 		world.push(tmp);
-		worldColors.push(tmpcolors);
 	}
 
 	// create ground
-	var groundRows = 8;
+	/*var groundRows = 8;
 	for (var i = 0; i < GRID_SIZE; i++) {
 		for (var j = 0; j < groundRows * 4; j++) {
 			worldColors[i][j] = colors[0];
@@ -278,5 +277,5 @@ function prepopulateWorld() {
 	colorBox([19,14], colors[3]);
 	colorBox([20,13], colors[3]);
 	colorBox([20,12], colors[3]);
-	colorBox([20,11], colors[3]);
+	colorBox([20,11], colors[3]);*/
 }
