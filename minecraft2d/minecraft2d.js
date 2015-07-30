@@ -9,13 +9,12 @@ var maxNumVertices  = 3 * maxNumTriangles;
 
 var USE_WORLD_PREPOPULATION = true;
 
-var index = 0;
-var cIndex = 0;
+var cIndex = 0; // current selected color index
 
-var vBuffer;
-var cBuffer;
+var vBuffer; // vertice Buffer
+var cBuffer; // color Buffer
 
-var world = []; // 25x25 with 20x20 per block - assumes canvas of size 500x500
+var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
 var worldColors = [];
 
 var colors = [
@@ -40,26 +39,16 @@ function init(program) {
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-  if (USE_WORLD_PREPOPULATION) {
-  	gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(world), gl.STATIC_DRAW );
-	}
-  else {
-  	gl.bufferData( gl.ARRAY_BUFFER, 8*maxNumVertices, gl.STATIC_DRAW );
-  }
-    
+  gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(world), gl.STATIC_DRAW );
+	
   var vPosition = gl.getAttribLocation(program, "vPosition");
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
   cBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-  if (USE_WORLD_PREPOPULATION) {
-  	gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(worldColors), gl.STATIC_DRAW );	
-  }
-  else {
-  	gl.bufferData( gl.ARRAY_BUFFER, 16*maxNumVertices, gl.STATIC_DRAW );	
-  }
-
+  gl.bufferData( gl.ARRAY_BUFFER, flatten2dArray(worldColors), gl.STATIC_DRAW );	
+  
   var vColor = gl.getAttribLocation( program, "vColor" );
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vColor );
@@ -75,6 +64,7 @@ function flatten2dArray(array2d) {
 	return flatten(result);
 }
 
+// colors the box at boxGridCoord the given color
 function colorBox(boxGridCoord, color) {
 	var mat_idx = getCorrespondingWorldMatrixIndex(boxGridCoord);
 
@@ -114,34 +104,34 @@ function clickedSquare(p) {
 	gl.bufferSubData(gl.ARRAY_BUFFER, bufferIdx + sizeof.vec4*3, flatten(colorToWrite));
 }
 
-function createSquare(p) {
+// function createSquare(p) {
 
-	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer)
+// 	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer)
 
-		var gridCoord = pointToGrid(p[0], p[1]);
-		var blockLowerLeft = gridCoordToBlock(p[0], p[1]);
+// 		var gridCoord = pointToGrid(p[0], p[1]);
+// 		var blockLowerLeft = gridCoordToBlock(p[0], p[1]);
 
-		var el = 2/GRID_SIZE;
+// 		var el = 2/GRID_SIZE;
 
-	  t1 = vec2(blockLowerLeft);
-	  t2 = vec2(t1[0], t1[1]+el);
-	  t3 = vec2(t1[0]+el, t1[1]);
-	  t4 = vec2(t1[0]+el, t1[1]+el);
+// 	  t1 = vec2(blockLowerLeft);
+// 	  t2 = vec2(t1[0], t1[1]+el);
+// 	  t3 = vec2(t1[0]+el, t1[1]);
+// 	  t4 = vec2(t1[0]+el, t1[1]+el);
 
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*index, flatten(t1));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+1), flatten(t3));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+2), flatten(t2));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+3), flatten(t4));
-	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-	  index += 4;
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*index, flatten(t1));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+1), flatten(t3));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+2), flatten(t2));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+3), flatten(t4));
+// 	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+// 	  index += 4;
 	  
-	  t = vec4(colors[cIndex]);
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(t));
-	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(t));
+// 	  t = vec4(colors[cIndex]);
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(t));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(t));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(t));
+// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(t));
 
-}
+// }
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
@@ -153,12 +143,7 @@ function render() {
 }
 
 function handleMouseDown(event) {
-	if (USE_WORLD_PREPOPULATION) {
-		clickedSquare(pointToGrid(event.clientX, event.clientY));	
-	}
-	else {
-		createSquare(vec2(pointToGrid(event.clientX, event.clientY)));	
-	}
+	clickedSquare(pointToGrid(event.clientX, event.clientY));	
 }
 
 function handleKeyDown(event) {
