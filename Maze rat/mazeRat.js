@@ -35,12 +35,14 @@ function init(program)
 }
 
 function left() {
+    if(ratPos[0]-1 < 0) return;
     var temp = maze[ratPos[0]-1];
     if(temp[ratPos[1]]) return;
     ratPos[0] = ratPos[0] - 1
 }
 
 function right() {
+    if(ratPos[0]+1 >= 25) return;
     var temp = maze[ratPos[0]+1];
     if(temp[ratPos[1]]) return;
     ratPos[0] = ratPos[0] + 1
@@ -99,7 +101,7 @@ function updateRatPosition() {
 }
 
 function generateMaze() {
-    for(var i = 0; i < 150; i++) {
+    for(var i = 0; i < 200; i++) {
         var row;
         var colIndex;
         do {
