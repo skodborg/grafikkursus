@@ -9,8 +9,12 @@ var cIndex = 0; // current selected color index
 
 var vBuffer; // vertice Buffer
 var cBuffer; // color Buffer
+
 var vPosition;
 var vColor;
+
+var shouldPaintWireFrame = false;
+var currMousePos;
 
 var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
 
@@ -27,12 +31,14 @@ var colors = [
 function init(program) {
 
 	$('canvas').on('mousedown', handleMouseDown);
+	$('canvas').mousemove(handleMouseMove);
 	$(window).keypress(handleKeyDown);
 	$('#material').change(function() {
       cIndex = $('#material option:selected').attr('value');
     });
 
 	prepopulateWorld();
+	
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -51,6 +57,33 @@ function init(program) {
   gl.enableVertexAttribArray( vColor );
 
 	render();
+}
+
+function handleMouseMove(event) {
+	var currGrid = pointToGrid(event.clientX, event.clientY);
+	var currBlock = world[currGrid[0]][currGrid[1]];
+	
+	shouldPaintWireFrame = currBlock != undefined || 
+												 getNeighbours(currGrid[0], currGrid[1]).length > 0;
+	currMousePos = currGrid;
+}
+
+function paintWireFrame(mouseGridPos) {
+	var ll = gridToWorld(mouseGridPos[0],mouseGridPos[1]);
+  var tl = vec2(ll[0], ll[1] + BLOCK_WIDTH);
+  var tr = vec2(ll[0] + BLOCK_WIDTH, ll[1] + BLOCK_WIDTH);
+  var lr = vec2(ll[0] + BLOCK_WIDTH, ll[1]);
+
+	var currBoxCorners = [ll, tl, tr, lr];
+	var colorOfWireFrame = [colors[5],colors[5],colors[5],colors[5]];
+
+	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+  gl.bufferData( gl.ARRAY_BUFFER, flatten(currBoxCorners) , gl.STATIC_DRAW );
+  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+  gl.bufferData( gl.ARRAY_BUFFER, flatten(colorOfWireFrame), gl.STATIC_DRAW );
+  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 }
 
 function worldToBuffer(array2d, whatToGet) {
@@ -127,11 +160,27 @@ function getNeighbours(x, y) {
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
+
+	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
+  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
+  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+
 	var length = worldToBuffer(world, "vertices").length;
 	for (var i = 0; i < length/2; i+=4) {
+		gl.lineWidth(2.0);
 		gl.drawArrays( gl.TRIANGLE_STRIP, i, 4);
 	}
-    window.requestAnimFrame(render);
+
+	if (shouldPaintWireFrame) {
+		paintWireFrame(currMousePos);
+		gl.drawArrays( gl.LINE_LOOP, 0, 4);
+	}
+
+	window.requestAnimFrame(render);
 }
 
 function handleMouseDown(event) {
@@ -172,6 +221,12 @@ function pointToGrid(x, y) {
   col = Math.floor(x / BLOCK_SIZE);
   row = (GRID_SIZE-1) - Math.floor(y / BLOCK_SIZE);
   return [col, row];
+}
+
+function gridToWorld(x, y) {
+	var newX = -1 + 2*x/GRID_SIZE;
+	var newY = -1 + 2*y/GRID_SIZE;
+	return vec2(newX, newY);
 }
 
 function prepopulateWorld() {
