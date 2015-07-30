@@ -35,7 +35,7 @@ main()
         gl_FragColor = fColor;
     } else {
         // current fragment is within some block
-        float offset = (sqrt(pow(abs(0.04-(mod(fPosition.x+0.04, 0.08))),2.0) + pow(abs(0.04-(mod(fPosition.y+0.04, 0.08))),2.0)))*9.0;
+        float offset = (sqrt(pow(0.04-(mod(fPosition.x+0.04, 0.08)),2.0) + pow(0.04-(mod(fPosition.y+0.04, 0.08)),2.0)))*9.0;
         vec4 color;
         color.r = fColor.r - offset;
         color.g = fColor.g - offset;
