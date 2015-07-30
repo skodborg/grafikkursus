@@ -33,8 +33,8 @@ function init(program) {
 	$('canvas').on('mousedown', handleMouseDown);
 	$(window).keypress(handleKeyDown);
 	$('#material').change(function() {
-    cIndex = $('#material option:selected').attr('value');
-  });
+      cIndex = $('#material option:selected').attr('value');
+    });
 
 	prepopulateWorld();
 
