@@ -40,9 +40,7 @@ function init(program) {
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-  console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
   gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
-	console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
 
   var vPosition = gl.getAttribLocation(program, "vPosition");
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
@@ -50,7 +48,7 @@ function init(program) {
 
   cBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(worldColors, "colors"), gl.STATIC_DRAW );	
+  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
   
   var vColor = gl.getAttribLocation( program, "vColor" );
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
@@ -67,7 +65,7 @@ function worldToBuffer(array2d, whatToGet) {
 				result = result.concat(array2d[i][j].getCorners());
 			}
 			if(whatToGet === "colors") {
-				result = result.concat(array2d[i][j].material);	
+				result = result.concat(array2d[i][j].color);
 			}
 		}
 	}
@@ -145,12 +143,11 @@ function clickedSquare(p) {
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
-	//var length = worldToBuffer(world, "vertices").length;
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-	/*for (var i = 0; i < 12; i+=4) {
+	var length = worldToBuffer(world, "vertices").length;
+	for (var i = 0; i < length/2; i+=4) {
 		gl.drawArrays( gl.TRIANGLE_STRIP, i, 4);
-	}*/
-  window.requestAnimFrame(render);
+	}
+    window.requestAnimFrame(render);
 }
 
 function handleMouseDown(event) {
@@ -180,7 +177,7 @@ function handleKeyDown(event) {
 
 // returns lower left corner of block
 function gridCoordToBlock(x, y) {
-	var halfGridSize = GRID_SIZE / 2;
+	var halfGridSize = GRID_SIZE/2;
 	var col = (x / halfGridSize) -1;
 	var row = (y / halfGridSize) -1;
 	return vec2(col, row);

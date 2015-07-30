@@ -4,7 +4,8 @@ var Block = (function () {
   function Block(x, y, mat) {
     this.x = x;
     this.y = y;
-    this.material = mat;  
+    this.material = mat;
+    this.color = [mat, mat, mat, mat];
   }
 
   //Return the corners of this block, in render list order
