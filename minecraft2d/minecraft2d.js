@@ -5,18 +5,14 @@ var BLOCK_SIZE = 20;
 var GRID_SIZE = 25;
 var BLOCK_WIDTH = 0.08;
 
-var maxNumTriangles = 1000;  
-var maxNumVertices  = 3 * maxNumTriangles;
-
-var USE_WORLD_PREPOPULATION = true;
-
 var cIndex = 0; // current selected color index
 
 var vBuffer; // vertice Buffer
 var cBuffer; // color Buffer
+var vPosition;
+var vColor;
 
 var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
-var worldColors = [];
 
 var colors = [
     vec4( 0.8, 0.65, 0.0, 1.0 ), // brown
@@ -42,7 +38,7 @@ function init(program) {
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
 
-  var vPosition = gl.getAttribLocation(program, "vPosition");
+  vPosition = gl.getAttribLocation(program, "vPosition");
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
@@ -50,7 +46,7 @@ function init(program) {
   gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
   gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
   
-  var vColor = gl.getAttribLocation( program, "vColor" );
+  vColor = gl.getAttribLocation( program, "vColor" );
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vColor );
 
@@ -61,85 +57,55 @@ function worldToBuffer(array2d, whatToGet) {
 	var result = [];
 	for (var i = 0; i < array2d.length; i++) {
 		for(var j = 0; j < array2d[i].length; j++) {
+			var entry = array2d[i][j];
 			if(whatToGet === "vertices") {
-				result = result.concat(array2d[i][j].getCorners());
+				if (entry != undefined) {
+					result = result.concat(entry.getCorners());
+				}
 			}
 			if(whatToGet === "colors") {
-				result = result.concat(array2d[i][j].color);
+				if (entry != undefined) {
+					result = result.concat(entry.color);
+				}
 			}
 		}
 	}
 	return flatten(result);
 }
 
-// colors the box at boxGridCoord the given color
-function colorBox(boxGridCoord, color) {
-	var mat_idx = getCorrespondingWorldMatrixIndex(boxGridCoord);
-
-	worldColors[mat_idx[0]][mat_idx[1]] = color;
-	worldColors[mat_idx[0]][mat_idx[1]+1] = color;
-	worldColors[mat_idx[0]][mat_idx[1]+2] = color;
-	worldColors[mat_idx[0]][mat_idx[1]+3] = color;
-}
-
-function getCorrespondingWorldMatrixIndex(gridPoint) {
-	return [gridPoint[0],gridPoint[1]*4];
-}
 
 function clickedSquare(p) {
-	var mat_idx = getCorrespondingWorldMatrixIndex(p);
-	var colorToWrite;
+	var clickedBlock = world[p[0]][p[1]];
+	if (world[p[0]][p[1]] == undefined) {
+		// clicked the sky
+		var newBlock = new Block(p[0], p[1], colors[cIndex]);
+		 world[p[0]][p[1]] = newBlock;
 
-	if (worldColors[mat_idx[0]][mat_idx[1]] == colors[6]) {
-		// clicked sky, create block of selected type
-		worldColors[mat_idx[0]][mat_idx[1]] = colors[cIndex];
-		colorToWrite = colors[cIndex];
+		gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
+	  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+
+	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
+	  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+
+	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 	}
 	else {
-		// clicked some existing block, change state back to sky to remove the block
-		worldColors[mat_idx[0]][mat_idx[1]] = colors[6];
-		colorToWrite = colors[6];
+		// clicked a box
+		world[p[0]][p[1]] = undefined;
+
+		gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
+	  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+
+	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
+	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
+	  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+
+	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 	}
-
-	// send updated data to the GPU
-	gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-	var bufferX = p[0] * sizeof.vec4 * 100;
-	var bufferY = p[1] * sizeof.vec4 * 4;
-	var bufferIdx = bufferX + bufferY;
-	gl.bufferSubData(gl.ARRAY_BUFFER, bufferIdx + sizeof.vec4*0, flatten(colorToWrite));
-	gl.bufferSubData(gl.ARRAY_BUFFER, bufferIdx + sizeof.vec4*1, flatten(colorToWrite));
-	gl.bufferSubData(gl.ARRAY_BUFFER, bufferIdx + sizeof.vec4*2, flatten(colorToWrite));
-	gl.bufferSubData(gl.ARRAY_BUFFER, bufferIdx + sizeof.vec4*3, flatten(colorToWrite));
 }
-
-// function createSquare(p) {
-
-// 	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer)
-
-// 		var gridCoord = pointToGrid(p[0], p[1]);
-// 		var blockLowerLeft = gridCoordToBlock(p[0], p[1]);
-
-// 		var el = 2/GRID_SIZE;
-
-// 	  t1 = vec2(blockLowerLeft);
-// 	  t2 = vec2(t1[0], t1[1]+el);
-// 	  t3 = vec2(t1[0]+el, t1[1]);
-// 	  t4 = vec2(t1[0]+el, t1[1]+el);
-
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*index, flatten(t1));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+1), flatten(t3));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+2), flatten(t2));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 8*(index+3), flatten(t4));
-// 	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-// 	  index += 4;
-	  
-// 	  t = vec4(colors[cIndex]);
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-4), flatten(t));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-3), flatten(t));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-2), flatten(t));
-// 	  gl.bufferSubData(gl.ARRAY_BUFFER, 16*(index-1), flatten(t));
-
-// }
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
@@ -191,88 +157,83 @@ function pointToGrid(x, y) {
 }
 
 function prepopulateWorld() {
+
 	for (var i = 0; i < GRID_SIZE; i++) {
-		var tmp = [];
-		for (var j = 0; j < GRID_SIZE; j++) {
-			var currBlock = new Block(i, j, colors[0]);
-			tmp.push(currBlock);
-		}
-		world.push(tmp);
+		world.push([]);
 	}
 
-	// create ground
-	/*var groundRows = 8;
+	var groundRows = 8;
 	for (var i = 0; i < GRID_SIZE; i++) {
-		for (var j = 0; j < groundRows * 4; j++) {
-			worldColors[i][j] = colors[0];
+		for (var j = 0; j < groundRows; j++) {
+				world[i][j] = new Block(i,j, colors[0]);
 		}
 	}
-	colorBox([23,8], colors[0]);
-	colorBox([24,8], colors[0]);
-	colorBox([22,8], colors[0]);
-	colorBox([24,9], colors[0]);
-	colorBox([0,8], colors[0]);
-	colorBox([1,8], colors[0]);
-	colorBox([2,8], colors[0]);
-	colorBox([3,8], colors[0]);
-	colorBox([4,8], colors[0]);
-	colorBox([5,8], colors[0]);
-	colorBox([4,9], colors[0]);
-	colorBox([3,9], colors[0]);
-	colorBox([2,9], colors[0]);
-	colorBox([1,9], colors[0]);
-	colorBox([0,9], colors[0]);
-	colorBox([1,10], colors[0]);
-	colorBox([0,10], colors[0]);
-	colorBox([10,8], colors[0]);
-	colorBox([11,8], colors[0]);
-	colorBox([12,8], colors[0]);
+
+	world[23][8] = new Block(23,8, colors[0]);
+	world[24][8] = new Block(24,8, colors[0]);
+	world[22][8] = new Block(22,8, colors[0]);
+	world[24][9] = new Block(24,9, colors[0]);
+	world[0][8] = new Block(0,8, colors[0]);
+	world[1][8] = new Block(1,8, colors[0]);
+	world[2][8] = new Block(2,8, colors[0]);
+	world[3][8] = new Block(3,8, colors[0]);
+	world[4][8] = new Block(4,8, colors[0]);
+	world[5][8] = new Block(5,8, colors[0]);
+	world[4][9] = new Block(4,9, colors[03]);
+	world[3][9] = new Block(3,9, colors[0]);
+	world[2][9] = new Block(2,9, colors[0]);
+	world[1][9] = new Block(1,9, colors[0]);
+	world[0][9] = new Block(0,9, colors[0]);
+	world[1][10] = new Block(1,10, colors[0]);
+	world[0][10] = new Block(0,10, colors[0]);
+	world[10][8] = new Block(10,8, colors[0]);
+	world[11][8] = new Block(11,8, colors[0]);
+	world[12][8] = new Block(12,8, colors[0]);
 
 	// cover with grass
-	colorBox([0,11], colors[3]);
-	colorBox([1,11], colors[3]);
-	colorBox([2,10], colors[3]);
-	colorBox([3,10], colors[3]);
-	colorBox([4,10], colors[3]);
-	colorBox([5,9], colors[3]);
-	colorBox([6,8], colors[3]);
-	colorBox([7,8], colors[3]);
-	colorBox([8,8], colors[3]);
-	colorBox([9,8], colors[3]);
-	colorBox([10,9], colors[3]);
-	colorBox([11,9], colors[3]);
-	colorBox([12,9], colors[3]);
-	colorBox([13,8], colors[3]);
-	colorBox([14,8], colors[3]);
-	colorBox([15,8], colors[3]);
-	colorBox([16,8], colors[3]);
-	colorBox([17,8], colors[3]);
-	colorBox([18,8], colors[3]);
-	colorBox([19,8], colors[3]);
-	colorBox([20,8], colors[3]);
-	colorBox([21,8], colors[3]);
-	colorBox([22,9], colors[3]);
-	colorBox([23,9], colors[3]);
-	colorBox([24,10], colors[3]);
+	world[0][11] = new Block(0,11, colors[3]);
+	world[1][11] = new Block(1,11, colors[3]);
+	world[2][10] = new Block(2,10, colors[3]);
+	world[3][10] = new Block(3,10, colors[3]);
+	world[4][10] = new Block(4,10, colors[3]);
+	world[5][9]  = new Block(5,9, colors[3]);
+	world[6][8]  = new Block(6,8, colors[3]);
+	world[7][8]  = new Block(7,8, colors[3]);
+	world[8][8]  = new Block(8,8, colors[3]);
+	world[9][8]  = new Block(9,8, colors[3]);
+	world[10][9] = new Block(10,9, colors[3]);
+	world[11][9] = new Block(11,9, colors[3]);
+	world[12][9] = new Block(12,9, colors[3]);
+	world[13][8] = new Block(13,8, colors[3]);
+	world[14][8] = new Block(14,8, colors[3]);
+	world[15][8] = new Block(15,8, colors[3]);
+	world[16][8] = new Block(16,8, colors[3]);
+	world[17][8] = new Block(17,8, colors[3]);
+	world[18][8] = new Block(18,8, colors[3]);
+	world[19][8] = new Block(19,8, colors[3]);
+	world[20][8] = new Block(20,8, colors[3]);
+	world[21][8] = new Block(21,8, colors[3]);
+	world[22][9] = new Block(22,9, colors[3]);
+	world[23][9] = new Block(23,9, colors[3]);
+	world[24][10] = new Block(24,10, colors[3]);
 
 	// create tree
-	colorBox([18,9], colors[2]);
-	colorBox([18,10], colors[2]);
-	colorBox([18,11], colors[2]);
-	colorBox([18,12], colors[2]);
-	// leaves of tree
-	colorBox([17,12], colors[3]);
-	colorBox([17,13], colors[3]);
-	colorBox([18,13], colors[3]);
-	colorBox([19,13], colors[3]);
-	colorBox([19,12], colors[3]);
-	colorBox([16,11], colors[3]);
-	colorBox([16,12], colors[3]);
-	colorBox([16,13], colors[3]);
-	colorBox([17,14], colors[3]);
-	colorBox([18,14], colors[3]);
-	colorBox([19,14], colors[3]);
-	colorBox([20,13], colors[3]);
-	colorBox([20,12], colors[3]);
-	colorBox([20,11], colors[3]);*/
+	world[18][9] = new Block(18,9, colors[2]);
+	world[18][10] = new Block(18,10, colors[2]);
+	world[18][11] = new Block(18,11, colors[2]);
+	world[18][12] = new Block(18,12, colors[2]);
+	world[17][12] = new Block(17,12, colors[3]);
+	world[17][13] = new Block(17,13, colors[3]);
+	world[18][13] = new Block(18,13, colors[3]);
+	world[19][13] = new Block(19,13, colors[3]);
+	world[19][12] = new Block(19,12, colors[3]);
+	world[16][11] = new Block(16,11, colors[3]);
+	world[16][12] = new Block(16,12, colors[3]);
+	world[16][13] = new Block(16,13, colors[3]);
+	world[17][14] = new Block(17,14, colors[3]);
+	world[18][14] = new Block(18,14, colors[3]);
+	world[19][14] = new Block(19,14, colors[3]);
+	world[20][13] = new Block(20,13, colors[3]);
+	world[20][12] = new Block(20,12, colors[3]);
+	world[20][11] = new Block(20,11, colors[3]);
 }
