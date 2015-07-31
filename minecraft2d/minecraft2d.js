@@ -9,14 +9,18 @@ var cIndex = 0; // current selected color index
 
 var vBuffer; // vertice Buffer
 var cBuffer; // color Buffer
+var wfBuffer; // wireframe Buffer
 
 var vPosition;
 var vColor;
+var uWireframeColor;
 
 var shouldPaintWireFrame = false;
+var wireFrameCorners = [];
+var wireFrameColor;
 var currMousePos;
 
-var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
+var world = []; // 25x25 with 20x20 per block - assumes canvas of size 500x500
 
 var colors = [
     vec4( 0.8, 0.65, 0.0, 1.0 ), // brown
@@ -38,14 +42,12 @@ function init(program) {
     });
 
 	prepopulateWorld();
-	
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
 
   vPosition = gl.getAttribLocation(program, "vPosition");
-  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
   cBuffer = gl.createBuffer();
@@ -53,37 +55,37 @@ function init(program) {
   gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
   
   vColor = gl.getAttribLocation( program, "vColor" );
-  gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vColor );
+
+  wfBuffer = gl.createBuffer();
+
+  uWireframeColor = gl.getUniformLocation(program, "uWireframeColor");
 
 	render();
 }
 
 function handleMouseMove(event) {
+	wireFrameCorners = [];
 	var currGrid = pointToGrid(event.clientX, event.clientY);
 	var currBlock = world[currGrid[0]][currGrid[1]];
-	
+
+	var worldCoord = gridToWorld(currGrid[0], currGrid[1]);
+	var worldX = worldCoord[0];
+	var worldY = worldCoord[1];
+
+	wireFrameCorners = [worldX, worldY, 
+											worldX, worldY+BLOCK_WIDTH, 
+											worldX+BLOCK_WIDTH, worldY+BLOCK_WIDTH, 
+											worldX+BLOCK_WIDTH, worldY];
+
+		
 	shouldPaintWireFrame = currBlock != undefined || 
-												 getNeighbours(currGrid[0], currGrid[1]).length > 0;
+												 getNeighbours(currGrid[0], currGrid[1]).length > 0
+	if (shouldPaintWireFrame) {
+		gl.bindBuffer( gl.ARRAY_BUFFER, wfBuffer);
+		gl.bufferData( gl.ARRAY_BUFFER, flatten(wireFrameCorners), gl.STATIC_DRAW);	
+	}
 	currMousePos = currGrid;
-}
-
-function paintWireFrame(mouseGridPos) {
-	var ll = gridToWorld(mouseGridPos[0],mouseGridPos[1]);
-  var tl = vec2(ll[0], ll[1] + BLOCK_WIDTH);
-  var tr = vec2(ll[0] + BLOCK_WIDTH, ll[1] + BLOCK_WIDTH);
-  var lr = vec2(ll[0] + BLOCK_WIDTH, ll[1]);
-
-	var currBoxCorners = [ll, tl, tr, lr];
-	var colorOfWireFrame = [colors[5],colors[5],colors[5],colors[5]];
-
-	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(currBoxCorners) , gl.STATIC_DRAW );
-  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-
-  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(colorOfWireFrame), gl.STATIC_DRAW );
-  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 }
 
 function worldToBuffer(array2d, whatToGet) {
@@ -93,7 +95,15 @@ function worldToBuffer(array2d, whatToGet) {
 			var entry = array2d[i][j];
 			if(whatToGet === "vertices") {
 				if (entry != undefined) {
-					result = result.concat(entry.getCorners());
+					var resultTrianglesCorners = [];
+					var entryCorners = entry.getCorners();
+					resultTrianglesCorners.push(entryCorners[0]);
+					resultTrianglesCorners.push(entryCorners[1]);
+					resultTrianglesCorners.push(entryCorners[2]);
+					resultTrianglesCorners.push(entryCorners[0]);
+					resultTrianglesCorners.push(entryCorners[2]);
+					resultTrianglesCorners.push(entryCorners[3]);
+					result = result.concat(resultTrianglesCorners);
 				}
 			}
 			if(whatToGet === "colors") {
@@ -106,7 +116,6 @@ function worldToBuffer(array2d, whatToGet) {
 	return flatten(result);
 }
 
-
 function clickedSquare(p) {
 	var clickedBlock = world[p[0]][p[1]];
 	if (world[p[0]][p[1]] == undefined) { //We clicked the sky
@@ -116,11 +125,9 @@ function clickedSquare(p) {
 
 			gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 		  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
-		  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 
 		  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
 		  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
-		  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
 	  	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 		}
@@ -130,11 +137,9 @@ function clickedSquare(p) {
 
 		gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
-	  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 
 	  gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
 	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
-	  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
 	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
 	}
@@ -159,7 +164,10 @@ function getNeighbours(x, y) {
 }
 
 function render() {
-	gl.clear( gl.COLOR_BUFFER_BIT );
+	gl.clear( gl.COLOR_BUFFER_BIT );	
+
+  var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+  gl.useProgram( program );
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
@@ -168,14 +176,18 @@ function render() {
   gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
 	var length = worldToBuffer(world, "vertices").length;
-	for (var i = 0; i < length/2; i+=4) {
-		gl.lineWidth(2.0);
-		gl.drawArrays( gl.TRIANGLE_STRIP, i, 4);
-	}
+	gl.drawArrays( gl.TRIANGLES, 0, length/2);
 
 	if (shouldPaintWireFrame) {
-		paintWireFrame(currMousePos);
-		gl.drawArrays( gl.LINE_LOOP, 0, 4);
+		var program = initShaders( gl, "wireframe-vertex-shader", "wireframe-fragment-shader" );
+  	gl.useProgram( program );
+  	
+  	uWireframeColor = gl.getUniformLocation(program, "uWireframeColor");
+  	gl.uniform4f(uWireframeColor, 1.0, 0.0, 0.0, 1.0);
+
+		gl.bindBuffer( gl.ARRAY_BUFFER, wfBuffer);
+		gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+		gl.drawArrays( gl.LINE_LOOP, 0, wireFrameCorners.length/2);
 	}
 
 	window.requestAnimFrame(render);
