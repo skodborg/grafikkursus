@@ -35,7 +35,7 @@ var colors = [
 //Ripple Animation
 var rippleLocation = vec2(-1.0,-1.0);
 var rippleLocationLoc;
-var rippleTime = 0.0;
+var rippleTime = 10.0;
 var rippleTimeLoc;
 
 function init(program) {
@@ -153,6 +153,7 @@ function clickedSquare(p) {
 	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
 
 	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+	  createRipple(p[0], p[1]);
 	}
 }
 

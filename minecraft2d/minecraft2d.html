@@ -21,7 +21,15 @@ main()
     vec2 distPoint = (dirVector * rippleTime) + rippleLocation;
     //Set waveHeight to show how high the ripple is for this vertex.
     waveHeight = (1.0 - clamp(distance(distPoint, vec2(vPosition)) * 2.0, 0.0,1.0)) / 4.0;
-    gl_Position = vPosition;
+    float moveX = waveHeight / 20.0;
+    float moveY = moveX;
+    if(vPosition.x < 0.0) {
+        moveX = -moveX;
+    }
+    if(vPosition.y < 0.0) {
+        moveY = - moveY;
+    }
+    gl_Position = vPosition + vec4(moveX, moveY, 0.0, 0.0);
     fColor = vColor;
     fPosition = vPosition;
 }
