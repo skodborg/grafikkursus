@@ -19,13 +19,13 @@ var currMousePos;
 var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
 
 var colors = [
-    vec4( 0.8, 0.65, 0.0, 1.0 ), // brown
-    vec4( 1.0, 0.0, 0.0, 1.0 ),  // red
-    vec4( 1.0, 1.0, 0.0, 1.0 ),  // yellow
-    vec4( 0.0, 0.8, 0.0, 1.0 ),  // green
-    vec4( 0.0, 0.0, 1.0, 1.0 ),  // blue
-    vec4( 1.0, 0.0, 1.0, 1.0 ),  // magenta
-    vec4( 0.6, 0.9, 0.9, 1.0 )   // light blue
+  vec4( 0.8, 0.65, 0.0, 1.0 ), // brown
+  vec4( 1.0, 0.0, 0.0, 1.0 ),  // red
+  vec4( 1.0, 1.0, 0.0, 1.0 ),  // yellow
+  vec4( 0.0, 0.8, 0.0, 1.0 ),  // green
+  vec4( 0.0, 0.0, 1.0, 1.0 ),  // blue
+  vec4( 1.0, 0.0, 1.0, 1.0 ),  // magenta
+  vec4( 0.6, 0.9, 0.9, 1.0 )   // light blue
 ];
 
 function init(program) {
@@ -174,8 +174,8 @@ function render() {
 	}
 
 	if (shouldPaintWireFrame) {
-		paintWireFrame(currMousePos);
-		gl.drawArrays( gl.LINE_LOOP, 0, 4);
+		//paintWireFrame(currMousePos);
+		//gl.drawArrays( gl.LINE_LOOP, 0, 4);
 	}
 
 	window.requestAnimFrame(render);
