@@ -61,12 +61,14 @@ precision mediump float;
 
 attribute vec4 vPosition;
 uniform vec4 uWireframeColor;
+uniform vec2 currMousePos;
 varying vec4 fColor;
 
 void
 main()
 {
-    gl_Position = vPosition;
+    vec4 pos = vec4(vPosition.x + currMousePos.x, vPosition.y + currMousePos.y, 0.0, 1.0);
+    gl_Position = pos;
     fColor = uWireframeColor;
 }
 </script>
