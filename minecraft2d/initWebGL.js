@@ -1,5 +1,6 @@
 var debugLevel = 1;
 var gl;
+var program;
 window.onload = function() {
   var canvas = document.getElementById( "gl-canvas" );
   gl = WebGLUtils.setupWebGL( canvas );
@@ -32,7 +33,7 @@ window.onload = function() {
   
   //  Load shaders and initialize attribute buffers
   
-  var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+  program = initShaders( gl, "vertex-shader", "fragment-shader" );
   gl.useProgram( program );
-  init(program);
+  init();
 };

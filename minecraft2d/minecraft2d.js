@@ -23,6 +23,8 @@ var wireFrameColor;
 var currMousePos = vec2(-1.-1);
 var currMousePosLoc;
 
+var ripple;
+
 var world = []; // 25x25 with 20x20 per block - assumes canvas of size 500x500
 
 var colors = [
@@ -35,13 +37,9 @@ var colors = [
   vec4( 0.6, 0.9, 0.9, 1.0 )   // light blue
 ];
 
-//Ripple Animation
-var rippleLocation = vec2(-1.0,-1.0);
-var rippleLocationLoc;
-var rippleTime = 10.0;
-var rippleTimeLoc;
 
-function init(program) {
+
+function init() {
 
 	$('canvas').on('mousedown', handleMouseDown);
 	$('canvas').mousemove(handleMouseMove);
@@ -51,6 +49,8 @@ function init(program) {
   });
 
 	prepopulateWorld();
+
+	ripple = new Ripple();
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -68,8 +68,6 @@ function init(program) {
 
   currMousePosLoc =gl.getUniformLocation(program, "currMousePos");
 
-  rippleTimeLoc = gl.getUniformLocation( program, "rippleTime" );
-  rippleLocationLoc = gl.getUniformLocation( program, "rippleLocation" );
 
 	wireFrameCorners = [0.0, 0.0, 
 												0.0, 0.0+BLOCK_WIDTH, 
@@ -143,7 +141,7 @@ function clickedSquare(p) {
 		  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
 
 	  	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-	  	createRipple(p[0], p[1]);
+	  	ripple.createRipple(p[0], p[1]);
 		}
 	}
 	else { //We clicked on an existing box
@@ -156,14 +154,11 @@ function clickedSquare(p) {
 	  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
 
 	  gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-	  createRipple(p[0], p[1]);
+	  ripple.createRipple(p[0], p[1]);
 	}
 }
 
-function createRipple(x, y) {
-	rippleLocation = gridCoordToBlock(x, y);
-	rippleTime = 0.0
-}
+
 
 function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
@@ -171,9 +166,7 @@ function render() {
   program = initShaders( gl, "vertex-shader", "fragment-shader" );
   gl.useProgram( program );
 
-	animateRipple();
-	rippleLocationLoc = gl.getUniformLocation( program, "rippleLocation" );
-	gl.uniform2f( rippleLocationLoc, rippleLocation[0], rippleLocation[1] );
+	ripple.animateRipple();
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
@@ -200,19 +193,6 @@ function render() {
 
 	window.requestAnimFrame(render);
 }
-
-
-function animateRipple() {
-	if(rippleTime < 10) {
-		rippleTime += 0.1;
-	} else {
-		rippleTime = 10;
-	}
-	rippleTimeLoc = gl.getUniformLocation( program, "rippleTime" );
-  gl.uniform1f( rippleTimeLoc, rippleTime );
-}
-
-
 
 
 function handleMouseDown(event) {
