@@ -15,6 +15,13 @@ function pointToGrid(x, y) {
   return [col, row];
 }
 
+// returns grid index corresponding to world coord
+function worldToGrid(x, y){
+  col = Math.floor((x+1)/(2/GRID_SIZE));
+  row = Math.floor((y+1)/(2/GRID_SIZE));
+  return [col, row];
+}
+
 function gridToWorld(x, y) {
   var newX = -1 + 2*x/GRID_SIZE;
   var newY = -1 + 2*y/GRID_SIZE;

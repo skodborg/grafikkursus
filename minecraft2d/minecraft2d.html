@@ -3,6 +3,7 @@
 <head>
 <link rel='stylesheet' href='style.css' />
 <script id="vertex-shader" type="x-shader/x-vertex">
+
 attribute vec4 vPosition;
 attribute vec4 vColor;
 uniform float rippleTime;
@@ -36,8 +37,8 @@ main()
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-precision mediump float;
 
+precision mediump float;
 
 varying vec4 fColor;
 varying vec4 fPosition;
@@ -93,6 +94,8 @@ main()
     <script type="text/javascript" src="Common/MV.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="minecraft2d.js"></script>
+    <script type="text/javascript" src="Box.js"></script>
+    <script type="text/javascript" src="Player.js"></script>
     <script type="text/javascript" src="Block.js"></script>
     <script type="text/javascript" src="Ripple.js"></script>
     <script type="text/javascript" src="WireFrame.js"></script>

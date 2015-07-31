@@ -1,4 +1,4 @@
-// Block class
+//Block Class
 var Block = (function () {
   
   function Block(x, y, mat) {
@@ -16,7 +16,7 @@ var Block = (function () {
     var lr = vec2(ll[0] + BLOCK_WIDTH, ll[1]);
     var result = [ll, tl, tr, lr];
     return result;
-  }
+  };
 
 
   return Block;
