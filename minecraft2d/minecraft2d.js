@@ -17,6 +17,7 @@ var shouldPaintWireFrame = false;
 var currMousePos;
 
 var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
+var player; // holds the player object
 
 var colors = [
   vec4( 0.8, 0.65, 0.0, 1.0 ), // brown
@@ -38,7 +39,7 @@ function init(program) {
   });
 
 	prepopulateWorld();
-	
+  player = new Player(0,12);
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -183,6 +184,18 @@ function handleKeyDown(event) {
 			break;
 		case '5':
 			cIndex = 4;
+			break;
+		case '37':
+      player.moveLeft();
+			break;
+		case '38':
+			player.jump();
+			break;
+		case '39':
+      player.moveRight();
+			break;
+		case '40':
+			// maybe duck
 			break;
 	}
 }

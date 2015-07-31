@@ -1,4 +1,4 @@
-//Turtle Class
+//Block Class
 var Block = (function () {
   
   function Block(x, y, mat) {
