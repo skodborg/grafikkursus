@@ -13,7 +13,7 @@ var Ripple = (function () {
 
   //Return the corners of this block, in render list order
   Ripple.prototype.createRipple = function(x, y) {
-  rippleLocation = gridCoordToBlock(x, y);
+  rippleLocation = gridCoordToBlock(x+0.04, y+0.04);
   rippleTime = 0.0
   }
 
