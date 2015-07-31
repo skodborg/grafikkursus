@@ -28,10 +28,16 @@ var colors = [
   vec4( 0.6, 0.9, 0.9, 1.0 )   // light blue
 ];
 
+//Ripple Animation
+var rippleLocation;
+var rippleLocationLoc;
+var rippleTime = 0.0;
+var rippleTimeLoc;
+
 function init(program) {
 
 	$('canvas').on('mousedown', handleMouseDown);
-	$('canvas').mousemove(handleMouseMove);
+	//$('canvas').mousemove(handleMouseMove);
 	$(window).keypress(handleKeyDown);
 	$('#material').change(function() {
       cIndex = $('#material option:selected').attr('value');
@@ -55,6 +61,9 @@ function init(program) {
   vColor = gl.getAttribLocation( program, "vColor" );
   gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vColor );
+
+  rippleTimeLoc = gl.getUniformLocation( program, "rippleTime" );
+  rippleLocationLoc = gl.getUniformLocation( program, "rippleLocation" );
 
 	render();
 }
@@ -113,6 +122,7 @@ function clickedSquare(p) {
 		  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
 	  	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+	  	createRipple(p[0], p[1]);
 		}
 	}
 	else { //We clicked on an existing box
@@ -130,7 +140,14 @@ function clickedSquare(p) {
 	}
 }
 
+function createRipple(x, y) {
+	rippleLocation = gridCoordToBlock(x, y);
+	gl.uniform2f( rippleLocationLoc, rippleLocation[0], rippleLocation[1] );
+	rippleTime = 1.0
+}
+
 function render() {
+	animateRipple();
 	gl.clear( gl.COLOR_BUFFER_BIT );
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -141,7 +158,7 @@ function render() {
 
 	var length = worldToBuffer(world, "vertices").length;
 	for (var i = 0; i < length/2; i+=4) {
-		gl.lineWidth(2.0);
+		gl.lineWidth(2.0); 
 		gl.drawArrays( gl.TRIANGLE_STRIP, i, 4);
 	}
 
@@ -151,6 +168,15 @@ function render() {
 	}
 
 	window.requestAnimFrame(render);
+}
+
+function animateRipple() {
+	if(rippleTime > 0.15) {
+		rippleTime -= 0.15;
+	} else {
+		rippleTime = 0.0;
+	}
+  gl.uniform1f( rippleTimeLoc, rippleTime );
 }
 
 function handleMouseMove(event) {

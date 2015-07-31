@@ -6,6 +6,8 @@
 
 attribute vec4 vPosition;
 attribute vec4 vColor;
+uniform float rippleTime;
+uniform vec2 rippleLocation;
 
 varying vec4 fColor;
 varying vec4 fPosition;
@@ -13,7 +15,16 @@ varying vec4 fPosition;
 void
 main()
 {
-    gl_Position = vPosition;
+    //float scale = length(rippleLocation - vec2(vPosition)) / 10.0;
+    //vec4 pos = vPosition + vec4(vPosition.x + (rippleTime * scale), vPosition.y + (rippleTime * scale), 0.0, 1.0);
+
+    float dist = distance(rippleLocation, vec2(vPosition));
+    float diff = dist - rippleTime;
+    float powDiff = 1.0 - pow(abs(diff* 10.0), 0.8);
+    float diffTime = diff * powDiff;
+    vec2 diffUV = normalize(vec2(vPosition) - rippleLocation);
+    vec2 pos = vec2(vPosition) + (diffUV * diffTime);
+    gl_Position = vec4(pos, 0.0, 1.0);
     fColor = vColor;
     fPosition = vPosition;
 }
