@@ -33,13 +33,21 @@ function init(program) {
 
 	$('canvas').on('mousedown', handleMouseDown);
 	$('canvas').mousemove(handleMouseMove);
-	$(window).keypress(handleKeyDown);
+
+  window.onkeydown = handleKeyDown;
+
 	$('#material').change(function() {
       cIndex = $('#material option:selected').attr('value');
   });
 
 	prepopulateWorld();
   player = new Player(0,12);
+
+  console.log(player);
+
+  pBuffer = gl.createBuffer();
+  gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer);
+  gl.bufferData( gl.ARRAY_BUFFER, flatten(player.getVertices()), gl.STATIC_DRAW );
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -151,6 +159,13 @@ function render() {
 		//gl.drawArrays( gl.LINE_LOOP, 0, 4);
 	}
 
+  gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer );
+  gl.bufferData( gl.ARRAY_BUFFER, flatten(player.getVertices()), gl.STATIC_DRAW );
+  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+  gl.drawArrays(gl.LINES, 0, player.getVertices().length);
+
+  player.updatePosition();
+
 	window.requestAnimFrame(render);
 }
 
@@ -170,31 +185,33 @@ function handleMouseDown(event) {
 function handleKeyDown(event) {
 	var key = String.fromCharCode(event.keyCode);
 	switch (key) {
-		case '1':
-			cIndex = 0;
-			break;
-		case '2':
-			cIndex = 1;
-			break;
-		case '3':
-			cIndex = 2;
-			break;
-		case '4':
-			cIndex = 3;
-			break;
-		case '5':
-			cIndex = 4;
-			break;
-		case '37':
+    case '1':
+      cIndex = 0;
+      break;
+    case '2':
+      cIndex = 1;
+      break;
+    case '3':
+      cIndex = 2;
+      break;
+    case '4':
+      cIndex = 3;
+      break;
+    case '5':
+      cIndex = 4;
+      break;
+  }
+  switch (event.keyCode) {
+		case 37:
       player.moveLeft();
 			break;
-		case '38':
+		case 38:
 			player.jump();
 			break;
-		case '39':
+		case 39:
       player.moveRight();
 			break;
-		case '40':
+		case 40:
 			// maybe duck
 			break;
 	}
