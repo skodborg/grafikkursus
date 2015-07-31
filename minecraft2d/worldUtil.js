@@ -45,17 +45,6 @@ function prepopulateWorld() {
     world.push([]);
   }
 
-  var groundRows = 25;
-  for (var i = 0; i < GRID_SIZE; i++) {
-    for (var j = 0; j < groundRows; j++) {
-      world[i][j] = new Block(i,j, colors[0]);
-    }
-  }
-/*
-  for (var i = 0; i < GRID_SIZE; i++) {
-    world.push([]);
-  }
-
   var groundRows = 8;
   for (var i = 0; i < GRID_SIZE; i++) {
     for (var j = 0; j < groundRows; j++) {
@@ -130,5 +119,4 @@ function prepopulateWorld() {
   world[20][13] = new Block(20,13, colors[3]);
   world[20][12] = new Block(20,12, colors[3]);
   world[20][11] = new Block(20,11, colors[3]);
-*/
 }

@@ -20,7 +20,7 @@ main()
     //Scale vector from center with the amount of time passed.
     vec2 distPoint = (dirVector * rippleTime) + rippleLocation;
     //Set waveHeight to show how high the ripple is for this vertex.
-    waveHeight = clamp(-distance(distPoint, vec2(vPosition)) * 3.0,-1.0,0.0);
+    waveHeight = (1.0 - clamp(distance(distPoint, vec2(vPosition)) * 2.0, 0.0,1.0)) / 4.0;
     gl_Position = vPosition;
     fColor = vColor;
     fPosition = vPosition;
