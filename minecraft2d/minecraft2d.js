@@ -162,11 +162,9 @@ function render() {
 	gl.clear( gl.COLOR_BUFFER_BIT );
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "vertices"), gl.STATIC_DRAW );
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, worldToBuffer(world, "colors"), gl.STATIC_DRAW );
   gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
 	var length = worldToBuffer(world, "vertices").length;
