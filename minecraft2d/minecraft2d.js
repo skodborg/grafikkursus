@@ -5,6 +5,10 @@ var BLOCK_SIZE = 20;
 var GRID_SIZE = 25;
 var BLOCK_WIDTH = 0.08;
 
+var leftKeyDown = false;
+var rightKeyDown = false;
+var upKeyDown = false;
+
 var cIndex = 0; // current selected color index
 
 var vBuffer; // vertice Buffer
@@ -35,6 +39,7 @@ function init(program) {
 	$('canvas').mousemove(handleMouseMove);
 
   window.onkeydown = handleKeyDown;
+  window.onkeyup = handleKeyUp;
 
 	$('#material').change(function() {
       cIndex = $('#material option:selected').attr('value');
@@ -203,16 +208,32 @@ function handleKeyDown(event) {
   }
   switch (event.keyCode) {
 		case 37:
-      player.moveLeft();
+        leftKeyDown = true;
 			break;
 		case 38:
-			player.jump();
+        upKeyDown = true;
 			break;
 		case 39:
-      player.moveRight();
+        rightKeyDown = true;
 			break;
 		case 40:
 			// maybe duck
 			break;
 	}
+}
+
+function handleKeyUp(event) {
+  switch (event.keyCode) {
+    case 37:
+      leftKeyDown = false;
+      break;
+    case 38:
+      upKeyDown = false;
+      break;
+    case 39:
+      rightKeyDown = false;
+      break;
+    case 40:
+      break;
+  }
 }
