@@ -7,6 +7,7 @@ var Player = (function () {
     this.y = y;
     this.velocity = vec2(0,0);
     this.truePosition = gridCoordToBlock(x,y);
+    this.vertices = this.getVertices();
     pBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
@@ -26,10 +27,15 @@ var Player = (function () {
     uWireframeColor = gl.getUniformLocation(program, "uWireframeColor");
     gl.uniform4f(uWireframeColor, 0.0, 0.0, 0.0, 1.0);
 
+    //Translate all vertices to the players current position.
+    //This way we do not have to update vertices once player is build.
+    //We are kind of abusing mousePos varriable, maybe we should make a seperate one for js side.
+    currMousePosLoc = gl.getUniformLocation( program, "currMousePos" );
+    gl.uniform2f( currMousePosLoc, this.truePosition[0] + 1, this.truePosition[1] + 0.04 );
+
     gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.LINES, 0, player.getVertices().length);
+    gl.drawArrays(gl.LINES, 0, this.vertices.length);
   };
 
   /*---------------- Vertices ---------------------*/
