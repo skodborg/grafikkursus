@@ -17,7 +17,6 @@ var cBuffer; // color Buffer
 var vPosition;
 var vColor;
 
-var shouldPaintWireFrame = false;
 var currMousePos;
 
 var world = []; // 25x100 with 20x20 per block - assumes canvas of size 500x500
@@ -51,15 +50,11 @@ function init() {
   });
 
 	prepopulateWorld();
-  player = new Player(0,12);
 
+  player = new Player(0,12);
 	ripple = new Ripple();
 	wireFrame = new WireFrame();
 
-
-  pBuffer = gl.createBuffer();
-  gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(player.getVertices()), gl.STATIC_DRAW );
 
 	vBuffer = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
@@ -99,10 +94,7 @@ function render() {
 
 	wireFrame.render();
 
-  gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer );
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(player.getVertices()), gl.STATIC_DRAW );
-  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.LINES, 0, player.getVertices().length);
+  player.render();
 
   player.updatePosition();
 

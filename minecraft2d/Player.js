@@ -1,12 +1,22 @@
 //Player class
 var Player = (function () {
-
+  var pBuffer;
   function Player (x, y) {
     this.x = x;
     this.y = y;
     this.velocity = vec2(0,0);
     this.truePosition = gridCoordToBlock(x,y);
+    pBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer);
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
   }
+
+  Player.prototype.render = function() {
+    gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.LINES, 0, player.getVertices().length);
+  };
 
   /*---------------- Vertices ---------------------*/
 
@@ -64,7 +74,6 @@ var Player = (function () {
     if(!this.isStandingOnBlock()) {
       this.velocity = add(this.velocity, vec2(0,-0.01));
     } else {
-      console.log("block ramt")
       this.velocity = vec2(this.velocity[0], 0);
     }
 
@@ -85,7 +94,6 @@ var Player = (function () {
     var gridPos = worldToGrid(this.truePosition[0], this.truePosition[1]);
     this.x = gridPos[0];
     this.y = gridPos[1];
-    console.log("x: " + this.x + " – y: " + this.y);
   };
 
   /*---------------- Movement end ---------------------*/
