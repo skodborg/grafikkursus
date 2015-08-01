@@ -1,5 +1,4 @@
 
-var gl;
 
 var BLOCK_SIZE = 20;
 var GRID_SIZE = 25;
@@ -39,7 +38,7 @@ var colors = [
   vec4( 0.6, 0.9, 0.9, 1.0 )   // light blue
 ];
 
-function init(program) {
+function init() {
 
 	$('canvas').on('mousedown', handleMouseDown);
 	$('canvas').mousemove(handleMouseMove);
