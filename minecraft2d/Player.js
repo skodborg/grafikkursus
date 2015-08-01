@@ -1,6 +1,7 @@
 //Player class
 var Player = (function () {
   var pBuffer;
+  var playerColor;
   function Player (x, y) {
     this.x = x;
     this.y = y;
@@ -9,9 +10,22 @@ var Player = (function () {
     pBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
+
+    //This is the same uniform as used for wireframe!
+    uPlayerColor = gl.getUniformLocation(program, "uWireframeColor");
   }
 
   Player.prototype.render = function() {
+    /*
+      Ensure that we use the shaders for wireframe and player
+      Loading thish as the effect of resetting colour and mouse position
+    */
+    program = initShaders( gl, "wireframe-vertex-shader", "wireframe-fragment-shader" );
+    gl.useProgram( program );
+
+    uWireframeColor = gl.getUniformLocation(program, "uWireframeColor");
+    gl.uniform4f(uWireframeColor, 0.0, 0.0, 0.0, 1.0);
+
     gl.bindBuffer( gl.ARRAY_BUFFER, pBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.getVertices()), gl.STATIC_DRAW );
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
