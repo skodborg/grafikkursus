@@ -92,6 +92,9 @@ var Player = (function () {
 
     // Gravity
     if(!this.isStandingOnBlock()) {
+      if(this.isTouchingWater()) {
+        this.velocity[1] = Math.max(add(this.velocity, vec2(0,-0.0000005))[1], -0.001);
+      }
       this.velocity = add(this.velocity, vec2(0,-0.01));
     } else {
       this.velocity = vec2(this.velocity[0], 0);
@@ -111,6 +114,10 @@ var Player = (function () {
       this.velocity[0] = 0;
     }
 
+    if(this.hitFire()){
+      this.velocity = add(this.velocity, vec2(0, 0.04));
+    }
+
     var gridPos = worldToGrid(this.truePosition[0], this.truePosition[1]);
     this.x = gridPos[0];
     this.y = gridPos[1];
@@ -125,7 +132,7 @@ var Player = (function () {
     if (world[this.x] != undefined) {
       var lowerBlock = world[this.x][this.y - 1];
     }
-    if (lowerBlock != undefined &&
+    if (lowerBlock != undefined && lowerBlock.type != "water" &&
         gridCoordToBlock(lowerBlock.x, lowerBlock.y)[1] + 0.08 >= this.truePosition[1]) {
       this.truePosition[1] = gridCoordToBlock(lowerBlock.x, lowerBlock.y)[1] + 0.08;
       return true;
@@ -135,10 +142,38 @@ var Player = (function () {
     if (world[rightLeg[0]] != undefined) {
       lowerBlock = world[rightLeg[0]][rightLeg[1]];
     }
-    if (lowerBlock != undefined &&
+    if (lowerBlock != undefined && lowerBlock.type != "water" &&
         gridCoordToBlock(lowerBlock.x, lowerBlock.y)[1] + 0.08 >= this.truePosition[1]) {
       this.truePosition[1] = gridCoordToBlock(lowerBlock.x, lowerBlock.y)[1] + 0.08;
       return true;
+    }
+  };
+
+  Player.prototype.hitFire = function () {
+    if(world[this.x] != undefined){
+      var lowerBlock = world[this.x][this.y - 1];
+      if (lowerBlock && lowerBlock.type == "fire"){
+        return true;
+      }
+    }
+    //right leg is on the next block
+    if(this.truePosition[0]+0.06 >= gridCoordToBlock(this.x+1, this.y-1)[0]){
+      if(world[this.x+1] != undefined){
+        var lowerRight = world[this.x+1][this.y-1];
+        if( lowerRight && lowerRight.type == "fire"){
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  Player.prototype.isTouchingWater = function () {
+    if(world[this.x] != undefined) {
+      var touchingBlock = world[this.x][this.y];
+      if(touchingBlock && touchingBlock.type == "water") {
+        return true;
+      };
     }
   };
 
@@ -169,32 +204,32 @@ var Player = (function () {
       upperNeighbour = world[this.x+1][this.y +2];
     }
 
-    if(leftNeighbour != undefined &&
+    if(leftNeighbour != undefined && leftNeighbour.type != "water" && !this.isTouchingWater() &&
         gridCoordToBlock(leftNeighbour.x, leftNeighbour.y)[0]+0.08 >= this.truePosition[0]) {
       this.truePosition[0] = gridCoordToBlock(leftNeighbour.x, leftNeighbour.y)[0]+0.08;
       return true;
     }
-    if(leftNeighbour2 != undefined &&
+    if(leftNeighbour2 != undefined && leftNeighbour2.type != "water" &&
         gridCoordToBlock(leftNeighbour2.x, leftNeighbour2.y)[0]+0.08 >= this.truePosition[0]) {
       this.truePosition[0] = gridCoordToBlock(leftNeighbour2.x, leftNeighbour2.y)[0]+0.08;
       return true;
     }
 
-    if(rightNeighbour != undefined &&
+    if(rightNeighbour != undefined && rightNeighbour.type != "water" && !this.isTouchingWater() &&
         gridCoordToBlock(rightNeighbour.x, rightNeighbour.y)[0] <= this.truePosition[0]+0.06) {
       this.truePosition[0] = gridCoordToBlock(rightNeighbour.x, rightNeighbour.y)[0]-0.06;
     }
-    if(rightNeighbour2 != undefined &&
+    if(rightNeighbour2 != undefined && rightNeighbour2.type != "water" &&
         gridCoordToBlock(rightNeighbour2.x, rightNeighbour2.y)[0] <= this.truePosition[0]+0.06) {
       this.truePosition[0] = gridCoordToBlock(rightNeighbour2.x, rightNeighbour2.y)[0]-0.06;
     }
 
-    if(upperNeighbour != undefined &&
+    if(upperNeighbour != undefined && upperNeighbour.type != "water" &&
         gridCoordToBlock(upperNeighbour.x, upperNeighbour.y)[1] <= this.truePosition[1]+0.13) {
       this.truePosition[1] = gridCoordToBlock(upperNeighbour.x, upperNeighbour.y)[1] - 0.13;
     }
 
-    if(upperNeighbour2 != undefined &&
+    if(upperNeighbour2 != undefined && upperNeighbour2.type != "water" &&
         gridCoordToBlock(upperNeighbour2.x, upperNeighbour2.y)[1] <= this.truePosition[1]+0.13) {
       this.truePosition[1] = gridCoordToBlock(upperNeighbour2.x, upperNeighbour2.y)[1] - 0.13;
     }
