@@ -6,7 +6,7 @@ var initPoints = [vec4(0, 0, 0, 1),
     vec4(1, 0, 0, 1),
     vec4(0.5, 1, 0, 1)];
 
-function init(program) {
+function init() {
 
     vPositions.push(initPoints[0]);
     vPositions.push(initPoints[1]);

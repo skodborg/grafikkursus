@@ -1,6 +1,7 @@
 var debugLevel = 1;
-
-window.onload = function initial() {
+var gl;
+var program;
+window.onload = function() {
   var canvas = document.getElementById( "gl-canvas" );
   gl = WebGLUtils.setupWebGL( canvas );
   if ( !gl ) { alert( "WebGL isn't available" ); }
@@ -27,12 +28,12 @@ window.onload = function initial() {
 
     //  Configure WebGL
   gl.viewport( 0, 0, canvas.width, canvas.height );
-  gl.clearColor( 0.2, 0.2, 0.2, 1.0 );
+  gl.clearColor( 0.6, 0.9, 0.9, 1.0 );
 
   
   //  Load shaders and initialize attribute buffers
   
-  var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+  program = initShaders( gl, "vertex-shader", "fragment-shader" );
   gl.useProgram( program );
-  init(program);
+  init();
 };
