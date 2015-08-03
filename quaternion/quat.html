@@ -34,16 +34,22 @@ rotateQuat(float theta, vec3 v)
 	return vec4(cos(theta / 2.0),sin(theta/2.0)*v); 
 }
 
+void
+rotate(float theta, vec3 d) {
+	vec4 pQuat = vec4(0.0,vPosition.xyz);
+	vec4 rQuat = rotateQuat(radians(theta), d);
+	vec4 rInvQuat = invQuat(rQuat); 
+    vec4 result = mulQuat(rQuat, mulQuat(pQuat, rInvQuat));
+    gl_Position = vec4(result.yzw, 1.0);
+}
+
 
 
 void
 main()
 {
-	vec4 pQuat = vec4(0.0,vPosition.xyz);
-	vec4 rQuat = rotateQuat(radians(90.0), vec3(0.0,0.0,1.0));
-	vec4 rInvQuat = invQuat(rQuat); 
-    vec4 result = mulQuat(rQuat, mulQuat(pQuat, rInvQuat));
-    gl_Position = vec4(result.yzw, 1.0);
+	rotate(42.0, vec3(1.0,1.0,0.8));
+	//rotate(90.0, vec3(0.0,0.0,1.0));
 }
 </script>
 
