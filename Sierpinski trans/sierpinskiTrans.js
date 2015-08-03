@@ -12,7 +12,7 @@ function init(program) {
     vPositions.push(initPoints[1]);
     vPositions.push(initPoints[2]);
 
-    generateGasket(mat4(), 2);
+    generateGasket(mat4(), 4);
 
     console.log(vPositions.length);
 
@@ -51,13 +51,18 @@ function generateGasket (mat, recursions) {
         vPositions.push(multmv(mat, initPoints[1]));
         vPositions.push(multmv(mat, initPoints[2]));
     } else {
-        var transed = mult(mat, translate(mat[0][0]/2, mat[1][1], 0));
-        var scaled = mult(mat, scalem(1/2, 1/2, 1));
-        var tscaled = mult(scaled, translate(mat[0][0]/2, mat[1][1],0));
-        generateGasket(scaled, recursions - 1);
-        generateGasket(tscaled, recursions - 1);
-        tscaled = mult(scaled, translate(mat[0][0], 0, 0));
-        generateGasket(tscaled, recursions - 1);
+
+        // translates first
+        var translated1 = mult(mat, translate(1/2, 0, 0));
+        var translated2 = mult(mat, translate(1/4, 1/2, 0));
+
+        // then scale
+        var scalemat = scalem(1/2, 1/2, 1);
+
+        // apply in reverse order
+        generateGasket(mult(mat, scalemat), recursions-1);
+        generateGasket(mult(translated1, scalemat), recursions-1);
+        generateGasket(mult(translated2, scalemat), recursions-1);
     }
 }
 
