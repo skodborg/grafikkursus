@@ -44,6 +44,22 @@ function render() {
 
 }
 
+function generateGasket2 (sc, trans, recursions) {
+
+    if(recursions == 0){
+        vPositions.push(multmv(mult(trans, scalem(sc,sc,0)), initPoints[0]));
+        vPositions.push(multmv(mult(trans, scalem(sc,sc,0)), initPoints[1]));
+        vPositions.push(multmv(mult(trans, scalem(sc,sc,0)), initPoints[2]));
+    } else {
+        var newTrans = mult(trans, translate(sc/4, sc/2, 0));
+        generateGasket(sc/2,  newTrans, recursions - 1);
+        newTrans = mult(trans, translate(sc/2, 0 , 0));
+        generateGasket(sc/2, newTrans, recursions - 1);
+        generateGasket(sc/2, trans, recursions - 1);
+
+    }
+}
+
 function generateGasket (mat, recursions) {
 
     if(recursions == 0){
