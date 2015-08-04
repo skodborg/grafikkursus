@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec3 vPosition;
+
+uniform vec4 color;
+uniform mat4 vRotationMatrix;
+
+varying vec4 fColor;
+
+void
+main()
+{
+    gl_Position = vRotationMatrix*vec4(vPosition, 1.0);
+    fColor = color;
+}
+</script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+varying vec4 fColor;
+
+void
+main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+    <script src="../initWebGL.js"></script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/webgl-debug.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="../Common/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="maze3D.js"></script>
+</head>
+
+<body>
+<canvas id="gl-canvas" width="500" height="500">
+    Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+</html>
