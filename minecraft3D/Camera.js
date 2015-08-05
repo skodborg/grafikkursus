@@ -35,8 +35,8 @@ var Camera = (function () {
     var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
 
     vModelViewMatrix =
-        mult(translationMatrix,
         mult(tempTransInv,
+        mult(translationMatrix,
         mult(vRotationMatrix,
              tempTrans)));
 
@@ -54,19 +54,27 @@ var Camera = (function () {
   };
 
   Camera.prototype.forward = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(0,0,amount));
+    var direction = vec4(0,0,amount,0);
+    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
   };
 
   Camera.prototype.backward = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(0,0,-amount));
+    var direction = vec4(0,0,-amount,0);
+    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
   };
 
   Camera.prototype.left = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(amount,0,0));
+    var direction = vec4(-amount,0,0,0);
+    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
   };
 
   Camera.prototype.right = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(-amount,0,0));
+    var direction = vec4(amount,0,0,0);
+    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
   };
 
   return Camera;

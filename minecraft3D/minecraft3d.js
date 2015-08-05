@@ -195,3 +195,19 @@ function handleKeyPress(event){
             break;
     }
 }
+function multmv( m, v )
+{
+    var result = [];
+
+    if ( m.matrix && v.length > 1 && !v.matrix ) {
+        for ( var i = 0; i < 4; i++ ) {
+            var sum = 0.0;
+            for ( var j = 0; j < 4; j++ ) {
+                sum += m[i][j]*v[j];
+            }
+            result.push(sum);
+        }
+    }
+
+    return vec4(result);
+}
