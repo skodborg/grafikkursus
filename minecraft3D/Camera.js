@@ -30,15 +30,7 @@ var Camera = (function () {
 
     var R = mult(yRotationMatrix, xRotationMatrix);
 
-    var tempTransInv = translate(translationMatrix[0][3],
-        translationMatrix[1][3],
-        translationMatrix[2][3]);
-
-    vModelViewMatrix =
-        mult(vModelViewMatrix,
-            mult(tempTransInv,
-                mult(R ,
-                    tempTrans )));
+    vModelViewMatrix = mult(translationMatrix, R);
 
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
   };
