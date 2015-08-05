@@ -31,6 +31,9 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 
+var oldMouseX = undefined;
+var oldMouseY = undefined;
+
 function init() {
     // initializes points for painting the axis indicator lines
     initAxisLines();
@@ -42,6 +45,7 @@ function init() {
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
+    document.getElementById("gl-canvas").onmousemove = handleMouseMove;
 
     camera = new Camera();
     player = new Player(0, 0, -2, camera);
@@ -253,6 +257,20 @@ function handleKeyRelease(event){
             sPressed = false;
             break;
     }
+}
+
+function handleMouseMove(event) {
+    if(oldMouseX == undefined) {
+        oldMouseX = event.clientX;
+        return;
+    }
+    if(oldMouseY == undefined) {
+        oldMouseY = event.clientY;
+        return;
+    }
+    player.handleMouseMove(event.clientX - oldMouseX, event.clientY - oldMouseY);
+    oldMouseX = event.clientX;
+    oldMouseY = event.clientY;
 }
 
 
