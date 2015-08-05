@@ -169,16 +169,16 @@ function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
         case 37:
-            camera.rotY(1);
-            break;
-        case 38:
-            camera.rotX(1);
-            break;
-        case 39:
             camera.rotY(-1);
             break;
-        case 40:
+        case 38:
             camera.rotX(-1);
+            break;
+        case 39:
+            camera.rotY(1);
+            break;
+        case 40:
+            camera.rotX(1);
             break;
         //Rotation
         case 65:

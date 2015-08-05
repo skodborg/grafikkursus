@@ -62,11 +62,11 @@ var Camera = (function () {
   };
 
   Camera.prototype.left = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(-amount,0,0));
+    translationMatrix = mult(translationMatrix, translate(amount,0,0));
   };
 
   Camera.prototype.right = function (amount) {
-    translationMatrix = mult(translationMatrix, translate(amount,0,0));
+    translationMatrix = mult(translationMatrix, translate(-amount,0,0));
   };
 
   return Camera;
