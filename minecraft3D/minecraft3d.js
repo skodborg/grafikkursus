@@ -53,6 +53,8 @@ function init() {
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 
+    camera.update();
+
     // draw boxes
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
@@ -63,8 +65,6 @@ function render() {
     gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.TRIANGLES, 0, worldVertices.length);
-
-    camera.update();
 
     // draw XYZ-indicators
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -81,8 +81,8 @@ function render() {
 }
 
 function initWorld() {
-    var someBlock = new Block(0, 0.5, 0, 0.1, "someMat");
-    var someBlock2 = new Block(0, 0, 0, 0.1, "someMat");
+    var someBlock = new Block(0, 0, 0, 0.1, "someMat");
+    var someBlock2 = new Block(0, 0.5, 0, 0.1, "someMat");
     world.push(someBlock);
     world.push(someBlock2);
 }
@@ -105,12 +105,29 @@ function worldToVerticeArray() {
         var trb = currBlockCorners[6];
         var lrb = currBlockCorners[7];
 
-        var frontColor = vec4(Math.random(), Math.random(), Math.random(), 1);
-        var rightColor = vec4(Math.random(), Math.random(), Math.random(), 1);
-        var backColor = vec4(Math.random(), Math.random(), Math.random(), 1);
-        var leftColor = vec4(Math.random(), Math.random(), Math.random(), 1);
-        var upColor = vec4(Math.random(), Math.random(), Math.random(), 1);
-        var downColor = vec4(Math.random(), Math.random(), Math.random(), 1);
+        var fstVec = subtract(llf, tlf);
+        var sndVec = subtract(tlf, trf);
+        var frontColor = vec4(normalize(cross(sndVec, fstVec)));
+        
+        fstVec = subtract(lrf, trf);
+        sndVec = subtract(lrf, lrb);
+        var rightColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+
+        fstVec = subtract(lrb, trb);
+        sndVec = subtract(lrb, llb);
+        var backColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+
+        fstVec = subtract(llb, tlb);
+        sndVec = subtract(llb, llf);
+        var leftColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+
+        fstVec = subtract(tlf, tlb);
+        sndVec = subtract(tlf, trf);
+        var upColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+
+        fstVec = subtract(llf, lrf);
+        sndVec = subtract(llf, llb);
+        var downColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
 
         // front face triangles
         result = result.concat([llf, tlf, trf]);
