@@ -9,6 +9,11 @@ var Camera = (function () {
   var vProjectionMatrix;
   var vProjectionMatrixLoc;
 
+  var lookingUpDown = 0;
+  var lookingLeftRight = 0;
+  var movingForwardBackward = 0;
+  var movingLeftRight = 0;
+
   function Camera() {
     xRotationMatrix = mat4();
     yRotationMatrix = mat4();
@@ -24,6 +29,9 @@ var Camera = (function () {
   }
 
   Camera.prototype.update = function () {
+
+  	updateMatrices();
+
     var tempTrans = translate(translationMatrix[0][3],
                               translationMatrix[1][3],
                               translationMatrix[2][3]);
@@ -46,36 +54,50 @@ var Camera = (function () {
   //-------------------- movement ----------------------//
 
   Camera.prototype.rotX = function (angle) {
-    xRotationMatrix = mult(xRotationMatrix, rotate(angle, vec3(1,0,0)));
+  	lookingUpDown = angle;
   };
 
   Camera.prototype.rotY = function (angle) {
-    yRotationMatrix = mult(yRotationMatrix, rotate(angle, vec3(0,1,0)));
+  	lookingLeftRight = angle;
   };
 
   Camera.prototype.forward = function (amount) {
-    var direction = vec4(0,0,amount,0);
-    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
-    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	movingForwardBackward = amount;
   };
 
   Camera.prototype.backward = function (amount) {
-    var direction = vec4(0,0,-amount,0);
-    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
-    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	movingForwardBackward = -amount;
   };
 
   Camera.prototype.left = function (amount) {
-    var direction = vec4(-amount,0,0,0);
-    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
-    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	movingLeftRight = -amount;
   };
 
   Camera.prototype.right = function (amount) {
-    var direction = vec4(amount,0,0,0);
-    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
-    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	movingLeftRight = amount;
   };
+
+  function updateMatrices() {
+  	if (lookingLeftRight !== 0) {
+  		yRotationMatrix = mult(yRotationMatrix, rotate(lookingLeftRight, vec3(0,1,0)));
+  	}
+
+  	if (lookingUpDown !== 0) {
+  		xRotationMatrix = mult(xRotationMatrix, rotate(lookingUpDown, vec3(1,0,0)));
+  	}
+
+  	if (movingLeftRight !== 0) {
+  		var direction = vec4(movingLeftRight,0,0,0);
+	    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+	    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	}
+
+  	if (movingForwardBackward !== 0) {
+  		var direction = vec4(0,0,movingForwardBackward,0);
+	    direction = multmv(mult(xRotationMatrix, yRotationMatrix), direction);
+	    translationMatrix = mult(translationMatrix, translate(-direction[0],0, direction[2]));
+  	}
+  }
 
   return Camera;
 })();

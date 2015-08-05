@@ -15,6 +15,9 @@ var camera;
 var vBuffer;
 var cBuffer;
 
+var MOVEMENT_SPEED = 0.03;
+var ROTATION_SPEED = 1;
+
 function init() {
     // initializes points for painting the axis indicator lines
     initAxisLines();
@@ -25,6 +28,7 @@ function init() {
     worldToVerticeArray();
 
     window.onkeydown = handleKeyPress;
+    window.onkeyup = handleKeyRelease;
 
     camera = new Camera();
 
@@ -169,32 +173,65 @@ function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
         case 37:
-            camera.rotY(-1);
+            camera.rotY(-ROTATION_SPEED);
             break;
         case 38:
-            camera.rotX(-1);
+            camera.rotX(-ROTATION_SPEED);
             break;
         case 39:
-            camera.rotY(1);
+            camera.rotY(ROTATION_SPEED);
             break;
         case 40:
-            camera.rotX(1);
+            camera.rotX(ROTATION_SPEED);
             break;
         //Rotation
         case 65:
-            camera.left(0.1);
+            camera.left(MOVEMENT_SPEED);
             break;
         case 87:
-            camera.forward(0.1);
+            camera.forward(MOVEMENT_SPEED);
             break;
         case 68:
-            camera.right(0.1);
+            camera.right(MOVEMENT_SPEED);
             break;
         case 83:
-            camera.backward(0.1);
+            camera.backward(MOVEMENT_SPEED);
             break;
     }
 }
+
+function handleKeyRelease(event){
+    switch (event.keyCode) {
+        //Movement
+        case 37:
+            camera.rotY(0);
+            break;
+        case 38:
+            camera.rotX(0);
+            break;
+        case 39:
+            camera.rotY(0);
+            break;
+        case 40:
+            camera.rotX(0);
+            break;
+        //Rotation
+        case 65:
+            camera.left(0);
+            break;
+        case 87:
+            camera.forward(0);
+            break;
+        case 68:
+            camera.right(0);
+            break;
+        case 83:
+            camera.backward(0);
+            break;
+    }
+}
+
+
 function multmv( m, v )
 {
     var result = [];
