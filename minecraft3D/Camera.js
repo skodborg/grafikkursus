@@ -22,8 +22,20 @@ var Camera = (function () {
   }
 
   Camera.prototype.update = function () {
+    var tempTrans = translate(translationMatrix[0][3],
+                              translationMatrix[1][3],
+                              translationMatrix[2][3]);
 
-    vModelViewMatrix = mult(translationMatrix, vRotationMatrix);
+    var tempTransInv = translate(-translationMatrix[0][3],
+                              -translationMatrix[1][3],
+                              -translationMatrix[2][3]);
+
+
+    vModelViewMatrix =
+        mult(translationMatrix,
+        mult(tempTransInv,
+        mult(vRotationMatrix,
+             tempTrans)));
 
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
   };
