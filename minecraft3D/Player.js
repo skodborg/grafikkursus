@@ -57,7 +57,6 @@ var Player = (function () {
         if(upPressed) {
         }
         if(downPressed) {
-
         }
         if(aPressed) {
             this.strafeLeft();
@@ -71,6 +70,11 @@ var Player = (function () {
         if(wPressed) {
             this.walkForwards();
         }
+    };
+
+    Player.prototype.handleMouseMove = function (x, y) {
+        camera.rotX(x);
+        camera.rotY(y);
     };
 
     /*---------------- Gravity --------------------------*/
