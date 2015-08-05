@@ -35,7 +35,6 @@ function init() {
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 
-
     for(var i = 0; i < vPositions.length; i += 3 ) {
         gl.drawArrays(gl.TRIANGLES, i, 3);
 
@@ -57,7 +56,7 @@ function generateGasket2 (sc, trans, recursions) {
         generateGasket(sc/2, newTrans, recursions - 1);
         generateGasket(sc/2, trans, recursions - 1);
 
-    }
+    }x
 }
 
 function generateGasket (mat, recursions) {
