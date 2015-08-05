@@ -10,16 +10,19 @@ var world = [];
 var worldVertices = [];         // filled by worldToVerticeArray();
 var worldVerticeColors = [];    // filled by worldToVerticeArray();
 
+var camera;
+
 var vBuffer;
 var cBuffer;
 
 function init() {
-
     // initializes points for painting the axis indicator lines
     initAxisLines();
     initWorld();
 
     worldToVerticeArray();
+
+    camera = new Camera();
 
     vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -52,6 +55,8 @@ function render() {
     gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.TRIANGLES, 0, worldVertices.length);
+
+    camera.update();
 
     // draw XYZ-indicators
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
