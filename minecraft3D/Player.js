@@ -43,7 +43,7 @@ var Player = (function () {
     };
 
     Player.prototype.jump = function () {
-        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*elapsedTime, 0));
+        this.velocity = add(this.velocity, vec3(0, -MOVEMENT_SPEED*elapsedTime, 0));
     };
 
     Player.prototype.walkForwards = function () {
@@ -86,6 +86,9 @@ var Player = (function () {
         }
         if(wPressed) {
             this.walkForwards();
+        }
+        if(spacePressed) {
+            this.jump();
         }
     };
 

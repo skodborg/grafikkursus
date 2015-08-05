@@ -30,6 +30,7 @@ var aPressed = false;
 var sPressed = false;
 var dPressed = false;
 var wPressed = false;
+var spacePressed = false;
 
 var oldMouseX = undefined;
 var oldMouseY = undefined;
@@ -247,6 +248,9 @@ function handleKeyPress(event){
         case 83:
             sPressed = true;
             break;
+        case 32:
+            spacePressed = true;
+            break;
     }
 }
 
@@ -277,6 +281,9 @@ function handleKeyRelease(event){
             break;
         case 83:
             sPressed = false;
+            break;
+        case 32:
+            spacePressed = false;
             break;
     }
 }
