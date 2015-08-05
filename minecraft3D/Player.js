@@ -91,7 +91,7 @@ var Player = (function () {
 
     Player.prototype.handleMouseMove = function (x, y) {
         camera.rotX(x*ROTATION_SPEED);
-        var deg = -radians(x);
+        var deg = -radians(x*ROTATION_SPEED);
         this.direction = vec3(
             Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
             this.direction[1],
