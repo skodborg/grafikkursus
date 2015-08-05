@@ -17,6 +17,8 @@ var cBuffer;
 
 var MOVEMENT_SPEED = 0.03;
 var ROTATION_SPEED = 1;
+var lastTime = new Date().getTime();
+var elapsedTime = 1;
 
 function init() {
     // initializes points for painting the axis indicator lines
@@ -52,7 +54,7 @@ function init() {
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-
+    update();
     // draw boxes
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
@@ -64,7 +66,6 @@ function render() {
 
     gl.drawArrays( gl.TRIANGLES, 0, worldVertices.length);
 
-    camera.update();
 
     // draw XYZ-indicators
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -78,6 +79,16 @@ function render() {
     gl.drawArrays( gl.LINES, 0, axisVertices.length);
 
     window.requestAnimFrame(render);
+}
+//The function driving our animations
+function update() {
+    var currTime = new Date().getTime();
+    elapsedTime = (currTime - lastTime) / 40;
+    if(elapsedTime == 0) {
+        elapsedTime = 0.00001;
+    }
+    camera.update();
+    lastTime = currTime;
 }
 
 function initWorld() {
