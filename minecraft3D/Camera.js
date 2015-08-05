@@ -1,6 +1,5 @@
 var Camera = (function () {
-  var xRotationMatrix;
-  var yRotationMatrix;
+  var vRotationMatrix;
   var translationMatrix;
 
   var vModelViewMatrix;
@@ -10,9 +9,8 @@ var Camera = (function () {
   var vProjectionMatrixLoc;
 
   function Camera() {
-    xRotationMatrix = mat4();
-    yRotationMatrix = mat4();
-    translationMatrix = translate(0,0,-1);
+    vRotationMatrix = mat4();
+    translationMatrix = translate(0,0,-2);
     vModelViewMatrix = mat4();
     vProjectionMatrix = perspective(60,1, 0.01, 3);
 
@@ -24,13 +22,8 @@ var Camera = (function () {
   }
 
   Camera.prototype.update = function () {
-    var tempTrans = translate(-translationMatrix[0][3],
-                              -translationMatrix[1][3],
-                              -translationMatrix[2][3]);
 
-    var R = mult(yRotationMatrix, xRotationMatrix);
-
-    vModelViewMatrix = mult(translationMatrix, R);
+    vModelViewMatrix = mult(translationMatrix, vRotationMatrix);
 
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
   };
@@ -38,11 +31,11 @@ var Camera = (function () {
   //-------------------- movement ----------------------//
 
   Camera.prototype.rotX = function (angle) {
-    xRotationMatrix = mult(xRotationMatrix, rotate(angle, vec3(1,0,0)));
+    vRotationMatrix = mult(vRotationMatrix, rotate(angle, vec3(1,0,0)));
   };
 
   Camera.prototype.rotY = function (angle) {
-    yRotationMatrix = mult(yRotationMatrix, rotate(angle, vec3(0,1,0)));
+    vRotationMatrix = mult(vRotationMatrix, rotate(angle, vec3(0,1,0)));
   };
 
   Camera.prototype.forward = function (amount) {
