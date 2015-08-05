@@ -17,7 +17,7 @@ var vBuffer;
 var cBuffer;
 
 var MOVEMENT_SPEED = 0.03;
-var ROTATION_SPEED = 1;
+var ROTATION_SPEED = 0.1;
 var lastTime = new Date().getTime();
 var elapsedTime = 1;
 
@@ -33,6 +33,7 @@ var wPressed = false;
 
 var oldMouseX = undefined;
 var oldMouseY = undefined;
+var mouseLeftDown = false;
 
 function init() {
     // initializes points for painting the axis indicator lines
@@ -45,7 +46,9 @@ function init() {
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
-    document.getElementById("gl-canvas").onmousemove = handleMouseMove;
+    window.onmousemove = handleMouseMove;
+    window.onmousedown = handleMouseDown;
+    window.onmouseup = handleMouseUp;
 
     camera = new Camera();
     player = new Player(0, 0, -2, camera);
@@ -260,6 +263,9 @@ function handleKeyRelease(event){
 }
 
 function handleMouseMove(event) {
+    if(!mouseLeftDown) {
+        return;
+    }
     if(oldMouseX == undefined) {
         oldMouseX = event.clientX;
         return;
@@ -268,9 +274,19 @@ function handleMouseMove(event) {
         oldMouseY = event.clientY;
         return;
     }
-    player.handleMouseMove(event.clientX - oldMouseX, event.clientY - oldMouseY);
+    player.handleMouseMove(-(event.clientX - oldMouseX), -(event.clientY - oldMouseY));
     oldMouseX = event.clientX;
     oldMouseY = event.clientY;
+}
+
+function handleMouseDown(event) {
+    mouseLeftDown = true;
+    oldMouseX = event.clientX;
+    oldMouseY = event.clientY;
+}
+
+function handleMouseUp() {
+    mouseLeftDown = false;
 }
 
 

@@ -73,8 +73,8 @@ var Player = (function () {
     };
 
     Player.prototype.handleMouseMove = function (x, y) {
-        camera.rotX(x);
-        camera.rotY(y);
+        camera.rotX(x*ROTATION_SPEED);
+        camera.rotY(y*ROTATION_SPEED);
     };
 
     /*---------------- Gravity --------------------------*/
