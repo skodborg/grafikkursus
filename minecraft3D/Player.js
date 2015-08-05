@@ -5,6 +5,7 @@ var Player = (function () {
         this.camera = cam;
         this.velocity = vec3(0, 0, 0);
         this.position = vec3(x, y, z);
+        this.direction = vec3(0, 0, 1);
     }
 
     Player.prototype.render = function() {
@@ -20,11 +21,25 @@ var Player = (function () {
     /*---------------- Movement ---------------------*/
 
     Player.prototype.strafeLeft = function () {
-        this.velocity = add(this.velocity, vec3(MOVEMENT_SPEED*elapsedTime, 0, 0));
+        var deg = radians(90);
+        var left = vec3(
+            Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
+            this.direction[1],
+            -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
+        );
+        this.velocity = add(this.velocity,
+            scale(MOVEMENT_SPEED*elapsedTime, left));
     };
 
     Player.prototype.strafeRight = function () {
-        this.velocity = add(this.velocity, vec3(-MOVEMENT_SPEED*elapsedTime, 0, 0));
+        var deg = radians(-90);
+        var right = vec3(
+            Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
+            this.direction[1],
+            -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
+        );
+        this.velocity = add(this.velocity,
+            scale(MOVEMENT_SPEED*elapsedTime, right));
     };
 
     Player.prototype.jump = function () {
@@ -32,11 +47,13 @@ var Player = (function () {
     };
 
     Player.prototype.walkForwards = function () {
-        this.velocity = add(this.velocity, vec3(0, 0, MOVEMENT_SPEED*elapsedTime));
+        this.velocity = add(this.velocity,
+            scale(MOVEMENT_SPEED*elapsedTime, this.direction));
     };
 
     Player.prototype.walkBackwards = function () {
-        this.velocity = add(this.velocity, vec3(0, 0, -MOVEMENT_SPEED*elapsedTime));
+        this.velocity = add(this.velocity,
+            scale(MOVEMENT_SPEED*elapsedTime, scale(-1, this.direction)));
     };
 
     Player.prototype.updatePosition = function () {
@@ -74,6 +91,12 @@ var Player = (function () {
 
     Player.prototype.handleMouseMove = function (x, y) {
         camera.rotX(x*ROTATION_SPEED);
+        var deg = -radians(x);
+        this.direction = vec3(
+            Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
+            this.direction[1],
+            -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
+        );
         camera.rotY(y*ROTATION_SPEED);
     };
 

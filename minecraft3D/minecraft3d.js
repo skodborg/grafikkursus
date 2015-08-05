@@ -274,7 +274,7 @@ function handleMouseMove(event) {
         oldMouseY = event.clientY;
         return;
     }
-    player.handleMouseMove(-(event.clientX - oldMouseX), -(event.clientY - oldMouseY));
+    player.handleMouseMove((event.clientX - oldMouseX), (event.clientY - oldMouseY));
     oldMouseX = event.clientX;
     oldMouseY = event.clientY;
 }
