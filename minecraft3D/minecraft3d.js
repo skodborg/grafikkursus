@@ -20,6 +20,8 @@ function init() {
     initAxisLines();
     initWorld();
 
+    gl.enable(gl.DEPTH_TEST);
+
     worldToVerticeArray();
 
     window.onkeydown = handleKeyPress;
