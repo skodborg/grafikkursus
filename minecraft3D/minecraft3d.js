@@ -22,6 +22,8 @@ function init() {
 
     worldToVerticeArray();
 
+    window.onkeydown = handleKeyPress;
+
     camera = new Camera();
 
     vBuffer = gl.createBuffer();
@@ -69,6 +71,7 @@ function render() {
 
     gl.drawArrays( gl.LINES, 0, axisVertices.length);
 
+    window.requestAnimFrame(render);
 }
 
 function initWorld() {
@@ -158,4 +161,35 @@ function initAxisLines() {
         vec4( 0.0, 1.0, 0.0, 1.0 ),
         vec4( 0.0, 0.0, 1.0, 1.0 ),
         vec4( 0.0, 0.0, 1.0, 1.0 )];
+}
+
+function handleKeyPress(event){
+    switch (event.keyCode) {
+        //Movement
+        case 37:
+            camera.rotY(2);
+            break;
+        case 38:
+            camera.rotX(2);
+            break;
+        case 39:
+            camera.rotY(-2);
+            break;
+        case 40:
+            camera.rotX(-2);
+            break;
+        //Rotation
+        case 65:
+            camera.left(0.1);
+            break;
+        case 87:
+            camera.forward(0.1);
+            break;
+        case 68:
+            camera.right(0.1);
+            break;
+        case 83:
+            camera.backward(0.1);
+            break;
+    }
 }
