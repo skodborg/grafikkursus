@@ -11,12 +11,29 @@ var worldVertices = [];         // filled by worldToVerticeArray();
 var worldVerticeColors = [];    // filled by worldToVerticeArray();
 
 var camera;
+var player;
 
 var vBuffer;
 var cBuffer;
 
 var MOVEMENT_SPEED = 0.03;
-var ROTATION_SPEED = 1;
+var ROTATION_SPEED = 0.1;
+var lastTime = new Date().getTime();
+var elapsedTime = 1;
+
+// KEYS
+var leftPressed = false;
+var rightPressed = false;
+var upPressed = false;
+var downPressed = false;
+var aPressed = false;
+var sPressed = false;
+var dPressed = false;
+var wPressed = false;
+
+var oldMouseX = undefined;
+var oldMouseY = undefined;
+var mouseLeftDown = false;
 
 function init() {
     // initializes points for painting the axis indicator lines
@@ -29,8 +46,12 @@ function init() {
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
+    window.onmousemove = handleMouseMove;
+    window.onmousedown = handleMouseDown;
+    window.onmouseup = handleMouseUp;
 
     camera = new Camera();
+    player = new Player(0, 0, -2, camera);
 
     vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -53,7 +74,7 @@ function init() {
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 
-    camera.update();
+    update();
 
     // draw boxes
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -78,6 +99,18 @@ function render() {
     gl.drawArrays( gl.LINES, 0, axisVertices.length);
 
     window.requestAnimFrame(render);
+}
+//The function driving our animations
+function update() {
+    var currTime = new Date().getTime();
+    elapsedTime = (currTime - lastTime) / 40;
+    if(elapsedTime == 0) {
+        elapsedTime = 0.00001;
+    }
+    player.handleKeys();
+    player.updatePosition();
+    camera.update();
+    lastTime = currTime;
 }
 
 function initWorld() {
@@ -190,29 +223,29 @@ function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
         case 37:
-            camera.rotY(-ROTATION_SPEED);
+            leftPressed = true;
             break;
         case 38:
-            camera.rotX(-ROTATION_SPEED);
+            upPressed = true;
             break;
         case 39:
-            camera.rotY(ROTATION_SPEED);
+            rightPressed = true;
             break;
         case 40:
-            camera.rotX(ROTATION_SPEED);
+            downPressed = true;
             break;
         //Rotation
         case 65:
-            camera.left(MOVEMENT_SPEED);
+            aPressed = true;
             break;
         case 87:
-            camera.forward(MOVEMENT_SPEED);
+            wPressed = true;
             break;
         case 68:
-            camera.right(MOVEMENT_SPEED);
+            dPressed = true;
             break;
         case 83:
-            camera.backward(MOVEMENT_SPEED);
+            sPressed = true;
             break;
     }
 }
@@ -221,31 +254,58 @@ function handleKeyRelease(event){
     switch (event.keyCode) {
         //Movement
         case 37:
-            camera.rotY(0);
+            leftPressed = false;
             break;
         case 38:
-            camera.rotX(0);
+            upPressed = false;
             break;
         case 39:
-            camera.rotY(0);
+            rightPressed = false;
             break;
         case 40:
-            camera.rotX(0);
+            downPressed = false;
             break;
         //Rotation
         case 65:
-            camera.left(0);
+            aPressed = false;
             break;
         case 87:
-            camera.forward(0);
+            wPressed = false;
             break;
         case 68:
-            camera.right(0);
+            dPressed = false;
             break;
         case 83:
-            camera.backward(0);
+            sPressed = false;
             break;
     }
+}
+
+function handleMouseMove(event) {
+    if(!mouseLeftDown) {
+        return;
+    }
+    if(oldMouseX == undefined) {
+        oldMouseX = event.clientX;
+        return;
+    }
+    if(oldMouseY == undefined) {
+        oldMouseY = event.clientY;
+        return;
+    }
+    player.handleMouseMove((event.clientX - oldMouseX), (event.clientY - oldMouseY));
+    oldMouseX = event.clientX;
+    oldMouseY = event.clientY;
+}
+
+function handleMouseDown(event) {
+    mouseLeftDown = true;
+    oldMouseX = event.clientX;
+    oldMouseY = event.clientY;
+}
+
+function handleMouseUp() {
+    mouseLeftDown = false;
 }
 
 
