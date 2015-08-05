@@ -6,13 +6,16 @@ var vColorLoc;
 var axisVertices = [];
 var axisColors = [];
 
+var camera;
+
 var vBuffer;
 var cBuffer;
 
 function init() {
-
     // initializes points for painting the axis indicator lines
     initAxisLines();
+
+    camera = new Camera();
 
     vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
@@ -39,6 +42,8 @@ function init() {
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
+
+    camera.update();
 
     // draw XYZ-indicators
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );

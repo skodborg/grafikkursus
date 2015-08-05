@@ -6,12 +6,15 @@
 attribute vec4 vPosition;
 attribute vec4 vColor;
 
+uniform mat4 vModelViewMatrix;
+uniform mat4 vProjectionMatrix;
+
 varying vec4 fColor;
 
 void
 main()
 {
-    gl_Position = vPosition;
+    gl_Position = vProjectionMatrix * vModelViewMatrix * vPosition;
     fColor = vColor;
 }
 </script>
@@ -35,6 +38,7 @@ main()
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="../Common/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="minecraft3d.js"></script>
+<script type="text/javascript" src="Camera.js"></script>
 </head>
 
 <body>
