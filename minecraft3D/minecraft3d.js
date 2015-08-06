@@ -10,6 +10,8 @@ var world = [];
 var worldVertices = [];         // filled by worldToVerticeArray();
 var worldVerticeColors = [];    // filled by worldToVerticeArray();
 
+var worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
+
 var camera;
 var player;
 
@@ -141,27 +143,39 @@ function worldToVerticeArray() {
 
         var fstVec = subtract(llf, tlf);
         var sndVec = subtract(tlf, trf);
-        var frontColor = vec4(normalize(cross(sndVec, fstVec)));
+        var normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var frontColor = vec4(normal);
         
         fstVec = subtract(lrf, trf);
         sndVec = subtract(lrf, lrb);
-        var rightColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var rightColor = vec4(normal, 1);
 
         fstVec = subtract(lrb, trb);
         sndVec = subtract(lrb, llb);
-        var backColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var backColor = vec4(add(vec3(1,1,1), normal), 1);
 
         fstVec = subtract(llb, tlb);
         sndVec = subtract(llb, llf);
-        var leftColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var leftColor = vec4(add(vec3(1,1,1), normal), 1);
 
         fstVec = subtract(tlf, tlb);
         sndVec = subtract(tlf, trf);
-        var upColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var upColor = vec4(normal, 1);
 
         fstVec = subtract(llf, lrf);
         sndVec = subtract(llf, llb);
-        var downColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var downColor = vec4(add(vec3(1,1,1), normal), 1);
 
         // front face triangles
         result = result.concat([llf, tlf, trf]);
