@@ -19,7 +19,7 @@ function triangle(a, b, c) {
      pointsArray.push(a); 
      pointsArray.push(b); 
      pointsArray.push(c);
-     var normal = vec4(normalize(cross(subtract(b,a), subtract(c,a))),0);
+     var normal = vec4(normalize(cross(subtract(c,a), subtract(b,a))),0);
      normalArray.push(normal);
      normalArray.push(normal);
      normalArray.push(normal);  
@@ -98,7 +98,7 @@ function init() {
         pointsArray = []; 
         init();
     };
-    modelViewMatrix = mult(mult(mat4(),rotate(180, vec3(0,1,0))), translate(0,0,3));
+    modelViewMatrix = mult(mat4(), translate(0,0,-3));
     projectionMatrix = perspective(60, 1.0, 0.01, 5);
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
@@ -115,7 +115,7 @@ function render() {
     //eye = vec3(0,0,-2);
     //modelViewMatrix = lookAt(eye, at , up);
             
-    lightPosition = vec4(0,0,-3,1);
+    lightPosition = vec4(2,2,3,1);
     gl.uniform4fv(lightPositionLoc, lightPosition);
         
 
