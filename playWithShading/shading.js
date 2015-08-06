@@ -1,7 +1,7 @@
 
 var gl;
 
-var numTimesToSubdivide = 8;
+var numTimesToSubdivide = 4;
  
 var index = 0;
 
@@ -16,11 +16,15 @@ var shininessLoc;
 
 var modelViewMatrix, projectionMatrix;
 var modelViewMatrixLoc, projectionMatrixLoc;
+var normalMatrix, normalMatrixLoc;
 
 var lightPosition;
 var lightPositionLoc;
 
 function triangle(a, b, c) {
+    //a = add(a, vec4(0.5,0.5,0,1));
+    //b = add(b, vec4(0.5,0.5,0,1));
+    //c = add(c, vec4(0.5,0.5,0,1));
      pointsArray.push(a); 
      pointsArray.push(b); 
      pointsArray.push(c);
@@ -86,12 +90,15 @@ function init() {
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
 
+    normalMatrixLoc = gl.getUniformLocation( program, "normalMatrix" );
+
     ambientProductLoc = gl.getUniformLocation(program, "ambientProduct"); 
     diffuseProductLoc = gl.getUniformLocation(program, "diffuseProduct");
     specularProductLoc = gl.getUniformLocation(program, "specularProduct");
     shininessLoc = gl.getUniformLocation(program, "shininess");
 
-    modelViewMatrix = mult(mat4(), translate(0,0,-3));
+    modelViewMatrix = mult(mat4(), translate(0,0,-4));
+    modelViewMatrix = mult(modelViewMatrix, scalem(1,1,1));
     projectionMatrix = perspective(60, 1.0, 0.01, 5);
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
@@ -100,16 +107,23 @@ function init() {
 
 function setParameters(choice) {
     if(choice == 0) { //Nice
-        ambientProduct = vec4(0.1,0.1,0.1,1);
-        diffuseProduct = vec4(0.4,0.4,0.4,1);
+        ambientProduct = vec4(0,0.1,0,1);
+        diffuseProduct = vec4(0,0.5,0,1);
         specularProduct = vec4(0.8,0.8,0.8,1);
-        shininess = 250;
+        shininess = 100;
     }
     if(choice == 1) { //Ugly
         ambientProduct = vec4(0.3,0.0,0.0,1);
         diffuseProduct = vec4(0,0.5,0,1);
         specularProduct = vec4(0.0,0.0,1,1);
         shininess = 10;
+    }
+
+    if(choice == 2) { //Carbon
+        ambientProduct = vec4(0,0,0,1);
+        diffuseProduct = vec4(0.3,0.3,0.3,1);
+        specularProduct = vec4(0.6,0.6,0.6,1);
+        shininess = 300;
     }
 
     gl.uniform4fv(ambientProductLoc, ambientProduct);
@@ -123,14 +137,24 @@ function render() {
     
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     setParameters(0);
-            
+
+    modelViewMatrix = mult(modelViewMatrix, rotate(1, vec3(0,1,0)));        
     lightPosition = vec4(5,3,3,1);
     gl.uniform4fv(lightPositionLoc, lightPosition);
+
+    normalMatrix = [
+        vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
+        vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
+        vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
+    ];
+    normalMatrix = transpose(inverse3(normalMatrix));
+    gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
+    gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix) );
         
 
     gl.drawArrays( gl.TRIANGLES, 0, index );
 
-    //window.requestAnimFrame(render);
+    window.requestAnimFrame(render);
 
 
 }
