@@ -8,6 +8,11 @@ var index = 0;
 var pointsArray = [];
 var normalArray = [];
 
+var ambientProduct, diffuseProduct, specularProduct;
+var ambientProductLoc, diffuseProductLoc, specularProductLoc;
+var shininess;
+var shininessLoc;
+
 
 var modelViewMatrix, projectionMatrix;
 var modelViewMatrixLoc, projectionMatrixLoc;
@@ -81,23 +86,11 @@ function init() {
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
 
-    document.getElementById("Button0").onclick = function(){theta += dr;};
-    document.getElementById("Button1").onclick = function(){theta -= dr;};
-    document.getElementById("Button2").onclick = function(){phi += dr;};
-    document.getElementById("Button3").onclick = function(){phi -= dr;};
-    
-    document.getElementById("Button4").onclick = function(){
-        numTimesToSubdivide++; 
-        index = 0;
-        pointsArray = []; 
-        init();
-    };
-    document.getElementById("Button5").onclick = function(){
-        if(numTimesToSubdivide) numTimesToSubdivide--;
-        index = 0;
-        pointsArray = []; 
-        init();
-    };
+    ambientProductLoc = gl.getUniformLocation(program, "ambientProduct"); 
+    diffuseProductLoc = gl.getUniformLocation(program, "diffuseProduct");
+    specularProductLoc = gl.getUniformLocation(program, "specularProduct");
+    shininessLoc = gl.getUniformLocation(program, "shininess");
+
     modelViewMatrix = mult(mat4(), translate(0,0,-3));
     projectionMatrix = perspective(60, 1.0, 0.01, 5);
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
@@ -105,17 +98,33 @@ function init() {
     render();
 }
 
+function setParameters(choice) {
+    if(choice == 0) { //Nice
+        ambientProduct = vec4(0.1,0.1,0.1,1);
+        diffuseProduct = vec4(0.4,0.4,0.4,1);
+        specularProduct = vec4(0.8,0.8,0.8,1);
+        shininess = 250;
+    }
+    if(choice == 1) { //Ugly
+        ambientProduct = vec4(0.3,0.0,0.0,1);
+        diffuseProduct = vec4(0,0.5,0,1);
+        specularProduct = vec4(0.0,0.0,1,1);
+        shininess = 10;
+    }
+
+    gl.uniform4fv(ambientProductLoc, ambientProduct);
+    gl.uniform4fv(diffuseProductLoc, diffuseProduct);
+    gl.uniform4fv(specularProductLoc, specularProduct);
+    gl.uniform1f(shininessLoc, shininess);
+}
+
 
 function render() {
     
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    //Handle view Matrix
-    //eye = vec3(radius*Math.sin(theta)*Math.cos(phi), 
-    //    radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
-    //eye = vec3(0,0,-2);
-    //modelViewMatrix = lookAt(eye, at , up);
+    setParameters(0);
             
-    lightPosition = vec4(2,2,3,1);
+    lightPosition = vec4(5,3,3,1);
     gl.uniform4fv(lightPositionLoc, lightPosition);
         
 
