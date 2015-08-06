@@ -3,12 +3,19 @@ var gl;
 var vPositionLoc;
 var vColorLoc;
 
+var BLOCK_SIZE = 0.1;
+
 var axisVertices = [];
 var axisColors = [];
 
 var world = [];
 var worldVertices = [];         // filled by worldToVerticeArray();
 var worldVerticeColors = [];    // filled by worldToVerticeArray();
+var worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
+
+var wireframeVertices = [];
+var wireframeColors = [];
+
 
 var camera;
 var player;
@@ -42,8 +49,14 @@ function init() {
     initWorld();
 
     gl.enable(gl.DEPTH_TEST);
+    // offsets the polygons defining the blocks from the lines outlining them
+    // result is smooth outlining
+    gl.enable(gl.POLYGON_OFFSET_FILL);
+    gl.polygonOffset(1.0, 1.0);
 
     worldToVerticeArray();
+
+    drawWireframeAtGridPos(0,0,0);
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
@@ -88,6 +101,17 @@ function render() {
 
     gl.drawArrays( gl.TRIANGLES, 0, worldVertices.length);
 
+    // draw wireframe
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(wireframeVertices), gl.STATIC_DRAW );
+    gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(wireframeColors), gl.STATIC_DRAW );
+    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+
+    gl.drawArrays( gl.LINES, 0, wireframeVertices.length);
+
     // draw XYZ-indicators
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(axisVertices), gl.STATIC_DRAW );
@@ -115,10 +139,46 @@ function update() {
 }
 
 function initWorld() {
-    var someBlock = new Block(0, 0, 0, 0.1, "someMat");
-    var someBlock2 = new Block(0, 0.5, 0, 0.1, "someMat");
+    var someBlock = new Block(0, 0, 0, BLOCK_SIZE, "someMat");
+    var someBlock2 = new Block(0, 0.5, 0, BLOCK_SIZE, "someMat");
     world.push(someBlock);
     world.push(someBlock2);
+}
+
+function drawWireframeAtGridPos(x, y, z) {
+
+    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
+    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
+
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
+
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
+    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
+    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
+    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
+
+    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
+    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
+    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
+
+    
+    for (var i = 0; i < 24; i++) {
+        wireframeColors.push(vec4(0,0,0,1));
+    }
 }
 
 // rebuilds the current world state as an array of vertices, vec4
@@ -141,27 +201,39 @@ function worldToVerticeArray() {
 
         var fstVec = subtract(llf, tlf);
         var sndVec = subtract(tlf, trf);
-        var frontColor = vec4(normalize(cross(sndVec, fstVec)));
+        var normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var frontColor = vec4(normal);
         
         fstVec = subtract(lrf, trf);
         sndVec = subtract(lrf, lrb);
-        var rightColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var rightColor = vec4(normal, 1);
 
         fstVec = subtract(lrb, trb);
         sndVec = subtract(lrb, llb);
-        var backColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var backColor = vec4(add(vec3(1,1,1), normal), 1);
 
         fstVec = subtract(llb, tlb);
         sndVec = subtract(llb, llf);
-        var leftColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var leftColor = vec4(add(vec3(1,1,1), normal), 1);
 
         fstVec = subtract(tlf, tlb);
         sndVec = subtract(tlf, trf);
-        var upColor = vec4(normalize(cross(sndVec, fstVec)), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var upColor = vec4(normal, 1);
 
         fstVec = subtract(llf, lrf);
         sndVec = subtract(llf, llb);
-        var downColor = vec4(add(vec3(1,1,1), normalize(cross(sndVec, fstVec))), 1);
+        normal = normalize(cross(sndVec, fstVec));
+        worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
+        var downColor = vec4(add(vec3(1,1,1), normal), 1);
 
         // front face triangles
         result = result.concat([llf, tlf, trf]);
