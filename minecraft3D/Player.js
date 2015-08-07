@@ -5,11 +5,11 @@ var Player = (function () {
         this.camera = cam;
         this.velocity = vec3(0, 0, 0);
         this.position = vec3(x, y, z);
-        this.direction = vec3(0, 0, 1);
+        this.direction = vec3(0, 0, -1);
     }
 
     Player.prototype.render = function() {
-
+        console.log(this.position);
     };
 
     /*---------------- Vertices ---------------------*/
@@ -43,11 +43,11 @@ var Player = (function () {
     };
 
     Player.prototype.jump = function () {
-        this.velocity = add(this.velocity, vec3(0, -MOVEMENT_SPEED*elapsedTime, 0));
+        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*elapsedTime, 0));
     };
 
     Player.prototype.fall = function () {
-        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*elapsedTime, 0));
+        this.velocity = add(this.velocity, vec3(0, -MOVEMENT_SPEED*elapsedTime, 0));
     }
 
     Player.prototype.walkForwards = function () {
@@ -62,7 +62,7 @@ var Player = (function () {
 
     Player.prototype.updatePosition = function () {
         this.position = add(this.position, this.velocity);
-        this.camera.setPosition(this.position);
+        this.camera.setPosition(negate(this.position));
         this.updateVelocity();
     };
 

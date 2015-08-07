@@ -27,11 +27,11 @@ var AxisDrawer = (function () {
   AxisDrawer.prototype.initAxisLines = function(x, y, z) {
     this.axisVertices = [
         vec3(x, y, z),
-        vec3(x + 1.0, y, z),
+        vec3(x + 10.0, y, z),
         vec3(x, y, z),
-        vec3(x, y + 1.0, z),
+        vec3(x, y + 10.0, z),
         vec3(x, y, z),
-        vec3(x, y, z + 1.0)];
+        vec3(x, y, z + 10.0)];
 
     this.axisColors = [
         vec4( 1.0, 0.0, 0.0, 1.0 ),
