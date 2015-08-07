@@ -3,9 +3,6 @@ var Camera = (function () {
   var yRotationMatrix;
   var translationMatrix;
 
-  var vModelViewMatrix;
-  var vModelViewMatrixLoc;
-
   var vProjectionMatrix;
   var vProjectionMatrixLoc;
 

@@ -1,5 +1,12 @@
 var gl;
 
+
+var vModelViewMatrix;
+var vModelViewMatrixLoc;
+
+var vSBRotationMatrix = mat4();
+var vSBRotationMatrixLoc;
+
 var vPositionLoc;
 var vNormalLoc;
 
@@ -60,6 +67,8 @@ function init() {
     vNormalLoc = gl.getAttribLocation( program, "vNormal" );
     gl.enableVertexAttribArray( vNormalLoc );
 
+    vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
+
     render();
 }
 
@@ -86,7 +95,7 @@ function update() {
     player.updatePosition();
     camera.update();
 
-    spinningBlockTheta = (spinningBlockTheta + 1) % 360;
+    spinningBlockTheta = (spinningBlockTheta + 4) % 360;
 
     lastTime = currTime;
 }

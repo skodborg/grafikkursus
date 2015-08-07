@@ -7,6 +7,7 @@ attribute vec4 vPosition;
 attribute vec4 vNormal;
 
 uniform mat4 vModelViewMatrix;
+uniform mat4 vSBRotationMatrix;
 uniform mat4 vProjectionMatrix;
 
 varying vec4 fNormal;
@@ -14,7 +15,7 @@ varying vec4 fNormal;
 void
 main()
 {
-    gl_Position = vProjectionMatrix * vModelViewMatrix * vPosition;
+    gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
     //gl_Position = vPosition;
     fNormal = vNormal;
 }
@@ -34,6 +35,7 @@ main()
 
 <script src="initWebGL.js"></script>
 <script src="Block.js"></script>
+<script src="SpinningBlock.js"></script>
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/webgl-debug.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
