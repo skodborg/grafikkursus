@@ -3,7 +3,7 @@
 var canvas;
 var gl;
 
-var numTimesToSubdivide = 3;
+var numTimesToSubdivide = 6;
  
 var index = 0; 
 
@@ -188,8 +188,8 @@ function render() {
     
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
-    eye = vec3(radius*Math.sin(theta)*Math.cos(phi), 
-        radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
+    eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
+            radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
 
     modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = ortho(left, right, bottom, ytop, near, far);

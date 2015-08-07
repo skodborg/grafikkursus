@@ -12,7 +12,7 @@ var AxisDrawer = (function () {
     gl.vertexAttribPointer( vPositionLoc, 3, gl.FLOAT, false, 0, 0 );
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.axisColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
   }
 
@@ -20,7 +20,7 @@ var AxisDrawer = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.vertexAttribPointer( vPositionLoc, 3, gl.FLOAT, false, 0, 0 );
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
     gl.drawArrays( gl.LINES, 0, this.axisVertices.length);
   };
 

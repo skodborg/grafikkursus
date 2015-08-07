@@ -1,7 +1,7 @@
 var gl;
 
 var vPositionLoc;
-var vColorLoc;
+var vNormalLoc;
 
 var BLOCK_SIZE = 1;
 var WORLD_SIZE = 30;
@@ -15,6 +15,10 @@ var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
 var axisVertices = [];
 var axisColors = [];
 
+
+var wireframeVertices = [];
+var wireframeColors = [];
+
 var camera;
 var player;
 
@@ -22,6 +26,8 @@ var MOVEMENT_SPEED = 0.3;
 var ROTATION_SPEED = 0.1;
 var lastTime = new Date().getTime();
 var elapsedTime = 1;
+
+var spinningBlockTheta = 0;
 
 // KEYS
 var leftPressed = false;
@@ -58,8 +64,8 @@ function init() {
 
 
     // Associate out shader variables with our data buffer
-    vColorLoc = gl.getAttribLocation( program, "vColor" );
-    gl.enableVertexAttribArray( vColorLoc );
+    vNormalLoc = gl.getAttribLocation( program, "vNormal" );
+    gl.enableVertexAttribArray( vNormalLoc );
 
     render();
 }
@@ -85,6 +91,9 @@ function update() {
     player.handleKeys();
     player.updatePosition();
     camera.update();
+
+    spinningBlockTheta = (spinningBlockTheta + 1) % 360;
+
     lastTime = currTime;
 }
 
@@ -194,4 +203,8 @@ function multmv( m, v )
     }
 
     return vec4(result);
+}
+
+function calcNormal( u, v ) {
+    return normalize(cross(v, u));
 }

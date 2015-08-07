@@ -16,7 +16,7 @@ var Wireframe = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.wireframeColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.LINES, 0, this.wireframeVertices.length);
   };

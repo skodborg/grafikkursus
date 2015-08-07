@@ -2,15 +2,23 @@
 var World = (function () {
   var wvBuffer;
   var wcBuffer;
+  var wNormalBuffer;
+
+  var wSBVBuffer;
+  var wSBCBuffer;
+
   var wfvBuffer;
   var wfcBuffer;
   function World() {
     this.world = [];
     this.worldVertices = [];         // filled by worldToVerticeArray();
-    this.worldVerticeColors = [];    // filled by worldToVerticeArray();
     this.worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
     this.worldWireframeVertices = [];
     this.worldWireframeColors = [];
+
+    this.worldSpinningBlockVertices = [];
+    this.worldSpinningBlockVerticeColors = [];
+    this.worldSpinningBlockNormals = [];
 
     this.initWorld();
     this.worldToVerticeArray();
@@ -19,9 +27,9 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
 
-    wcBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVerticeColors), gl.STATIC_DRAW );
+    wNormalBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
 
     wfvBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
@@ -31,17 +39,24 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
 
+    wSBVBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBVBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockVertices), gl.STATIC_DRAW );
+
+    wSBCBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBCBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockVerticeColors), gl.STATIC_DRAW );
   }
 
   World.prototype.render = function() {
-      // draw boxes
+    // draw boxes
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-    // gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
+    // gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
 
-    gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
+    gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
     // gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.TRIANGLES, 0, this.worldVertices.length);
 
@@ -52,7 +67,7 @@ var World = (function () {
     gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.LINES, 0, this.worldWireframeVertices.length);
 
@@ -61,17 +76,17 @@ var World = (function () {
 
   World.prototype.initWorld = function() {
     for (var i = 0; i < WORLD_SIZE; i++) {
-        this.world[i] = [];
-        for (var j = 0; j < WORLD_SIZE; j++) {
-            this.world[i][j] = [];
-        }
+      this.world[i] = [];
+      for (var j = 0; j < WORLD_SIZE; j++) {
+        this.world[i][j] = [];
+      }
     }
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
-            for (var k = 0; k < 10; k++) {
-                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
-            }
+    for (var i = 0; i < 20; i++) {
+      for (var j = 0; j < 20; j++) {
+        for (var k = 0; k < 20; k++) {
+          this.world[i][j][k] = new Block(i,j,k,1, "someMat");
         }
+      }
     }
   };
 
@@ -80,115 +95,69 @@ var World = (function () {
     var result = [];
 
     for (var i = 0; i < WORLD_SIZE; i++) {
-        for (var j = 0; j < WORLD_SIZE; j++) {
-            for (var k = 0; k < WORLD_SIZE; k++) {
-                var currBlock = this.world[i][j][k];
+      for (var j = 0; j < WORLD_SIZE; j++) {
+        for (var k = 0; k < WORLD_SIZE; k++) {
+          var currBlock = this.world[i][j][k];
 
-                if (currBlock == undefined) continue;
+          if (!(currBlock instanceof Block)) continue;
 
-                if (this.getNeighbourBlocks(i,j,k).length > 5) continue;
+          //if (this.getNeighbourBlocks(i, j, k).length > 5) continue;
 
-                var currBlockCorners = currBlock.getCorners();
+          var currBlockCorners = currBlock.corners;
 
-                var llf = currBlockCorners[0];
-                var tlf = currBlockCorners[1];
-                var trf = currBlockCorners[2];
-                var lrf = currBlockCorners[3];
-                var llb = currBlockCorners[4];
-                var tlb = currBlockCorners[5];
-                var trb = currBlockCorners[6];
-                var lrb = currBlockCorners[7];
+          var llf = currBlockCorners[0];
+          var tlf = currBlockCorners[1];
+          var trf = currBlockCorners[2];
+          var lrf = currBlockCorners[3];
+          var llb = currBlockCorners[4];
+          var tlb = currBlockCorners[5];
+          var trb = currBlockCorners[6];
+          var lrb = currBlockCorners[7];
 
-                // fill wireframe of block
-                var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
-                               llb, tlb, tlb, trb, trb, lrb, lrb, llb,
-                               lrf, lrb, trf, trb, llf, llb, tlf, tlb];
-                this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
+          // fill wireframe of block
+          var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
+            llb, tlb, tlb, trb, trb, lrb, lrb, llb,
+            lrf, lrb, trf, trb, llf, llb, tlf, tlb];
+          this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
-                var wfcolors = [vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1), 
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
-                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1)];
-                this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
+          var wfcolors = [vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+            vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1)];
+          this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
 
-                var fstVec = subtract(llf, tlf);
-                var sndVec = subtract(tlf, trf);
-                var normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var frontColor = vec4(normal);
-                
-                fstVec = subtract(lrf, trf);
-                sndVec = subtract(lrf, lrb);
-                normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var rightColor = vec4(normal, 1);
+          this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
 
-                fstVec = subtract(lrb, trb);
-                sndVec = subtract(lrb, llb);
-                normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var backColor = vec4(add(vec3(1,1,1), normal), 1);
+          // front face triangles
+          result = result.concat([llf, tlf, trf]);
+          result = result.concat([llf, trf, lrf]);
 
-                fstVec = subtract(llb, tlb);
-                sndVec = subtract(llb, llf);
-                normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var leftColor = vec4(add(vec3(1,1,1), normal), 1);
+          // right face triangles
+          result = result.concat([lrf, trf, lrb]);
+          result = result.concat([lrb, trf, trb]);
 
-                fstVec = subtract(tlf, tlb);
-                sndVec = subtract(tlf, trf);
-                normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var upColor = vec4(normal, 1);
+          // // back face triangles
+          result = result.concat([lrb, trb, llb]);
+          result = result.concat([llb, trb, tlb]);
 
-                fstVec = subtract(llf, lrf);
-                sndVec = subtract(llf, llb);
-                normal = normalize(cross(sndVec, fstVec));
-                this.worldBlockNormals = this.worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var downColor = vec4(add(vec3(1,1,1), normal), 1);
+          // // left face triangles
+          result = result.concat([llb, tlb, tlf]);
+          result = result.concat([llb, tlf, llf]);
 
-                // front face triangles
-                result = result.concat([llf, tlf, trf]);
-                result = result.concat([llf, trf, lrf]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([frontColor, frontColor, frontColor, 
-                                                                frontColor, frontColor, frontColor]);
-                
-                // right face triangles
-                result = result.concat([lrf, trf, lrb]);
-                result = result.concat([lrb, trf, trb]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([rightColor, rightColor, rightColor, 
-                                                                rightColor, rightColor, rightColor]);
-                
-                // // back face triangles
-                result = result.concat([lrb, trb, llb]);
-                result = result.concat([llb, trb, tlb]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([backColor, backColor, backColor, 
-                                                                backColor, backColor, backColor]);
+          // // up face triangles
+          result = result.concat([tlf, tlb, trb]);
+          result = result.concat([tlf, trb, trf]);
 
-                // // left face triangles
-                result = result.concat([llb, tlb, tlf]);
-                result = result.concat([llb, tlf, llf]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([leftColor, leftColor, leftColor, 
-                                                                leftColor, leftColor, leftColor]);
-
-                // // up face triangles
-                result = result.concat([tlf, tlb, trb]);
-                result = result.concat([tlf, trb, trf]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([upColor, upColor, upColor, 
-                                                                upColor, upColor, upColor]);
-
-                // // down face triangles
-                result = result.concat([llf, llb, lrb]);
-                result = result.concat([llf, lrb, lrf]);
-                this.worldVerticeColors = this.worldVerticeColors.concat([downColor, downColor, downColor, 
-                                                                downColor, downColor, downColor]);
-            }
+          // // down face triangles
+          result = result.concat([llf, llb, lrb]);
+          result = result.concat([llf, lrb, lrf]);
         }
+      }
     }
     this.worldVertices = result;
   };
@@ -196,28 +165,28 @@ var World = (function () {
   World.prototype.getNeighbourBlocks = function(x, y, z) {
     var result = [];
     if (x < WORLD_SIZE-1) {
-        var currNeighbour = this.world[x+1][y][z];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x+1][y][z];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     if (x > 0) {
-        var currNeighbour = this.world[x-1][y][z];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x-1][y][z];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     if (y < WORLD_SIZE-1) {
-        var currNeighbour = this.world[x][y+1][z];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x][y+1][z];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     if (y > 0) {
-        var currNeighbour = this.world[x][y-1][z];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x][y-1][z];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     if (z < WORLD_SIZE-1) {
-        var currNeighbour = this.world[x][y][z+1];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x][y][z+1];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     if (z > 0) {
-        var currNeighbour = this.world[x][y][z-1];
-        if (currNeighbour !== undefined) result.push(currNeighbour);
+      var currNeighbour = this.world[x][y][z-1];
+      if (currNeighbour !== undefined) result.push(currNeighbour);
     }
     return result;
   };
