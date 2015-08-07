@@ -1,7 +1,7 @@
 
 var gl;
 
-var numTimesToSubdivide = 4;
+var numTimesToSubdivide = 6;
  
 var index = 0;
 
@@ -98,7 +98,7 @@ function init() {
     shininessLoc = gl.getUniformLocation(program, "shininess");
 
     modelViewMatrix = mult(mat4(), translate(0,0,-4));
-    modelViewMatrix = mult(modelViewMatrix, scalem(1,1,1));
+    modelViewMatrix = mult(modelViewMatrix, scalem(1,2,1));
     projectionMatrix = perspective(60, 1.0, 0.01, 5);
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
@@ -136,7 +136,7 @@ function setParameters(choice) {
 function render() {
     
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    setParameters(0);
+    setParameters(2);
 
     modelViewMatrix = mult(modelViewMatrix, rotate(1, vec3(0,1,0)));        
     lightPosition = vec4(5,3,3,1);
@@ -147,7 +147,7 @@ function render() {
         vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
         vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
     ];
-    normalMatrix = transpose(inverse3(normalMatrix));
+    //normalMatrix = transpose(inverse3(normalMatrix));
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix) );
         
