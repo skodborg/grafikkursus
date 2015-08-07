@@ -35,10 +35,6 @@ var wPressed = false;
 var spacePressed = false;
 var shiftPressed = false;
 
-var oldMouseX = undefined;
-var oldMouseY = undefined;
-var mouseLeftDown = false;
-
 function init() {
     // initializes points for painting the axis indicator lines
     initAxisLines();
@@ -48,7 +44,6 @@ function init() {
     // result is smooth outlining
     gl.enable(gl.POLYGON_OFFSET_FILL);
     gl.polygonOffset(1, 1);
-    
     world = new World();
     camera = new Camera();
     player = new Player(0, 0, -2, camera);
@@ -56,7 +51,7 @@ function init() {
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
-    window.onmousemove = handleMouseMove;
+    // window.onmousemove = handleMouseMove;
     window.onmousedown = handleMouseDown;
     window.onmouseup = handleMouseUp;
 
@@ -199,32 +194,19 @@ function handleKeyRelease(event){
 }
 
 function handleMouseMove(event) {
-    if(!mouseLeftDown) {
-        return;
-    }
-    if(oldMouseX == undefined) {
-        oldMouseX = event.clientX;
-        return;
-    }
-    if(oldMouseY == undefined) {
-        oldMouseY = event.clientY;
-        return;
-    }
-    player.handleMouseMove((event.clientX - oldMouseX), (event.clientY - oldMouseY));
-    oldMouseX = event.clientX;
-    oldMouseY = event.clientY;
-}
 
-function handleMouseDown(event) {
-    mouseLeftDown = true;
-    oldMouseX = event.clientX;
-    oldMouseY = event.clientY;
-}
+  var movementX = event.movementX ||
+      event.mozMovementX          ||
+      event.webkitMovementX       ||
+      0;
 
-function handleMouseUp() {
-    mouseLeftDown = false;
-}
+  var movementY = event.movementY ||
+      event.mozMovementY      ||
+      event.webkitMovementY   ||
+      0;
 
+  player.handleMouseMove(movementX, movementY);
+}
 
 function multmv( m, v )
 {
