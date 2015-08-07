@@ -47,7 +47,8 @@ function init() {
     // offsets the polygons defining the blocks from the lines outlining them
     // result is smooth outlining
     gl.enable(gl.POLYGON_OFFSET_FILL);
-    gl.polygonOffset(0, 0);
+    gl.polygonOffset(1, 1);
+    
     world = new World();
     camera = new Camera();
     player = new Player(0, 0, -2, camera);

@@ -2,11 +2,15 @@
 var World = (function () {
   var wvBuffer;
   var wcBuffer;
+  var wfvBuffer;
+  var wfcBuffer;
   function World() {
     this.world = [];
     this.worldVertices = [];         // filled by worldToVerticeArray();
     this.worldVerticeColors = [];    // filled by worldToVerticeArray();
     this.worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
+    this.worldWireframeVertices = [];
+    this.worldWireframeColors = [];
 
     this.initWorld();
     this.worldToVerticeArray();
@@ -18,6 +22,14 @@ var World = (function () {
     wcBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVerticeColors), gl.STATIC_DRAW );
+
+    wfvBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
+
+    wfcBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
 
   }
 
@@ -32,6 +44,19 @@ var World = (function () {
     gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.TRIANGLES, 0, this.worldVertices.length);
+
+
+
+    // draw box wireframes
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+    gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
+
+    gl.drawArrays( gl.LINES, 0, this.worldWireframeVertices.length);
+
+
   };
 
   World.prototype.initWorld = function() {
@@ -73,6 +98,23 @@ var World = (function () {
                 var tlb = currBlockCorners[5];
                 var trb = currBlockCorners[6];
                 var lrb = currBlockCorners[7];
+
+                // fill wireframe of block
+                var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
+                               llb, tlb, tlb, trb, trb, lrb, lrb, llb,
+                               lrf, lrb, trf, trb, llf, llb, tlf, tlb];
+                this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
+
+                var wfcolors = [vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1), 
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1),
+                                vec4(0,0,0,1), vec4(0,0,0,1), vec4(0,0,0,1)];
+                this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
+
 
                 var fstVec = subtract(llf, tlf);
                 var sndVec = subtract(tlf, trf);
