@@ -14,7 +14,7 @@ var Camera = (function () {
     yRotationMatrix = mat4();
     translationMatrix = translate(0,0,-2);
     vModelViewMatrix = mat4();
-    vProjectionMatrix = perspective(60,1, 0.01, 3);
+    vProjectionMatrix = perspective(60,1, 0.01, 20);
 
     vModelViewMatrixLoc = gl.getUniformLocation(program, "vModelViewMatrix");
 
