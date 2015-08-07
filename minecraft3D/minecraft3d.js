@@ -5,6 +5,12 @@ var vColorLoc;
 
 var BLOCK_SIZE = 1;
 var WORLD_SIZE = 30;
+var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
+                     vec4(1, 0, 0, 0),
+                     vec4(0, 0,-1, 0),
+                     vec4(-1,0, 0, 0),
+                     vec4(0 ,1, 0, 0),
+                     vec4(0,-1, 0, 0)];
 
 var axisVertices = [];
 var axisColors = [];
@@ -13,6 +19,7 @@ var world = [];
 var worldVertices = [];         // filled by worldToVerticeArray();
 var worldVerticeColors = [];    // filled by worldToVerticeArray();
 var worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
+
 
 var wireframeVertices = [];
 var wireframeColors = [];
@@ -41,6 +48,7 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 var spacePressed = false;
+var shiftPressed = false;
 
 var oldMouseX = undefined;
 var oldMouseY = undefined;
@@ -77,14 +85,14 @@ function init() {
     worldToVerticeArray(); // fills up worldVertices-array prior to binding it to the buffer
 
     var currTime = new Date().getTime();
-    console.log("javascript: " + (currTime - start));
+    // console.log("javascript: " + (currTime - start));
 
     wvBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
 
     var newCurrTime = new Date().getTime();
-    console.log("WebGL: " + (newCurrTime - currTime));
+    // console.log("WebGL: " + (newCurrTime - currTime));
 
     // Associate out shader variables with our data buffer
     vPositionLoc = gl.getAttribLocation( program, "vPosition" );
@@ -236,9 +244,35 @@ function getNeighbourBlocks(x, y, z) {
     return result;
 }
 
+function removeBlockFromWorld(x, y, z) {
+    if (world[x][y][z] != undefined) {
+        world[x][y][z] = undefined;
+        worldToVerticeArray();
+        gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
+        gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
+    }
+}
+
+function addBlockToWorld(x, y, z, block) {
+    if (world[x][y][z] == undefined) {
+        world[x][y][z] = block;
+        worldToVerticeArray();
+        gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
+        gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
+    }
+}
+
 // rebuilds the current world state as an array of vertices, vec4
 function worldToVerticeArray() {
     var result = [];
+    var normals = [];
+    worldVerticeColors = [];
+    worldBlockNormals = [];
+    worldVertices = [];
 
     for (var i = 0; i < WORLD_SIZE; i++) {
         for (var j = 0; j < WORLD_SIZE; j++) {
@@ -260,41 +294,55 @@ function worldToVerticeArray() {
                 var trb = currBlockCorners[6];
                 var lrb = currBlockCorners[7];
 
-                var fstVec = subtract(llf, tlf);
-                var sndVec = subtract(tlf, trf);
-                var normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var frontColor = vec4(normal);
+                var frontNormal = BLOCK_NORMALS[0];
+                var rightNormal = BLOCK_NORMALS[1];
+                var backNormal = BLOCK_NORMALS[2];
+                var leftNormal = BLOCK_NORMALS[3];
+                var upNormal = BLOCK_NORMALS[4];
+                var downNormal = BLOCK_NORMALS[5];
+                normals = normals.concat([frontNormal, frontNormal, 
+                                          frontNormal, frontNormal, 
+                                          frontNormal, frontNormal]);
+
+
+                var frontColor = vec4(vec3(frontNormal), 1);
+                // var frontColor = vec4(0,0,1,1);
                 
-                fstVec = subtract(lrf, trf);
-                sndVec = subtract(lrf, lrb);
-                normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var rightColor = vec4(normal, 1);
+                
+                normals = normals.concat([rightNormal, rightNormal, 
+                                          rightNormal, rightNormal, 
+                                          rightNormal, rightNormal]);
+                var rightColor = vec4(vec3(rightNormal, 1));
+                // var rightColor = vec4(1,0,0,1);
+                
+                
+                normals = normals.concat([backNormal, backNormal, 
+                                          backNormal, backNormal, 
+                                          backNormal, backNormal]);
+                var backColor = vec4(add(vec3(1,1,1), vec3(backNormal)), 1);
+                // var backColor = vec4(1,1,0,1);
+                
+                
+                normals = normals.concat([leftNormal, leftNormal, 
+                                          leftNormal, leftNormal, 
+                                          leftNormal, leftNormal]);
+                var leftColor = vec4(add(vec3(1,1,1), vec3(leftNormal)), 1);
+                // var leftColor = vec4(0,1,1,1);
+                
+                
+                normals = normals.concat([upNormal, upNormal,
+                                          upNormal, upNormal, 
+                                          upNormal, upNormal]);
+                var upColor = vec4(vec3(upNormal), 1);
+                // var upColor = vec4(0,1,0,1);
+                
 
-                fstVec = subtract(lrb, trb);
-                sndVec = subtract(lrb, llb);
-                normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var backColor = vec4(add(vec3(1,1,1), normal), 1);
+                normals = normals.concat([downNormal, downNormal,
+                                          downNormal, downNormal, 
+                                          downNormal, downNormal]);
+                var downColor = vec4(add(vec3(1,1,1), vec3(downNormal)), 1);
+                // var downColor = vec4(1,0,1,1);
 
-                fstVec = subtract(llb, tlb);
-                sndVec = subtract(llb, llf);
-                normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var leftColor = vec4(add(vec3(1,1,1), normal), 1);
-
-                fstVec = subtract(tlf, tlb);
-                sndVec = subtract(tlf, trf);
-                normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var upColor = vec4(normal, 1);
-
-                fstVec = subtract(llf, lrf);
-                sndVec = subtract(llf, llb);
-                normal = normalize(cross(sndVec, fstVec));
-                worldBlockNormals = worldBlockNormals.concat([normal, normal, normal, normal, normal, normal]);
-                var downColor = vec4(add(vec3(1,1,1), normal), 1);
 
                 // front face triangles
                 result = result.concat([llf, tlf, trf]);
@@ -335,6 +383,7 @@ function worldToVerticeArray() {
         }
     }
     worldVertices = result;
+    worldBlockNormals = normals;
 }
 
 function initAxisLines() {
@@ -359,16 +408,19 @@ function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
         case 37:
+            addBlockToWorld(3, 3, 3, new Block(3,3,3,0.5, "lol"));
             leftPressed = true;
             break;
         case 38:
             upPressed = true;
             break;
         case 39:
+            removeBlockFromWorld(3,3,3);
             rightPressed = true;
             break;
         case 40:
             downPressed = true;
+
             break;
         //Rotation
         case 65:
@@ -385,6 +437,9 @@ function handleKeyPress(event){
             break;
         case 32:
             spacePressed = true;
+            break;
+        case 16:
+            shiftPressed = true;
             break;
     }
 }
@@ -419,6 +474,9 @@ function handleKeyRelease(event){
             break;
         case 32:
             spacePressed = false;
+            break;
+        case 16:
+            shiftPressed = false;
             break;
     }
 }

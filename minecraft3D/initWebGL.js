@@ -6,6 +6,12 @@ window.onload = function() {
   gl = WebGLUtils.setupWebGL( canvas );
   if ( !gl ) { alert( "WebGL isn't available" ); }
 
+  canvas.requestPointerLock = canvas.requestPointerLock ||
+                            canvas.mozRequestPointerLock ||
+                            canvas.webkitRequestPointerLock;
+
+  canvas.requestPointerLock()
+
   // Debug
   function logGLCall(functionName, args) {   
    console.log("gl." + functionName + "(" + 
