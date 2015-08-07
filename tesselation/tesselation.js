@@ -4,7 +4,7 @@ var points = [];
 var vRotation = 0.1;
 var vRotataionLoc;
 
-function init(program) {
+function init() {
 
     //triangle(vec2(-0.1,-0.1), vec2(0.1,-0.1), vec2(0,0.1));
     //triangle(vec2(0.6,0.6), vec2(0.3,0.3), vec2(0.2,0.9));
@@ -53,7 +53,7 @@ function generateDividedTriangle(a, b, c, divisions){
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 
-    vRotation += 0.1;
+    vRotation += 0.01;
     gl.uniform1f( vRotataionLoc, vRotation );
 
     gl.drawArrays( gl.TRIANGLES, 0, points.length );

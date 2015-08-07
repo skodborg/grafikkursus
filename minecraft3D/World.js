@@ -74,7 +74,7 @@ var World = (function () {
       var currBlock = this.spinningBlocks[i];
 
       var moveToOrigo = translate(-currBlock.llfx, -currBlock.llfy, -currBlock.llfz);
-      var rotateM = rotate(53.5, vec3(1,0,1));
+      var rotateM = rotate(54.8, vec3(1,0,1));
       var rotateFactor = rotate(spinningBlockTheta, vec3(0,1,0));
 
       // rotate spinning boxes
