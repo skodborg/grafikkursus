@@ -46,6 +46,10 @@ var Player = (function () {
         this.velocity = add(this.velocity, vec3(0, -MOVEMENT_SPEED*elapsedTime, 0));
     };
 
+    Player.prototype.fall = function () {
+        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*elapsedTime, 0));
+    }
+
     Player.prototype.walkForwards = function () {
         this.velocity = add(this.velocity,
             scale(MOVEMENT_SPEED*elapsedTime, this.direction));
@@ -89,6 +93,9 @@ var Player = (function () {
         }
         if(spacePressed) {
             this.jump();
+        }
+        if(shiftPressed) {
+            this.fall();
         }
     };
 

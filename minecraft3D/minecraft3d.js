@@ -4,12 +4,16 @@ var vPositionLoc;
 var vColorLoc;
 
 var BLOCK_SIZE = 1;
-var WORLD_SIZE = 10;
+var WORLD_SIZE = 30;
+var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
+                     vec4(1, 0, 0, 0),
+                     vec4(0, 0,-1, 0),
+                     vec4(-1,0, 0, 0),
+                     vec4(0 ,1, 0, 0),
+                     vec4(0,-1, 0, 0)];
 
 var axisVertices = [];
 var axisColors = [];
-
-
 
 var camera;
 var player;
@@ -29,6 +33,7 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 var spacePressed = false;
+var shiftPressed = false;
 
 var oldMouseX = undefined;
 var oldMouseY = undefined;
@@ -40,7 +45,8 @@ function init() {
     // offsets the polygons defining the blocks from the lines outlining them
     // result is smooth outlining
     gl.enable(gl.POLYGON_OFFSET_FILL);
-    gl.polygonOffset(0, 0);
+    gl.polygonOffset(1, 1);
+    
     world = new World();
     camera = new Camera();
     player = new Player(0, 0, 0, camera);
@@ -91,6 +97,7 @@ function update() {
 }
 
 
+
 function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
@@ -121,6 +128,9 @@ function handleKeyPress(event){
             break;
         case 32:
             spacePressed = true;
+            break;
+        case 16:
+            shiftPressed = true;
             break;
     }
 }
@@ -155,6 +165,9 @@ function handleKeyRelease(event){
             break;
         case 32:
             spacePressed = false;
+            break;
+        case 16:
+            shiftPressed = false;
             break;
     }
 }
