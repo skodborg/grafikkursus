@@ -29,17 +29,17 @@ var Block = (function () {
 
   Block.prototype.calculateNormals = function () {
     var result = [];
-    var normal = vec4(0,0,1,0);
+    var normal = BLOCK_NORMALS[0];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = vec4(1,0,0,0);
+    normal = BLOCK_NORMALS[1];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = vec4(0,0,-1,0);
+    normal = BLOCK_NORMALS[2];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = vec4(-1,0,0,0);
+    normal = BLOCK_NORMALS[3];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = vec4(0,1,0,0);
+    normal = BLOCK_NORMALS[4];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = vec4(0,-1,0,0);
+    normal = BLOCK_NORMALS[5];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
     return result;
   };

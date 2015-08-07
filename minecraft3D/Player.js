@@ -9,7 +9,6 @@ var Player = (function () {
     }
 
     Player.prototype.render = function() {
-        console.log(this.position);
     };
 
     /*---------------- Vertices ---------------------*/

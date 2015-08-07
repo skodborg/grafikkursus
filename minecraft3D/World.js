@@ -81,9 +81,9 @@ var World = (function () {
         this.world[i][j] = [];
       }
     }
-    for (var i = 0; i < 20; i++) {
-      for (var j = 0; j < 20; j++) {
-        for (var k = 0; k < 20; k++) {
+    for (var i = 0; i < WORLD_SIZE; i++) {
+      for (var j = 0; j < WORLD_SIZE; j++) {
+        for (var k = 0; k < WORLD_SIZE; k++) {
           this.world[i][j][k] = new Block(i,j,k,1, "someMat");
         }
       }
@@ -101,7 +101,7 @@ var World = (function () {
 
           if (!(currBlock instanceof Block)) continue;
 
-          //if (this.getNeighbourBlocks(i, j, k).length > 5) continue;
+          if (this.getNeighbourBlocks(i, j, k).length > 5) continue;
 
           var currBlockCorners = currBlock.corners;
 
