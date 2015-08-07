@@ -10,15 +10,9 @@ var axisVertices = [];
 var axisColors = [];
 
 
-var wireframeVertices = [];
-var wireframeColors = [];
-
 
 var camera;
 var player;
-
-var vBuffer;
-var cBuffer;
 
 var MOVEMENT_SPEED = 0.3;
 var ROTATION_SPEED = 0.1;
@@ -51,20 +45,14 @@ function init() {
     gl.polygonOffset(0, 0);
     world = new World();
     camera = new Camera();
-    player = new Player(0, 0, -2, camera);    
-
-    drawWireframeAtGridPos(0,0,0);
+    player = new Player(0, 0, -2, camera);
+    wireframe = new Wireframe();
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
     window.onmousemove = handleMouseMove;
     window.onmousedown = handleMouseDown;
     window.onmouseup = handleMouseUp;
-
-
-    vBuffer = gl.createBuffer();
-    cBuffer = gl.createBuffer();
-
 
 
     // Associate out shader variables with our data buffer
@@ -84,20 +72,10 @@ function render() {
 
     update();
     world.render();
-
-    // draw wireframe
-    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(wireframeVertices), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
-
-    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(wireframeColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
-
-    gl.drawArrays( gl.LINES, 0, wireframeVertices.length);
+    wireframe.render();
 
     // draw XYZ-indicators
-    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
+    /*gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(axisVertices), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vPositionLoc, 3, gl.FLOAT, false, 0, 0 );
 
@@ -105,7 +83,7 @@ function render() {
     gl.bufferData( gl.ARRAY_BUFFER, flatten(axisColors), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
 
-    gl.drawArrays( gl.LINES, 0, axisVertices.length);
+    gl.drawArrays( gl.LINES, 0, axisVertices.length);*/
 
     window.requestAnimFrame(render);
 }
@@ -121,45 +99,6 @@ function update() {
     camera.update();
     lastTime = currTime;
 }
-
-
-
-function drawWireframeAtGridPos(x, y, z) {
-
-    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
-    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
-    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));        // #8
-    wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z - BLOCK_SIZE, 1));                     // #7
-
-    wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
-    wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z - BLOCK_SIZE, 1));                     // #6
-
-    
-    for (var i = 0; i < 24; i++) {
-        wireframeColors.push(vec4(0,0,0,1));
-    }
-}
-
 
 
 function initAxisLines() {
