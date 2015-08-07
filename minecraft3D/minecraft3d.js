@@ -44,7 +44,7 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(0, 0, -10, camera);
+    player = new Player(5,2,5, camera);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 
@@ -71,6 +71,7 @@ function render() {
     world.render();
     wireframe.render();
     axisDrawer.render();
+    player.render();
 
 
     window.requestAnimFrame(render);
