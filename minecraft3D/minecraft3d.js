@@ -44,15 +44,12 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(0, 0, 0, camera);
+    player = new Player(0, 0, -10, camera);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
-    // window.onmousemove = handleMouseMove;
-    window.onmousedown = handleMouseDown;
-    window.onmouseup = handleMouseUp;
 
 
     // Associate out shader variables with our data buffer
