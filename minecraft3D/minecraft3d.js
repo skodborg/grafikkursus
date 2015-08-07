@@ -35,8 +35,6 @@ var oldMouseY = undefined;
 var mouseLeftDown = false;
 
 function init() {
-    // initializes points for painting the axis indicator lines
-    initAxisLines();
 
     gl.enable(gl.DEPTH_TEST);
     // offsets the polygons defining the blocks from the lines outlining them
@@ -45,8 +43,9 @@ function init() {
     gl.polygonOffset(0, 0);
     world = new World();
     camera = new Camera();
-    player = new Player(0, 0, -2, camera);
+    player = new Player(0, 0, 0, camera);
     wireframe = new Wireframe();
+    axisDrawer = new AxisDrawer(0,0,0);
 
     window.onkeydown = handleKeyPress;
     window.onkeyup = handleKeyRelease;
@@ -73,17 +72,8 @@ function render() {
     update();
     world.render();
     wireframe.render();
+    axisDrawer.render();
 
-    // draw XYZ-indicators
-    /*gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(axisVertices), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vPositionLoc, 3, gl.FLOAT, false, 0, 0 );
-
-    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(axisColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vColorLoc, 4, gl.FLOAT, false, 0, 0 );
-
-    gl.drawArrays( gl.LINES, 0, axisVertices.length);*/
 
     window.requestAnimFrame(render);
 }
@@ -100,24 +90,6 @@ function update() {
     lastTime = currTime;
 }
 
-
-function initAxisLines() {
-    axisVertices = [
-        vec3(0.0, 0.0, 0.0),
-        vec3(1.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 1.0, 0.0),
-        vec3(0.0, 0.0, 0.0),
-        vec3(0.0, 0.0, 1.0)];
-
-    axisColors = [
-        vec4( 1.0, 0.0, 0.0, 1.0 ),
-        vec4( 1.0, 0.0, 0.0, 1.0 ),
-        vec4( 0.0, 1.0, 0.0, 1.0 ),
-        vec4( 0.0, 1.0, 0.0, 1.0 ),
-        vec4( 0.0, 0.0, 1.0, 1.0 ),
-        vec4( 0.0, 0.0, 1.0, 1.0 )];
-}
 
 function handleKeyPress(event){
     switch (event.keyCode) {
