@@ -110,7 +110,7 @@ var World = (function () {
 
 
     for (var i = 0; i < WORLD_SIZE; i++) {
-      for (var j = 0; j < 5; j++) {
+      for (var j = 0; j < 1; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2)) {
                 this.world[i][j][k] = new Block(i,j,k,1, "someMat");
@@ -119,19 +119,102 @@ var World = (function () {
       }
     }
 
-    centerX = WORLD_SIZE/4;
-    centerY = WORLD_SIZE/3;
-    var radius = 5;
+
+
 
     for (var i = 0; i < WORLD_SIZE; i++) {
-      for (var j = 5; j < 8; j++) {
+      for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
-            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2)) {
+
+            var hillHeight = 8;
+
+            var c = vec2(WORLD_SIZE/4, WORLD_SIZE/4);
+            var x = vec2(i,k);
+            var cx = length(subtract(c,x));
+            var worldDiag = Math.sqrt(Math.pow(WORLD_SIZE/2,2)*2);
+            var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
+            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
+                j <= y) {
+                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
+                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+            }
+
+            hillHeight = 5;
+
+            var c = vec2(WORLD_SIZE/4+5, WORLD_SIZE/4+5);
+            var x = vec2(i,k);
+            var cx = length(subtract(c,x));
+            var worldDiag = Math.sqrt(Math.pow(WORLD_SIZE/2,2)*2);
+            var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
+            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
+                j <= y) {
+                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
+                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+            }
+
+            hillHeight = 3;
+
+            var c = vec2(WORLD_SIZE/4+15, WORLD_SIZE/4+10);
+            var x = vec2(i,k);
+            var cx = length(subtract(c,x));
+            var worldDiag = Math.sqrt(Math.pow(WORLD_SIZE/2,2)*2);
+            var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
+            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
+                j <= y) {
+                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
                 this.world[i][j][k] = new Block(i,j,k,1, "someMat");
             }
         }
       }
     }
+
+    // TREE 1
+    var treeX = 10;
+    var treeZ = 25;
+    var treeHeight = 6;
+    var treeCrownRadius = 3;
+
+    for (var i = 0; i < treeHeight; i++) {
+        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "someMat");
+    }
+
+    for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
+        for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
+            for (var k = treeZ-(treeCrownRadius); k <= treeZ+(treeCrownRadius); k++) {
+
+
+                // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
+                if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
+                    this.world[i][j][k] = new Block(i,j,k,1, "someMat");               
+                }
+            }
+        }
+    }
+
+
+    // TREE 2
+    treeX = 20;
+    treeZ = 5;
+    treeHeight = 4;
+    treeCrownRadius = 2;
+
+    for (var i = 0; i < treeHeight; i++) {
+        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "someMat");
+    }
+
+    for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
+        for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
+            for (var k = treeZ-(treeCrownRadius); k <= treeZ+(treeCrownRadius); k++) {
+
+
+                // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
+                if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
+                    this.world[i][j][k] = new Block(i,j,k,1, "someMat");               
+                }
+            }
+        }
+    }
+
 
     this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"someMat");
   };
