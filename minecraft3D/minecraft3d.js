@@ -11,7 +11,7 @@ var vSBRotationMatrixLoc;
 var vPositionLoc;
 var vNormalLoc;
 
-var lightPosition = vec4(21, 5, 17, 1);
+var lightPosition = vec4(60, 5, -60, 1);
 var lightPositionLoc;
 
 var shininess = 100;
@@ -109,8 +109,7 @@ function update() {
         elapsedTime = 0.00001;
     }
 
-    lightPosition = add(lightPosition, vec4(-0.05,+0.01,0,0,0));
-
+    lightPosition = multmv(rotate(0.05, vec3(1,0,1)), lightPosition);
 
     gl.uniform4fv(lightPositionLoc, flatten(lightPosition));
     gl.uniform1f(shininessLoc, shininess);
