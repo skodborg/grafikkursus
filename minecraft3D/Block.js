@@ -18,10 +18,10 @@ var Block = (function () {
     var tlf = vec4(this.llfx, this.llfy + this.size, this.llfz, 1);
     var trf = vec4(this.llfx + this.size, this.llfy + this.size, this.llfz, 1);
     var lrf = vec4(this.llfx + this.size, this.llfy, this.llfz, 1);
-    var llb = vec4(this.llfx, this.llfy, this.llfz - this.size, 1);
-    var tlb = vec4(this.llfx, this.llfy + this.size, this.llfz - this.size, 1);
-    var trb = vec4(this.llfx + this.size, this.llfy + this.size, this.llfz - this.size, 1);
-    var lrb = vec4(this.llfx + this.size, this.llfy, this.llfz - this.size, 1);
+    var llb = vec4(this.llfx, this.llfy, this.llfz + this.size, 1);
+    var tlb = vec4(this.llfx, this.llfy + this.size, this.llfz + this.size, 1);
+    var trb = vec4(this.llfx + this.size, this.llfy + this.size, this.llfz + this.size, 1);
+    var lrb = vec4(this.llfx + this.size, this.llfy, this.llfz + this.size, 1);
 
     var result = [llf, tlf, trf, lrf, llb, tlb, trb, lrb];
     return result;

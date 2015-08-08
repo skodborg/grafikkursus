@@ -217,6 +217,7 @@ var World = (function () {
 
 
     this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"someMat");
+
   };
 
   // rebuilds the current world state as an array of vertices, vec4

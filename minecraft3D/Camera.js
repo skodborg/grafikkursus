@@ -17,8 +17,9 @@ var Camera = (function () {
   function Camera() {
     xRotationMatrix = mat4();
     yRotationMatrix = mat4();
-    translationMatrix = translate(0,0,-2);
+    translationMatrix = mat4();
     vModelViewMatrix = mat4();
+
     perspectiveMatrix = perspective(60,1, 0.01, 40);
     overviewModelViewMatrix = lookAt(vec3(WORLD_SIZE/2,WORLD_SIZE+10,WORLD_SIZE/2), 
                                      vec3(WORLD_SIZE/2,0,WORLD_SIZE/2), 
@@ -36,6 +37,7 @@ var Camera = (function () {
 
   Camera.prototype.update = function () {
 
+
     if (!overviewMode) {
       var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
       vModelViewMatrix = mult(vRotationMatrix, translationMatrix);
@@ -45,6 +47,7 @@ var Camera = (function () {
       vModelViewMatrix = overviewModelViewMatrix;
       vProjectionMatrix = overviewProjectionMatrix;
     }
+
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
     gl.uniformMatrix4fv( vProjectionMatrixLoc, false, flatten(vProjectionMatrix) );
   };
