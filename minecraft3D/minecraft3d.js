@@ -51,7 +51,7 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(WORLD_SIZE / 2, 8, WORLD_SIZE / 2, camera, world.world);
+    player = new Player(WORLD_SIZE / 2, 5, WORLD_SIZE / 2, camera, world.world);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 

@@ -21,13 +21,14 @@ var Player = (function () {
     /*---------------- Movement ---------------------*/
 
     Player.prototype.strafeLeft = function () {
+        var abovePosition = vec3(this.position[0], this.position[1] + 1, this.position[2]);
         var deg = radians(90);
         var left = vec3(
             Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
             this.direction[1],
             -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
         );
-        if(this.horiCollide(left)) {
+        if(this.horiCollide(left,this.position) || this.horiCollide(left, abovePosition)) {
             return;
         }
         this.velocity = add(this.velocity,
@@ -35,13 +36,14 @@ var Player = (function () {
     };
 
     Player.prototype.strafeRight = function () {
+        var abovePosition = vec3(this.position[0], this.position[1] + 1, this.position[2]);
         var deg = radians(-90);
         var right = vec3(
             Math.cos(deg)*this.direction[0]+Math.sin(deg)*this.direction[2],
             this.direction[1],
             -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
         );
-        if(this.horiCollide(right)) {
+        if(this.horiCollide(right, this.position) || this.horiCollide(right, abovePosition)) {
             return;
         }
         this.velocity = add(this.velocity,
@@ -49,7 +51,7 @@ var Player = (function () {
     };
 
     Player.prototype.jump = function () {
-        if(!this.fallCollide()) {
+        if(!this.fallCollide() || this.jumpCollide()) {
             return;
         }
         this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*1.3, 0));
@@ -64,7 +66,8 @@ var Player = (function () {
     }
 
     Player.prototype.walkForwards = function () {
-        if(this.horiCollide(this.direction)) {
+        var abovePosition = vec3(this.position[0], this.position[1] + 1, this.position[2]);
+        if(this.horiCollide(this.direction, this.position) || this.horiCollide(this.direction, abovePosition)) {
             return;
         }
         this.velocity = add(this.velocity,
@@ -72,7 +75,8 @@ var Player = (function () {
     };
 
     Player.prototype.walkBackwards = function () {
-        if(this.horiCollide(negate(this.direction))) {
+        var abovePosition = vec3(this.position[0], this.position[1] + 1, this.position[2]);
+        if(this.horiCollide(negate(this.direction), this.position) || this.horiCollide(negate(this.direction), abovePosition)) {
             return;
         }
         this.velocity = add(this.velocity,
@@ -81,7 +85,8 @@ var Player = (function () {
 
     Player.prototype.updatePosition = function () {
         this.position = add(this.position, this.velocity);
-        this.camera.setPosition(negate(this.position));
+        var shownPos = vec3(this.position[0], this.position[1] + 1, this.position[2]);
+        this.camera.setPosition(negate(shownPos));
         this.updateVelocity();
         this.fall();
     };
@@ -100,12 +105,25 @@ var Player = (function () {
             }
         }
         return false;
-    }
+    };
 
-    Player.prototype.horiCollide = function(moveDir) {
-        var gridPos = [Math.floor(this.position[0]), Math.floor(this.position[1]), Math.floor(this.position[2])];
+    Player.prototype.jumpCollide = function() {
+        var gridPos = [Math.floor(this.position[0]), Math.floor(this.position[1] + 1), Math.floor(this.position[2])];
+        if(this.world[gridPos[0]]) {
+            if(this.world[gridPos[0]][gridPos[1] + 1]) {
+                if(this.world[gridPos[0]][gridPos[1] + 1][gridPos[2]]) {
+                    this.velocity[1] = 0;
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    Player.prototype.horiCollide = function(moveDir, pos) {
+        var gridPos = [Math.floor(pos[0]), Math.floor(pos[1]), Math.floor(pos[2])];
         //Walking in x direction
-        if(moveDir[0] > 0 && this.position[0] - Math.floor(this.position[0]) > 0.7) {
+        if(moveDir[0] > 0 && pos[0] - Math.floor(pos[0]) > 0.7) {
             if(this.world[gridPos[0] + 1]) {
                 if(this.world[gridPos[0] + 1][gridPos[1]]) {
                     if(this.world[gridPos[0] + 1][gridPos[1]][gridPos[2]]) {
@@ -116,7 +134,7 @@ var Player = (function () {
             }
         }
         //Walking in negative x direction
-        if(moveDir[0] < 0 && this.position[0] - Math.floor(this.position[0]) < 0.3) {
+        if(moveDir[0] < 0 && pos[0] - Math.floor(pos[0]) < 0.3) {
             if(this.world[gridPos[0] - 1]) {
                 if(this.world[gridPos[0] - 1][gridPos[1]]) {
                     if(this.world[gridPos[0] - 1][gridPos[1]][gridPos[2]]) {
@@ -127,7 +145,7 @@ var Player = (function () {
             }
         }
         //Walking in z direction
-        if(moveDir[2] > 0 && this.position[2] - Math.floor(this.position[2]) > 0.7) {
+        if(moveDir[2] > 0 && pos[2] - Math.floor(pos[2]) > 0.7) {
             if(this.world[gridPos[0]]) {
                 if(this.world[gridPos[0]][gridPos[1]]) {
                     if(this.world[gridPos[0]][gridPos[1]][gridPos[2] + 1]) {
@@ -138,7 +156,7 @@ var Player = (function () {
             }
         }
         //Walking in negative z direction
-        if(moveDir[2] < 0 && this.position[2] - Math.floor(this.position[2]) < 0.3) {
+        if(moveDir[2] < 0 && pos[2] - Math.floor(pos[2]) < 0.3) {
             if(this.world[gridPos[0]]) {
                 if(this.world[gridPos[0]][gridPos[1]]) {
                     if(this.world[gridPos[0]][gridPos[1]][gridPos[2] - 1]) {
@@ -149,7 +167,7 @@ var Player = (function () {
             }
         }
         return false;
-    }
+    };
 
     /*---------------- Movement end ---------------------*/
 
