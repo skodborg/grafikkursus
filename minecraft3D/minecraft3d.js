@@ -43,7 +43,7 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(5,2,5, camera);
+    player = new Player(5,2,5, camera, world);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 

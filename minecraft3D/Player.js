@@ -1,8 +1,9 @@
 //Player class
 var Player = (function () {
 
-    function Player (x, y, z, cam) {
+    function Player (x, y, z, cam, world) {
         this.camera = cam;
+        this.world = world;
         this.velocity = vec3(0, 0, 0);
         this.position = vec3(x, y, z);
         this.direction = vec3(0, 0, -1);
@@ -50,6 +51,9 @@ var Player = (function () {
     }
 
     Player.prototype.walkForwards = function () {
+        if(this.forwardCollide()) {
+            return;
+        }
         this.velocity = add(this.velocity,
             scale(MOVEMENT_SPEED*elapsedTime, this.direction));
     };
@@ -64,6 +68,20 @@ var Player = (function () {
         this.camera.setPosition(negate(this.position));
         this.updateVelocity();
     };
+
+    Player.prototype.forwardCollide = function() {
+
+        console.log(this.position);
+        if(this.world[Math.round(this.position[0])]) {
+            if(this.world[Math.round(this.position[1])]) {
+                if(this.world[Math.round(this.position[2])]) {
+                    console.log("lol");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /*---------------- Movement end ---------------------*/
 
