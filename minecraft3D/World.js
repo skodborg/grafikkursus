@@ -102,10 +102,33 @@ var World = (function () {
         this.world[i][j] = [];
       }
     }
+
+
+    var centerX = WORLD_SIZE/2;
+    var centerY = WORLD_SIZE/2;
+    var radius = WORLD_SIZE/2;
+
+
     for (var i = 0; i < WORLD_SIZE; i++) {
-      for (var j = 0; j < WORLD_SIZE; j++) {
+      for (var j = 0; j < 5; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
-          this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2)) {
+                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+            }
+        }
+      }
+    }
+
+    centerX = WORLD_SIZE/4;
+    centerY = WORLD_SIZE/3;
+    var radius = 5;
+
+    for (var i = 0; i < WORLD_SIZE; i++) {
+      for (var j = 5; j < 8; j++) {
+        for (var k = 0; k < WORLD_SIZE; k++) {
+            if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2)) {
+                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+            }
         }
       }
     }

@@ -11,7 +11,7 @@ var vPositionLoc;
 var vNormalLoc;
 
 var BLOCK_SIZE = 1;
-var WORLD_SIZE = 15;
+var WORLD_SIZE = 30;
 var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
                      vec4(1, 0, 0, 0),
                      vec4(0, 0,-1, 0),
@@ -80,7 +80,7 @@ function render() {
     wireframe.render();
     axisDrawer.render();
     player.render();
-    
+
 
     window.requestAnimFrame(render);
 }
