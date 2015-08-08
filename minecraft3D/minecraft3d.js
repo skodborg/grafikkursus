@@ -11,7 +11,7 @@ var vPositionLoc;
 var vNormalLoc;
 
 var BLOCK_SIZE = 1;
-var WORLD_SIZE = 10;
+var WORLD_SIZE = 15;
 var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
                      vec4(1, 0, 0, 0),
                      vec4(0, 0,-1, 0),
@@ -80,7 +80,7 @@ function render() {
     wireframe.render();
     axisDrawer.render();
     player.render();
-
+    
 
     window.requestAnimFrame(render);
 }
@@ -99,7 +99,6 @@ function update() {
 
     lastTime = currTime;
 }
-
 
 
 function handleKeyPress(event){
@@ -135,6 +134,11 @@ function handleKeyPress(event){
             break;
         case 16:
             shiftPressed = true;
+            break;
+        //Camera
+        case 67:
+            // C pressed
+            camera.toggleViewMode();
             break;
     }
 }
