@@ -2,30 +2,59 @@ var Camera = (function () {
   var xRotationMatrix;
   var yRotationMatrix;
   var translationMatrix;
+  var perspectiveMatrix;
+
+  var overviewModelViewMatrix;
+  var overviewProjectionMatrix;
 
   var vProjectionMatrix;
   var vProjectionMatrixLoc;
+
+  var vModelViewMatrix;
+
+  var overviewMode;
 
   function Camera() {
     xRotationMatrix = mat4();
     yRotationMatrix = mat4();
     translationMatrix = mat4();
     vModelViewMatrix = mat4();
-    vProjectionMatrix = perspective(60,1, 0.01, 30);
+
+    perspectiveMatrix = perspective(60,1, 0.01, 40);
+    overviewModelViewMatrix = lookAt(vec3(WORLD_SIZE/2,WORLD_SIZE+10,WORLD_SIZE/2), 
+                                     vec3(WORLD_SIZE/2,0,WORLD_SIZE/2), 
+                                     vec3(0,0,-1));
+    overviewProjectionMatrix = ortho(-WORLD_SIZE, WORLD_SIZE,
+                                     -WORLD_SIZE, WORLD_SIZE,
+                                     0.0001,      WORLD_SIZE+10);
+    overviewMode = false;
 
     vModelViewMatrixLoc = gl.getUniformLocation(program, "vModelViewMatrix");
-
     vProjectionMatrixLoc = gl.getUniformLocation(program, "vProjectionMatrix");
 
-    gl.uniformMatrix4fv( vProjectionMatrixLoc, false, flatten(vProjectionMatrix));
+    gl.uniformMatrix4fv( vProjectionMatrixLoc, false, flatten(perspectiveMatrix));
   }
 
   Camera.prototype.update = function () {
 
-    var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
-    vModelViewMatrix = mult(vRotationMatrix, translationMatrix);
+
+    if (!overviewMode) {
+      var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
+      vModelViewMatrix = mult(vRotationMatrix, translationMatrix);
+      vProjectionMatrix = perspectiveMatrix;
+    }
+    else {
+      vModelViewMatrix = overviewModelViewMatrix;
+      vProjectionMatrix = overviewProjectionMatrix;
+    }
+
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
+    gl.uniformMatrix4fv( vProjectionMatrixLoc, false, flatten(vProjectionMatrix) );
   };
+
+  Camera.prototype.toggleViewMode = function() {
+    overviewMode = !overviewMode;
+  }
 
   //-------------------- movement ----------------------//
 

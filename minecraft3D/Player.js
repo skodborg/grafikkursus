@@ -59,7 +59,6 @@ var Player = (function () {
         if(this.fallCollide()) {
             return;
         }
-        console.log("fall");
         this.velocity = add(this.velocity, vec3(0, -0.01*elapsedTime, 0));
 
     }

@@ -11,7 +11,8 @@ var vPositionLoc;
 var vNormalLoc;
 
 var BLOCK_SIZE = 1;
-var WORLD_SIZE = 5;
+var WORLD_SIZE = 30;
+
 var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
                      vec4(1, 0, 0, 0),
                      vec4(0, 0,-1, 0),
@@ -50,7 +51,7 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(0,3,3, camera, world.world);
+    player = new Player(WORLD_SIZE / 2, 8, WORLD_SIZE / 2, camera, world.world);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 
@@ -101,7 +102,6 @@ function update() {
 }
 
 
-
 function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
@@ -135,6 +135,11 @@ function handleKeyPress(event){
             break;
         case 16:
             shiftPressed = true;
+            break;
+        //Camera
+        case 67:
+            // C pressed
+            camera.toggleViewMode();
             break;
     }
 }
