@@ -104,13 +104,13 @@ var World = (function () {
     }
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
-        for (var k = 0; k < WORLD_SIZE; k++) {
-          this.world[i][j][k] = new Block(i,j,k,1, "someMat");
-        }
+        this.world[i][0][j] = new Block(i,0,j,1, "someMat");
       }
     }
 
-    this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"someMat");
+    this.world[1][1][1] = new Block(1,1,1,1, "someMat");
+
+    //this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"someMat");
   };
 
   // rebuilds the current world state as an array of vertices, vec4

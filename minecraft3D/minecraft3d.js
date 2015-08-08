@@ -11,7 +11,7 @@ var vPositionLoc;
 var vNormalLoc;
 
 var BLOCK_SIZE = 1;
-var WORLD_SIZE = 10;
+var WORLD_SIZE = 5;
 var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
                      vec4(1, 0, 0, 0),
                      vec4(0, 0,-1, 0),
@@ -22,7 +22,7 @@ var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
 var camera;
 var player;
 
-var MOVEMENT_SPEED = 0.3;
+var MOVEMENT_SPEED = 0.1;
 var ROTATION_SPEED = 0.1;
 var lastTime = new Date().getTime();
 var elapsedTime = 1;
@@ -50,7 +50,7 @@ function init() {
     gl.polygonOffset(1, 1);
     world = new World();
     camera = new Camera();
-    player = new Player(5,2,5, camera, world);
+    player = new Player(0,3,3, camera, world.world);
     wireframe = new Wireframe();
     axisDrawer = new AxisDrawer(0,0,0);
 
@@ -77,7 +77,7 @@ function render() {
 
     update();
     world.render();
-    wireframe.render();
+    //wireframe.render();
     axisDrawer.render();
     player.render();
 

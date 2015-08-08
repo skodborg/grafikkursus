@@ -5,7 +5,7 @@ var Player = (function () {
         this.camera = cam;
         this.world = world;
         this.velocity = vec3(0, 0, 0);
-        this.position = vec3(x, y, z);
+        this.position = vec3(x + .5, y + .5, z + .5); //Place player in center of grid box
         this.direction = vec3(0, 0, -1);
     }
 
@@ -27,6 +27,9 @@ var Player = (function () {
             this.direction[1],
             -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
         );
+        if(this.horiCollide(left)) {
+            return;
+        }
         this.velocity = add(this.velocity,
             scale(MOVEMENT_SPEED*elapsedTime, left));
     };
@@ -38,20 +41,31 @@ var Player = (function () {
             this.direction[1],
             -Math.sin(deg)*this.direction[0]+Math.cos(deg)*this.direction[2]
         );
+        if(this.horiCollide(right)) {
+            return;
+        }
         this.velocity = add(this.velocity,
             scale(MOVEMENT_SPEED*elapsedTime, right));
     };
 
     Player.prototype.jump = function () {
-        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*elapsedTime, 0));
+        if(!this.fallCollide()) {
+            return;
+        }
+        this.velocity = add(this.velocity, vec3(0, MOVEMENT_SPEED*1.3, 0));
     };
 
     Player.prototype.fall = function () {
-        this.velocity = add(this.velocity, vec3(0, -MOVEMENT_SPEED*elapsedTime, 0));
+        if(this.fallCollide()) {
+            return;
+        }
+        console.log("fall");
+        this.velocity = add(this.velocity, vec3(0, -0.01*elapsedTime, 0));
+
     }
 
     Player.prototype.walkForwards = function () {
-        if(this.forwardCollide()) {
+        if(this.horiCollide(this.direction)) {
             return;
         }
         this.velocity = add(this.velocity,
@@ -59,6 +73,9 @@ var Player = (function () {
     };
 
     Player.prototype.walkBackwards = function () {
+        if(this.horiCollide(negate(this.direction))) {
+            return;
+        }
         this.velocity = add(this.velocity,
             scale(MOVEMENT_SPEED*elapsedTime, scale(-1, this.direction)));
     };
@@ -67,16 +84,68 @@ var Player = (function () {
         this.position = add(this.position, this.velocity);
         this.camera.setPosition(negate(this.position));
         this.updateVelocity();
+        this.fall();
     };
 
-    Player.prototype.forwardCollide = function() {
-
-        console.log(this.position);
-        if(this.world[Math.round(this.position[0])]) {
-            if(this.world[Math.round(this.position[1])]) {
-                if(this.world[Math.round(this.position[2])]) {
-                    console.log("lol");
+    Player.prototype.fallCollide = function() {
+        var gridPos = [Math.floor(this.position[0]), Math.floor(this.position[1]), Math.floor(this.position[2])];
+        if(this.position[1] - Math.floor(this.position[1]) > 0.5) {
+            return false;
+        }
+        if(this.world[gridPos[0]]) {
+            if(this.world[gridPos[0]][gridPos[1] - 1]) {
+                if(this.world[gridPos[0]][gridPos[1] - 1][gridPos[2]]) {
+                    this.velocity[1] = 0;
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    Player.prototype.horiCollide = function(moveDir) {
+        var gridPos = [Math.floor(this.position[0]), Math.floor(this.position[1]), Math.floor(this.position[2])];
+        //Walking in x direction
+        if(moveDir[0] > 0 && this.position[0] - Math.floor(this.position[0]) > 0.7) {
+            if(this.world[gridPos[0] + 1]) {
+                if(this.world[gridPos[0] + 1][gridPos[1]]) {
+                    if(this.world[gridPos[0] + 1][gridPos[1]][gridPos[2]]) {
+                        this.velocity[0] = 0;
+                        return true;
+                    }
+                }
+            }
+        }
+        //Walking in negative x direction
+        if(moveDir[0] < 0 && this.position[0] - Math.floor(this.position[0]) < 0.3) {
+            if(this.world[gridPos[0] - 1]) {
+                if(this.world[gridPos[0] - 1][gridPos[1]]) {
+                    if(this.world[gridPos[0] - 1][gridPos[1]][gridPos[2]]) {
+                        this.velocity[0] = 0;
+                        return true;
+                    }
+                }
+            }
+        }
+        //Walking in z direction
+        if(moveDir[2] > 0 && this.position[2] - Math.floor(this.position[2]) > 0.7) {
+            if(this.world[gridPos[0]]) {
+                if(this.world[gridPos[0]][gridPos[1]]) {
+                    if(this.world[gridPos[0]][gridPos[1]][gridPos[2] + 1]) {
+                        this.velocity[2] = 0;
+                        return true;
+                    }
+                }
+            }
+        }
+        //Walking in negative z direction
+        if(moveDir[2] < 0 && this.position[2] - Math.floor(this.position[2]) < 0.3) {
+            if(this.world[gridPos[0]]) {
+                if(this.world[gridPos[0]][gridPos[1]]) {
+                    if(this.world[gridPos[0]][gridPos[1]][gridPos[2] - 1]) {
+                        this.velocity[2] = 0;
+                        return true;
+                    }
                 }
             }
         }
@@ -131,7 +200,9 @@ var Player = (function () {
 
     Player.prototype.updateVelocity = function () {
         if(!(this.velocity[0] == 0 && this.velocity[1] == 0 && this.velocity[2] == 0)) {
-            this.velocity = add(this.velocity, scale(-1, normalize(this.velocity)));
+            this.velocity[0] = 0;
+            this.velocity[2] = 0;
+
         }
     };
 

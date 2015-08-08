@@ -9,9 +9,9 @@ var Camera = (function () {
   function Camera() {
     xRotationMatrix = mat4();
     yRotationMatrix = mat4();
-    translationMatrix = translate(0,0,-2);
+    translationMatrix = mat4();
     vModelViewMatrix = mat4();
-    vProjectionMatrix = perspective(60,1, 0.01, 20);
+    vProjectionMatrix = perspective(60,1, 0.01, 30);
 
     vModelViewMatrixLoc = gl.getUniformLocation(program, "vModelViewMatrix");
 
@@ -23,7 +23,6 @@ var Camera = (function () {
   Camera.prototype.update = function () {
 
     var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
-
     vModelViewMatrix = mult(vRotationMatrix, translationMatrix);
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
   };
