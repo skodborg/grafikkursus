@@ -253,6 +253,7 @@ var World = (function () {
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
               llb, tlb, tlb, trb, trb, lrb, lrb, llb,
               lrf, lrb, trf, trb, llf, llb, tlf, tlb];
+            currBlock.frameIndex = this.worldWireframeVertices.length - 1;
             this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
             var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -266,7 +267,7 @@ var World = (function () {
             this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
-
+            currBlock.index = this.worldVertices.length - 1;
             this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
 
           } else if (currBlock instanceof SpinningBlock) {
@@ -349,44 +350,128 @@ var World = (function () {
   };
 
   World.prototype.removeBlock = function(x, y, z) {
-    if (this.world[x][y][z] != undefined) {
-      this.world[x][y][z] = undefined;
-      
-      this.worldToVerticeArray();
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
+    var currBlock = this.world[x][y][z];
+    if (currBlock == undefined) {
+      return;
     }
-  }
+    this.removeVerticesFromArray(currBlock.index, currBlock.frameIndex);
+    this.world[x][y][z] = undefined;
+    var neighbours = this.getNeighbourBlocks(x,y,z);
+    for(var i = 0; i < neighbours.length; i++) {
+      if(this.getNeighbourBlocks(neighbours[i].llfx, neighbours[i].llfy, neighbours[i].llfz).length == 5) {
+        block.index = this.worldVertices.length - 1;
+        this.worldVertices = this.worldVertices.concat(blockToVertices(block));
+        this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
+        var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+        this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
+      }
+    }
+    
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
+}
 
   World.prototype.addBlock = function(x, y, z, block) {
-    if (this.world[x][y][z] == undefined) {
-      this.world[x][y][z] = block;
-
-      this.worldToVerticeArray();
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
-
-      gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
+    if(this.world[x][y][z] != undefined) {
+      return;
     }
+    this.world[x][y][z] = block;
+    block.index = this.worldVertices.length;
+    block.frameIndex = this.worldWireframeColors.length;
+    this.worldVertices = this.worldVertices.concat(blockToVertices(block));
+    var neighbours = this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz);
+    for(var i = 0; i < neighbours.length; i++) {
+      this.hideIfHidden(neighbours[i]);
+    }
+
+    this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
+    var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+    this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
+
   }
+
+  World.prototype.hideIfHidden = function(block) {
+    if(this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz).length > 5) {
+      this.removeVerticesFromArray(block.index, block.frameIndex);
+    }
+  };
+
+  World.prototype.removeVerticesFromArray = function(index, frameIndex) {
+    this.worldVertices.splice(index, 36);
+    this.worldWireframeVertices.splice(frameIndex, 24);
+    for (var i = 0; i < WORLD_SIZE; i++) {
+      for (var j = 0; j < WORLD_SIZE; j++) {
+        for (var k = 0; k < WORLD_SIZE; k++) {
+          currBlock = this.world[i][j][k];
+          if(currBlock == undefined) {
+            continue;
+          }
+          if(!(currBlock instanceof Block)) {
+            continue;
+          }
+          if(currBlock.index >= index) {
+            currBlock.index = currBlock.index - 36;
+            currBlock.frameIndex = currBlock.frameIndex - 24;
+            this.worldBlockNormals.splice(0, 36);
+            this.worldWireframeColors.splice(0, 24);
+          }
+        }
+      }
+    }
+  };
+
+  World.prototype.standardNormals = function () {
+    var result = [];
+    var normal = BLOCK_NORMALS[0];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[1];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[2];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[3];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[4];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[5];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    return result;
+  };
 
   return World;
 })();

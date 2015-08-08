@@ -8,6 +8,8 @@ var Block = (function () {
     this.size = size;
     this.corners = this.calculateCorners();
     this.normals = this.calculateNormals();
+    this.index = -1;
+    this.frameIndex = -1;
 
     this.color = mat;
   }
