@@ -5,10 +5,10 @@ var SpinningBlock = (function () {
     this.llfx = llfx + standardBlockSize/2;
     this.llfy = llfy;
     this.llfz = llfz - standardBlockSize/2;
+    this.size = size;
     this.corners = this.calculateCorners();
     this.normals = this.calculateNormals();
 
-    this.size = size;
     this.color = mat;
   }
 
@@ -29,20 +29,20 @@ var SpinningBlock = (function () {
 
   SpinningBlock.prototype.calculateNormals = function () {
     var result = [];
-    var normal = vec4(0,0,1,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
-    normal = vec4(1,0,0,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
-    normal = vec4(0,0,-1,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
-    normal = vec4(-1,0,0,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
-    normal = vec4(0,1,0,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
-    normal = vec4(0,-1,0,0);
-    result = result.concat([[normal, normal, normal, normal, normal, normal]]);
+    var normal = BLOCK_NORMALS[0];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[1];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[2];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[3];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[4];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
+    normal = BLOCK_NORMALS[5];
+    result = result.concat([normal, normal, normal, normal, normal, normal]);
     return result;
   };
 
-  return Block;
+  return SpinningBlock;
 })();
