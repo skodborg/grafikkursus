@@ -2,7 +2,7 @@ var gl;
 
 var world;
 
-var vModelViewMatrix;
+var vModelViewMatrix = mat4();
 var vModelViewMatrixLoc;
 
 var vSBRotationMatrix = mat4();
@@ -10,6 +10,15 @@ var vSBRotationMatrixLoc;
 
 var vPositionLoc;
 var vNormalLoc;
+
+var lightPosition = vec4(21, 5, 17, 1);
+var lightPositionLoc;
+
+var shininess = 100;
+var shininessLoc;
+
+var vNormalMatrix;
+var vNormalMatrixLoc;
 
 var BLOCK_SIZE = 1;
 var WORLD_SIZE = 30;
@@ -71,6 +80,12 @@ function init() {
 
     vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
 
+    lightPositionLoc = gl.getUniformLocation( program, "lightPosition" );
+
+    shininessLoc = gl.getUniformLocation( program, "shininess" );
+
+    vNormalMatrixLoc = gl.getUniformLocation( program, "vNormalMatrix");
+
     render();
 }
 
@@ -93,14 +108,41 @@ function update() {
     if(elapsedTime == 0) {
         elapsedTime = 0.00001;
     }
+
+    lightPosition = add(lightPosition, vec4(-0.05,+0.01,0,0,0));
+
+
+    gl.uniform4fv(lightPositionLoc, flatten(lightPosition));
+    gl.uniform1f(shininessLoc, shininess);
+
     player.handleKeys();
     player.updatePosition();
     camera.update();
+    updateNormalMatrix();
+
+    gl.uniformMatrix3fv(vNormalMatrixLoc, false, flatten(vNormalMatrix) );
 
     spinningBlockTheta = (spinningBlockTheta + 4) % 360;
 
     lastTime = currTime;
 }
+
+function updateNormalMatrix() {
+  var temp = mult(vModelViewMatrix, vSBRotationMatrix);
+  var normals = mat3();
+  normals[0][0] = temp[0][0];
+  normals[0][1] = temp[0][1];
+  normals[0][2] = temp[0][2];
+  normals[1][0] = temp[1][0];
+  normals[1][1] = temp[1][1];
+  normals[1][2] = temp[1][2];
+  normals[2][0] = temp[2][0];
+  normals[2][1] = temp[2][1];
+  normals[2][2] = temp[2][2];
+
+  vNormalMatrix = transpose(inverse(normals));
+}
+
 
 
 function handleKeyPress(event){

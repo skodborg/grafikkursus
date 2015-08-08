@@ -114,6 +114,8 @@ function mat4ToInverseMat3(mat) {
 	return dest;
 };
 
+
+
 function configureTexture( image ) {
     texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);

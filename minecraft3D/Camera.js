@@ -10,8 +10,6 @@ var Camera = (function () {
   var vProjectionMatrix;
   var vProjectionMatrixLoc;
 
-  var vModelViewMatrix;
-
   var overviewMode;
 
   function Camera() {
@@ -37,7 +35,6 @@ var Camera = (function () {
 
   Camera.prototype.update = function () {
 
-
     if (!overviewMode) {
       var vRotationMatrix = mult(xRotationMatrix, yRotationMatrix);
       vModelViewMatrix = mult(vRotationMatrix, translationMatrix);
@@ -47,7 +44,9 @@ var Camera = (function () {
       vModelViewMatrix = overviewModelViewMatrix;
       vProjectionMatrix = overviewProjectionMatrix;
     }
+    updateNormalMatrix();
 
+    gl.uniformMatrix3fv( vNormalMatrixLoc, false, flatten(vNormalMatrix) );
     gl.uniformMatrix4fv( vModelViewMatrixLoc, false, flatten(vModelViewMatrix) );
     gl.uniformMatrix4fv( vProjectionMatrixLoc, false, flatten(vProjectionMatrix) );
   };

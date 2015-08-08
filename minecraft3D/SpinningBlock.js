@@ -4,7 +4,7 @@ var SpinningBlock = (function () {
   function SpinningBlock(llfx, llfy, llfz, size, standardBlockSize, mat) {
     this.llfx = llfx + standardBlockSize/2;
     this.llfy = llfy;
-    this.llfz = llfz - standardBlockSize/2;
+    this.llfz = llfz + 1 - standardBlockSize/2;
     this.size = size;
     this.corners = this.calculateCorners();
     this.normals = this.calculateNormals();
