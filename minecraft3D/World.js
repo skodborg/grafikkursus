@@ -103,7 +103,6 @@ var World = (function () {
       }
     }
 
-
     var centerX = WORLD_SIZE/2;
     var centerY = WORLD_SIZE/2;
     var radius = WORLD_SIZE/2;
@@ -118,9 +117,6 @@ var World = (function () {
         }
       }
     }
-
-
-
 
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
@@ -359,8 +355,8 @@ var World = (function () {
     var neighbours = this.getNeighbourBlocks(x,y,z);
     for(var i = 0; i < neighbours.length; i++) {
       if(this.getNeighbourBlocks(neighbours[i].llfx, neighbours[i].llfy, neighbours[i].llfz).length == 5) {
-        block.index = this.worldVertices.length - 1;
-        this.worldVertices = this.worldVertices.concat(blockToVertices(block));
+        currBlock.index = this.worldVertices.length;
+        this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
         this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
         var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
         vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -400,7 +396,6 @@ var World = (function () {
     for(var i = 0; i < neighbours.length; i++) {
       this.hideIfHidden(neighbours[i]);
     }
-
     this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
     var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
       vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -435,6 +430,8 @@ var World = (function () {
   World.prototype.removeVerticesFromArray = function(index, frameIndex) {
     this.worldVertices.splice(index, 36);
     this.worldWireframeVertices.splice(frameIndex, 24);
+    this.worldBlockNormals.splice(0, 36);
+    this.worldWireframeColors.splice(0, 24);
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
@@ -448,8 +445,6 @@ var World = (function () {
           if(currBlock.index >= index) {
             currBlock.index = currBlock.index - 36;
             currBlock.frameIndex = currBlock.frameIndex - 24;
-            this.worldBlockNormals.splice(0, 36);
-            this.worldWireframeColors.splice(0, 24);
           }
         }
       }
