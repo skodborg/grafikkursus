@@ -79,6 +79,9 @@ var World = (function () {
 
       // rotate spinning boxes
       vSBRotationMatrix = mult(inverse4(moveToOrigo), mult(rotateFactor, mult(rotateM, moveToOrigo)));
+      updateNormalMatrix();
+      gl.uniformMatrix3fv(vNormalMatrixLoc, false, flatten(vNormalMatrix) );
+
       gl.uniformMatrix4fv(vSBRotationMatrixLoc, false, flatten(vSBRotationMatrix));
 
       // draw spinning boxes

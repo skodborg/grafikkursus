@@ -20,7 +20,7 @@ void
 main()
 {
     vec3 vPos = (vModelViewMatrix * vSBRotationMatrix * vPosition).xyz;
-    L = (vModelViewMatrix * vSBRotationMatrix * lightPosition).xyz - vPos;
+    L = (vModelViewMatrix * lightPosition).xyz - vPos;
     V = -vPos;
     fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
     gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
