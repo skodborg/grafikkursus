@@ -221,8 +221,12 @@ var World = (function () {
 
   // rebuilds the current world state as an array of vertices, vec4
   World.prototype.worldToVerticeArray = function() {
-    var result = [];
-    var sResult = [];
+    this.worldVertices = [];
+    this.worldBlockNormals = [];
+    this.worldWireframeVertices = [];
+    this.worldWireframeColors = [];
+    this.worldSpinningBlockVertices = [];
+    this.worldSpinningBlockNormals = [];
 
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
@@ -344,24 +348,42 @@ var World = (function () {
   };
 
   World.prototype.removeBlock = function(x, y, z) {
-    if (world[x][y][z] != undefined) {
-      world[x][y][z] = undefined;
-      worldToVerticeArray();
+    if (this.world[x][y][z] != undefined) {
+      this.world[x][y][z] = undefined;
+      
+      this.worldToVerticeArray();
+
       gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
-      gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
     }
   }
 
   World.prototype.addBlock = function(x, y, z, block) {
-    if (world[x][y][z] == undefined) {
-      world[x][y][z] = block;
-      worldToVerticeArray();
+    if (this.world[x][y][z] == undefined) {
+      this.world[x][y][z] = block;
+
+      this.worldToVerticeArray();
+
       gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVertices), gl.STATIC_DRAW );
-      gl.bindBuffer( gl.ARRAY_BUFFER, wcBuffer );
-      gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldBlockNormals), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wfvBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeVertices), gl.STATIC_DRAW );
+
+      gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
+      gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
     }
   }
 

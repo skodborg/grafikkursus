@@ -105,12 +105,14 @@ function handleKeyPress(event){
     switch (event.keyCode) {
         //Movement
         case 37:
+            world.addBlock(20, 15, 20, new Block(16, 6, 16, 1, "lol"));
             leftPressed = true;
             break;
         case 38:
             upPressed = true;
             break;
         case 39:
+            world.removeBlock(20, 15, 20);
             rightPressed = true;
             break;
         case 40:
