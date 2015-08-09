@@ -11,7 +11,7 @@ var vSBRotationMatrixLoc;
 var vPositionLoc;
 var vNormalLoc;
 
-var lightPosition = vec4(60, 5, -60, 1);
+var lightPosition = vec4(60, 0, -60, 1);
 var lightPositionLoc;
 
 var shininess = 100;
@@ -23,9 +23,9 @@ var vNormalMatrixLoc;
 var BLOCK_SIZE = 1;
 var WORLD_SIZE = 30;
 
-var BLOCK_NORMALS = [vec4(0, 0, 1, 0),
+var BLOCK_NORMALS = [vec4(0, 0, -1, 0),
                      vec4(1, 0, 0, 0),
-                     vec4(0, 0,-1, 0),
+                     vec4(0, 0, 1, 0),
                      vec4(-1,0, 0, 0),
                      vec4(0 ,1, 0, 0),
                      vec4(0,-1, 0, 0)];
@@ -109,7 +109,7 @@ function update() {
         elapsedTime = 0.00001;
     }
 
-    lightPosition = multmv(rotate(0.05, vec3(1,0,1)), lightPosition);
+    lightPosition = multmv(rotate(1, vec3(1,0,1)), lightPosition);
 
     gl.uniform4fv(lightPositionLoc, flatten(lightPosition));
     gl.uniform1f(shininessLoc, shininess);
