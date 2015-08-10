@@ -17,7 +17,7 @@ var vTexCoordLoc;
 var sunPosition = vec4(60, 0, -60, 1);
 var sunPositionLoc;
 var sunAmbient = vec4(0.2,0.2,0.2,1);
-var sunDiffuse = vec4(1,0,0,1);
+var sunDiffuse = vec4(1,1,1,1);
 var sunSpecular = vec4(1,1,1,1);
 var sunAmbientLoc;
 var sunDiffuseLoc;
@@ -26,16 +26,16 @@ var sunIsVisible = false;
 
 var moonPosition = vec4(-60, 0, 60, 1);
 var moonPositionLoc;
-var moonAmbient = vec4(0.1,0.1,0.1,1);
+var moonAmbient = vec4(0.0,0.0,0.05,1);
 var moonDiffuse = vec4(0,0,0.5,1);
-var moonSpecular = vec4(0,0,0.7,1);
+var moonSpecular = vec4(0,0,0.5,1);
 var moonAmbientLoc;
 var moonDiffuseLoc;
 var moonSpecularLoc;
 var moonIsVisible = true;
 
 var torchAmbient = vec4(0.0, 0.0, 0.0, 1);
-var torchDiffuse = vec4(1.0, 0.01, 0.0, 1);
+var torchDiffuse = vec4(1.0, 0.1, 0.0, 1);
 var torchSpecular = vec4(1.0, 0.05, 0.0, 1);
 var torchAmbientLoc;
 var torchDiffuseLoc;

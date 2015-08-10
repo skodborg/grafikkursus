@@ -67,31 +67,31 @@ main()
     float d = length(V);
     vec3 v = normalize(V);
 
-    vec4 ambient = vec4(0.2,0.2,0.2,1.0);
+    vec4 ambient = sunAmbient + moonAmbient + torchAmbient;
 
     float KdSun = max(dot(lSun, fNormal), 0.0);
-    vec4 diffuseSun = KdSun*vec4(0.5,0.0,0.0,1.0);
+    vec4 diffuseSun = KdSun*sunDiffuse;
 
     float KdMoon = max(dot(lMoon, fNormal), 0.0);
-    vec4 diffuseMoon = KdMoon*vec4(0.0,0.0,0.3,1.0);
+    vec4 diffuseMoon = KdMoon*moonDiffuse;
 
     float KdTorch = max(dot(v, fNormal), 0.0);
-    vec4 diffuseTorch = KdTorch*vec4(1.0,0.0,0.0,1.0);
+    vec4 diffuseTorch = KdTorch*torchDiffuse;
 
     vec3 Rsun = reflect(-lSun, fNormal);
     vec3 Rmoon = reflect(-lMoon, fNormal);
     vec3 Rtorch = reflect(-v, fNormal);
 
     float KsSun = pow(max(dot(Rsun, v), 0.0), shininess);
-    vec4 specularSun = KsSun * vec4(1.0,1.0,1.0,1.0);
+    vec4 specularSun = KsSun * sunSpecular;
 
     float KsMoon = pow(max(dot(Rmoon, v), 0.0), shininess);
-    vec4 specularMoon = KsMoon * vec4(0.0,0.0,1.0,1.0);
+    vec4 specularMoon = KsMoon * moonSpecular;
 
     float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
-    vec4 specularTorch = KsTorch * vec4(0.5,0.1,0.0,1.0);
+    vec4 specularTorch = KsTorch * torchSpecular;
 
-    vec4 torchResult = (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
+    vec4 torchResult = (1.0/(1.0+0.4*d+0.2*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
 
     vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
     fColor.a = 1.0;
