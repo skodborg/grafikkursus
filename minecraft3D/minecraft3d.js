@@ -11,6 +11,8 @@ var vSBRotationMatrixLoc;
 var vPositionLoc;
 var vNormalLoc;
 
+var vTexCoordLoc;
+
 var lightPosition = vec4(60, 0, -60, 1);
 var lightPositionLoc;
 
@@ -32,6 +34,8 @@ var BLOCK_NORMALS = [vec4(0, 0, -1, 0),
 
 var camera;
 var player;
+var texImage;
+var texture;
 
 var MOVEMENT_SPEED = 0.1;
 var ROTATION_SPEED = 0.1;
@@ -53,7 +57,8 @@ var spacePressed = false;
 var shiftPressed = false;
 
 function init() {
-
+    texImage = document.getElementById("texImage");
+    configureTexture(texImage);
     gl.enable(gl.DEPTH_TEST);
     // offsets the polygons defining the blocks from the lines outlining them
     // result is smooth outlining
@@ -85,6 +90,10 @@ function init() {
     shininessLoc = gl.getUniformLocation( program, "shininess" );
 
     vNormalMatrixLoc = gl.getUniformLocation( program, "vNormalMatrix");
+
+    vTexCoordLoc = gl.getAttribLocation(program, "vTexCoord");
+    gl.vertexAttribPointer( vTexCoordLoc, 2, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vTexCoordLoc );
 
     render();
 }
@@ -257,4 +266,16 @@ function multmv( m, v )
 
 function calcNormal( u, v ) {
     return normalize(cross(v, u));
+}
+
+function configureTexture(image) {
+    texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    //gl.activeTexture(gl.TEXTURE0);
+    gl.uniform1i(gl.getUniformLocation(program, "texture"),0);
 }

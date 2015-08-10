@@ -3,7 +3,7 @@ var World = (function () {
   var wvBuffer;
   var wcBuffer;
   var wNormalBuffer;
-
+  var texBuffer;
   var wSBVBuffer;
   var wSBNBuffer;
 
@@ -15,6 +15,7 @@ var World = (function () {
     this.worldBlockNormals = [];     // filled by worldToVerticeArray(); one normal per vertice
     this.worldWireframeVertices = [];
     this.worldWireframeColors = [];
+    this.texCoordsArray = [];
 
     this.spinningBlocks = [];
     this.worldSpinningBlockVertices = [];
@@ -47,6 +48,10 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, wSBNBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockNormals), gl.STATIC_DRAW );
 
+    texBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
+
   }
 
   World.prototype.render = function() {
@@ -59,6 +64,9 @@ var World = (function () {
     // gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
+    gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
+    gl.vertexAttribPointer( vTexCoordLoc, 2, gl.FLOAT, false, 0, 0 );
+
     gl.drawArrays( gl.TRIANGLES, 0, this.worldVertices.length);
 
     // draw box wireframes
@@ -67,6 +75,7 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
+
 
     gl.drawArrays( gl.LINES, 0, this.worldWireframeVertices.length);
 
@@ -268,6 +277,7 @@ var World = (function () {
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
             currBlock.index = this.worldVertices.length - 1;
             this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
+            this.texCoordsArray = this.texCoordsArray.concat(currBlock.textureCoords);
 
           } else if (currBlock instanceof SpinningBlock) {
             this.worldSpinningBlockVertices = this.worldSpinningBlockVertices.concat(blockToVertices(currBlock));

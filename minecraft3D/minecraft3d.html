@@ -5,6 +5,7 @@
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
 attribute vec4 vNormal;
+attribute  vec2 vTexCoord;
 
 uniform mat4 vModelViewMatrix;
 uniform mat4 vSBRotationMatrix;
@@ -14,6 +15,7 @@ uniform mat3 vNormalMatrix;
 uniform vec4 lightPosition;
 
 varying vec3 fNormal;
+varying vec2 fTexCoord;
 varying vec3 L, V;
 
 void
@@ -24,6 +26,7 @@ main()
     V = -vPos;
     fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
     gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
+    fTexCoord = vTexCoord;
 }
 </script>
 
@@ -32,9 +35,11 @@ main()
 precision mediump float;
 
 uniform float shininess;
-
+varying  vec2 fTexCoord;
 varying vec3 fNormal;
 varying vec3 L, V;
+varying vec2 texCoord;    
+uniform sampler2D texture;
 
 void
 main()
@@ -55,8 +60,9 @@ main()
     vec4 fColor = ambient + diffuse + specular;
     fColor.a = 1.0;
 
-    gl_FragColor = fColor;
+    gl_FragColor = fColor * texture2D(texture, fTexCoord);
 }
+
 </script>
 
 <script src="initWebGL.js"></script>
@@ -74,11 +80,18 @@ main()
 <script type="text/javascript" src="WireFrame.js"></script>
 <script type="text/javascript" src="AxisDrawer.js"></script>
 
+<style>
+    img {
+        display:block;
+    }
+</style>
+
 </head>
 
 <body>
 <canvas id="gl-canvas" width="1600" height="900">
     Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
+<img id="texImage" src="mineTexture.png"></img>
 </body>
 </html>

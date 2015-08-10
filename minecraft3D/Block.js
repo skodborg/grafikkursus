@@ -10,8 +10,56 @@ var Block = (function () {
     this.normals = this.calculateNormals();
     this.index = -1;
     this.frameIndex = -1;
+    this.textureCoords = this.getTextureCoords();
 
     this.color = mat;
+  }
+
+  Block.prototype.getTextureCoords = function() {
+    var result = [];
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+    result.push(vec2(1,0));
+    result.push(vec2(0,1));
+    result.push(vec2(0,0));
+
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,0));
+    result.push(vec2(0,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,0));
+    result.push(vec2(0,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+    result.push(vec2(1,0));
+    result.push(vec2(0,1));
+    result.push(vec2(0,0));
+
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+    result.push(vec2(1,0));
+    result.push(vec2(0,1));
+    result.push(vec2(0,0));
+
+    result.push(vec2(1,0));
+    result.push(vec2(1,1));
+    result.push(vec2(0,1));
+    result.push(vec2(1,0));
+    result.push(vec2(0,1));
+    result.push(vec2(0,0));
+    return result;
+
   }
 
   //Return the corners of this block, in render list order
