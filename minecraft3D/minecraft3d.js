@@ -173,17 +173,25 @@ function update() {
   sunPosition = multmv(rotate(0.1, vec3(1,0,1)), sunPosition);
   moonPosition = multmv(rotate(0.1, vec3(1,0,1)), moonPosition);
 
-  if(sunPosition[1] < -10) {
+  if(sunPosition[1] < -15) {
     lightsOut("sun");
   } else {
     lightsOn("sun");
   }
-  if(moonPosition[1] < -10) {
+  if(moonPosition[1] < -15) {
     lightsOut("moon");
     lightsOut("torch");
   } else {
     lightsOn("moon");
     lightsOn("torch");
+  }
+
+  if(sunIsVisible && moonIsVisible){
+    gl.clearColor( 0.8, 0.2, 0.2, 1.0 );
+  }else if(sunIsVisible && !moonIsVisible){
+    gl.clearColor( 0.7, 0.8, 1.0, 1.0 );
+  }else if(!sunIsVisible && moonIsVisible){
+    gl.clearColor( 0.0, 0.1, 0.4, 1.0 );
   }
 
   gl.uniform4fv(sunPositionLoc, flatten(sunPosition));
