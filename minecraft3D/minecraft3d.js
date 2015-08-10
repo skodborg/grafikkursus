@@ -170,8 +170,8 @@ function update() {
     elapsedTime = 0.00001;
   }
 
-  sunPosition = multmv(rotate(0.1, vec3(1,0,1)), sunPosition);
-  moonPosition = multmv(rotate(0.1, vec3(1,0,1)), moonPosition);
+  sunPosition = multmv(rotate(0.1*elapsedTime, vec3(1,0,1)), sunPosition);
+  moonPosition = multmv(rotate(0.1*elapsedTime, vec3(1,0,1)), moonPosition);
 
   if(sunPosition[1] < -15) {
     lightsOut("sun");

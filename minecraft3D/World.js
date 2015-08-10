@@ -193,7 +193,7 @@ var World = (function () {
 
                 // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
-                    this.world[i][j][k] = new Block(i,j,k,1, "wood");               
+                    this.world[i][j][k] = new Block(i,j,k,1, "grass");
                 }
             }
         }
@@ -217,7 +217,7 @@ var World = (function () {
 
                 // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
-                    this.world[i][j][k] = new Block(i,j,k,1, "wood");               
+                    this.world[i][j][k] = new Block(i,j,k,1, "grass");
                 }
             }
         }
