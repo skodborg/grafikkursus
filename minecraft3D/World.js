@@ -422,7 +422,7 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
 
-  }
+  };
 
   World.prototype.hideIfHidden = function(block) {
     if(this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz).length > 5) {

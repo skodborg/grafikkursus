@@ -29,11 +29,11 @@ var SpinningBlock = (function () {
 
   SpinningBlock.prototype.calculateNormals = function () {
     var result = [];
-    var normal = BLOCK_NORMALS[0];
+    var normal = BLOCK_NORMALS[2];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
     normal = BLOCK_NORMALS[1];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[2];
+    normal = BLOCK_NORMALS[0];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
     normal = BLOCK_NORMALS[3];
     result = result.concat([normal, normal, normal, normal, normal, normal]);
