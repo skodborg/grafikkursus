@@ -11,16 +11,17 @@ uniform mat4 vSBRotationMatrix;
 uniform mat4 vProjectionMatrix;
 uniform mat3 vNormalMatrix;
 
-uniform vec4 lightPosition;
+uniform vec4 sunPosition;
+uniform vec4 moonPosition;
 
-varying vec3 fNormal;
-varying vec3 L, V;
+varying vec3 Lsun, Lmoon, V, fNormal;
 
 void
 main()
 {
     vec3 vPos = (vModelViewMatrix * vSBRotationMatrix * vPosition).xyz;
-    L = (vModelViewMatrix * lightPosition).xyz - vPos;
+    Lsun = (vModelViewMatrix * sunPosition).xyz - vPos;
+    Lmoon = (vModelViewMatrix * moonPosition).xyz -vPos;
     V = -vPos;
     fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
     gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
@@ -33,26 +34,54 @@ precision mediump float;
 
 uniform float shininess;
 
-varying vec3 fNormal;
-varying vec3 L, V;
+uniform vec4 sunAmbient;
+uniform vec4 sunDiffuse;
+uniform vec4 sunSpecular;
+uniform vec4 moonAmbient;
+uniform vec4 moonDiffuse;
+uniform vec4 moonSpecular;
+uniform vec4 torchAmbient;
+uniform vec4 torchDiffuse;
+uniform vec4 torchSpecular;
+
+
+varying vec3 Lsun, Lmoon, V, fNormal;
 
 void
 main()
 {
-    vec3 l = normalize(L);
+    vec3 lSun = normalize(Lsun);
+    vec3 lMoon = normalize(Lmoon);
+    float d = length(V);
     vec3 v = normalize(V);
 
     vec4 ambient = vec4(0.2,0.2,0.2,1.0);
 
-    float Kd = max(dot(l, fNormal), 0.0);
-    vec4 diffuse = Kd*vec4(0.5,0.0,0.0,1.0);
+    float KdSun = max(dot(lSun, fNormal), 0.0);
+    vec4 diffuseSun = KdSun*vec4(0.5,0.0,0.0,1.0);
 
-    vec3 R = reflect(-l, fNormal);
+    float KdMoon = max(dot(lMoon, fNormal), 0.0);
+    vec4 diffuseMoon = KdMoon*vec4(0.0,0.0,0.3,1.0);
 
-    float Ks = pow(max(dot(R, v), 0.0), shininess);
-    vec4 specular = Ks * vec4(1.0,1.0,1.0,1.0);
+    float KdTorch = max(dot(v, fNormal), 0.0);
+    vec4 diffuseTorch = KdTorch*vec4(1.0,0.0,0.0,1.0);
 
-    vec4 fColor = ambient + diffuse + specular;
+    vec3 Rsun = reflect(-lSun, fNormal);
+    vec3 Rmoon = reflect(-lMoon, fNormal);
+    vec3 Rtorch = reflect(-v, fNormal);
+
+    float KsSun = pow(max(dot(Rsun, v), 0.0), shininess);
+    vec4 specularSun = KsSun * vec4(1.0,1.0,1.0,1.0);
+
+    float KsMoon = pow(max(dot(Rmoon, v), 0.0), shininess);
+    vec4 specularMoon = KsMoon * vec4(0.0,0.0,1.0,1.0);
+
+    float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
+    vec4 specularTorch = KsTorch * vec4(0.5,0.1,0.0,1.0);
+
+    vec4 torchResult = (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
+
+    vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
     fColor.a = 1.0;
 
     gl_FragColor = fColor;
