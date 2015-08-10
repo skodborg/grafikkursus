@@ -10,54 +10,71 @@ var Block = (function () {
     this.normals = this.calculateNormals();
     this.index = -1;
     this.frameIndex = -1;
+    this.material = this.getMaterial(mat);
     this.textureCoords = this.getTextureCoords();
-
     this.color = mat;
   }
 
+  Block.prototype.getMaterial = function(mat) {
+    if(mat == "grass") {
+        return [0,0.5];
+    }
+    if(mat == "dirt") {
+        return [0.5,0.5];
+    }
+    if(mat == "dirt") {
+        return [0.5,0];
+    }
+    return [0,0];
+  };
+
   Block.prototype.getTextureCoords = function() {
     var result = [];
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
-    result.push(vec2(1,0));
-    result.push(vec2(0,1));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0,0.5));
     result.push(vec2(0,0));
 
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
     result.push(vec2(0,0));
     result.push(vec2(0,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
 
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
     result.push(vec2(0,0));
     result.push(vec2(0,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
 
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
-    result.push(vec2(1,0));
-    result.push(vec2(0,1));
-    result.push(vec2(0,0));
-
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
-    result.push(vec2(1,0));
-    result.push(vec2(0,1));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0,0.5));
     result.push(vec2(0,0));
 
-    result.push(vec2(1,0));
-    result.push(vec2(1,1));
-    result.push(vec2(0,1));
-    result.push(vec2(1,0));
-    result.push(vec2(0,1));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0,0.5));
     result.push(vec2(0,0));
+
+    result.push(vec2(0.5,0));
+    result.push(vec2(0.5,0.5));
+    result.push(vec2(0,0.5));
+    result.push(vec2(0.5,0));
+    result.push(vec2(0,0.5));
+    result.push(vec2(0,0));
+    for(var i = 0; i < result.length; i++) {
+        result[i][0] += this.material[0];
+        result[i][1] += this.material[1];
+    }
     return result;
 
   }

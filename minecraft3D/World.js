@@ -124,7 +124,7 @@ var World = (function () {
       for (var j = 0; j < 1; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2)) {
-                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+                this.world[i][j][k] = new Block(i,j,k,1, "grass");
             }
         }
       }
@@ -144,7 +144,7 @@ var World = (function () {
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
                 // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
-                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+                this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
 
             hillHeight = 5;
@@ -157,7 +157,7 @@ var World = (function () {
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
                 // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
-                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+                this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
 
             hillHeight = 3;
@@ -170,7 +170,7 @@ var World = (function () {
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
                 // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
-                this.world[i][j][k] = new Block(i,j,k,1, "someMat");
+                this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
         }
       }
@@ -183,7 +183,7 @@ var World = (function () {
     var treeCrownRadius = 3;
 
     for (var i = 0; i < treeHeight; i++) {
-        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "someMat");
+        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "wood");
     }
 
     for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
@@ -193,7 +193,7 @@ var World = (function () {
 
                 // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
-                    this.world[i][j][k] = new Block(i,j,k,1, "someMat");               
+                    this.world[i][j][k] = new Block(i,j,k,1, "wood");               
                 }
             }
         }
@@ -207,7 +207,7 @@ var World = (function () {
     treeCrownRadius = 2;
 
     for (var i = 0; i < treeHeight; i++) {
-        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "someMat");
+        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "wood");
     }
 
     for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
@@ -217,14 +217,14 @@ var World = (function () {
 
                 // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
-                    this.world[i][j][k] = new Block(i,j,k,1, "someMat");               
+                    this.world[i][j][k] = new Block(i,j,k,1, "wood");               
                 }
             }
         }
     }
 
 
-    this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"someMat");
+    this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"wood");
 
   };
 
