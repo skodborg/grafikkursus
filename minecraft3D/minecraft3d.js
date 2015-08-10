@@ -90,7 +90,7 @@ var spacePressed = false;
 var shiftPressed = false;
 
 // PICKING
-var fboTexture;
+//var fboTexture;
 var framebuffer;
 var vGridPosLoc;
 var color = new Uint8Array(4);
@@ -106,12 +106,12 @@ function init() {
   texImage = document.getElementById("texImage");
   configureTexture(texImage);
 
-    CENTER_CURSOR_X = canvas.width / 2;
-    CENTER_CURSOR_Y = canvas.height / 2;
+  CENTER_CURSOR_X = canvas.width / 2;
+  CENTER_CURSOR_Y = canvas.height / 2;
 
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.POLYGON_OFFSET_FILL);
-    gl.polygonOffset(0, 0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.POLYGON_OFFSET_FILL);
+  gl.polygonOffset(0, 0);
 
 
     // Initialize FBO
@@ -119,7 +119,7 @@ function init() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     framebuffer.width = 1024;
     framebuffer.height = 1024;
-
+    
     fboTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, fboTexture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -138,19 +138,19 @@ function init() {
     if (status !== gl.FRAMEBUFFER_COMPLETE) {
         alert('Framebuffer Not Complete');
     }
-
     gl.bindTexture(gl.TEXTURE_2D, null);
+
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);*/
 
 
 
-    world = new World();
-    camera = new Camera();
-    player = new Player(WORLD_SIZE / 2, 5, WORLD_SIZE / 2, camera, world.world);
-    wireframe = new Wireframe();
-    // axisDrawer = new AxisDrawer(0,0,0);
-    crosshair = new CrosshairDrawer(0.02);
+  world = new World();
+  camera = new Camera();
+  player = new Player(WORLD_SIZE / 2, 5, WORLD_SIZE / 2, camera, world.world);
+  wireframe = new Wireframe();
+  // axisDrawer = new AxisDrawer(0,0,0);
+  crosshair = new CrosshairDrawer(0.02);
 
 
   window.onkeydown = handleKeyPress;
@@ -161,11 +161,11 @@ function init() {
   vPositionLoc = gl.getAttribLocation( program, "vPosition" );
   gl.enableVertexAttribArray( vPositionLoc );
 
-    vGridPosLoc = gl.getAttribLocation( program, "vGridPos" );
-    gl.enableVertexAttribArray( vGridPosLoc );
+  vGridPosLoc = gl.getAttribLocation( program, "vGridPos" );
+  gl.enableVertexAttribArray( vGridPosLoc );
 
 
-    vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
+  vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
 
 
   // Associate out shader variables with our data buffer
@@ -446,6 +446,7 @@ function handleMouseMove(event) {
   updateCursorWireframe();
 }
 
+//WHT IS THIS NOT IN THE WIREFRAME CLASS??
 function updateCursorWireframe() {
 
     // RENDER OFFBUFFER
