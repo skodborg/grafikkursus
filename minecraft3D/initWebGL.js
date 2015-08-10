@@ -1,11 +1,11 @@
 var debugLevel = 1;
 var gl;
 var program;
+var canvas;
 window.onload = function() {
-  var canvas = document.getElementById( "gl-canvas" );
+  canvas = document.getElementById( "gl-canvas" );
   gl = WebGLUtils.setupWebGL( canvas );
   if ( !gl ) { alert( "WebGL isn't available" ); }
-
 
   canvas.requestPointerLock = canvas.requestPointerLock ||
            canvas.mozRequestPointerLock ||
