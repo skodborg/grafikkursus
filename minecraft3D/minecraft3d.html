@@ -42,7 +42,7 @@ main()
         Lsun = (vModelViewMatrix * sunPosition).xyz - vPos;
         Lmoon = (vModelViewMatrix * moonPosition).xyz -vPos;
         V = -vPos;
-        fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
+        fNormal = vNormalMatrix * vNormal.xyz;
         gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
         fTexCoord = vTexCoord;
 	    fGridPos = vGridPos;

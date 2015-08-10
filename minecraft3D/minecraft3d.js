@@ -90,7 +90,7 @@ var spacePressed = false;
 var shiftPressed = false;
 
 // PICKING
-var fboTexture;
+//var fboTexture;
 var framebuffer;
 var vGridPosLoc;
 var color = new Uint8Array(4);
@@ -120,6 +120,7 @@ function init() {
   gl.bindTexture(gl.TEXTURE_2D, fboTexture);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
+
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, framebuffer.width, framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
   gl.generateMipmap(gl.TEXTURE_2D);
 
@@ -139,9 +140,8 @@ function init() {
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-
   texImage = document.getElementById("texImage");
-  configureTexture(texImage);
+  configureTexture(texImage); // binds new texture
 
 
   world = new World();
@@ -442,13 +442,12 @@ function handleMouseMove(event) {
 
   player.handleMouseMove(movementX, movementY);
 
-
   // if (elapsedTime > 0.5) {
     updateCursorWireframe();
   // }
-
 }
 
+//WHT IS THIS NOT IN THE WIREFRAME CLASS??
 function updateCursorWireframe() {
 
   // RENDER OFFBUFFER
