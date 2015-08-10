@@ -3,9 +3,14 @@
 <head>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
+precision mediump int;
+
 attribute vec4 vPosition;
 attribute vec4 vNormal;
+
 attribute  vec2 vTexCoord;
+
+attribute vec4 vGridPos;
 
 uniform mat4 vModelViewMatrix;
 uniform mat4 vSBRotationMatrix;
@@ -20,16 +25,29 @@ varying vec2 fTexCoord;
 varying vec3 Lsun, Lmoon, V, fNormal;
 
 
+varying vec4 fGridPos;
+uniform int i;
+
+
+
 void
 main()
 {
-    vec3 vPos = (vModelViewMatrix * vSBRotationMatrix * vPosition).xyz;
-    Lsun = (vModelViewMatrix * sunPosition).xyz - vPos;
-    Lmoon = (vModelViewMatrix * moonPosition).xyz -vPos;
-    V = -vPos;
-    fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
-    gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
-    fTexCoord = vTexCoord;
+
+	if (i == 2) {
+		gl_Position = vPosition;
+	}
+	else {
+        vec3 vPos = (vModelViewMatrix * vSBRotationMatrix * vPosition).xyz;
+        Lsun = (vModelViewMatrix * sunPosition).xyz - vPos;
+        Lmoon = (vModelViewMatrix * moonPosition).xyz -vPos;
+        V = -vPos;
+        fNormal = vNormalMatrix * vNormal.xyz; //(vModelViewMatrix * vSBRotationMatrix * vNormal).xyz;
+        gl_Position = vProjectionMatrix * vModelViewMatrix * vSBRotationMatrix * vPosition;
+        fTexCoord = vTexCoord;
+	    fGridPos = vGridPos;
+
+	}
 }
 </script>
 
@@ -39,11 +57,15 @@ precision mediump float;
 
 uniform float shininess;
 
+// 1 if we render with grid coordinate colors; 0 if regular rendering
+uniform int i;
+
+
+varying vec4 fGridPos;
 varying  vec2 fTexCoord;
 
 varying vec2 texCoord;    
 uniform sampler2D texture;
-
 
 uniform vec4 sunAmbient;
 uniform vec4 sunDiffuse;
@@ -55,52 +77,58 @@ uniform vec4 torchAmbient;
 uniform vec4 torchDiffuse;
 uniform vec4 torchSpecular;
 
-
 varying vec3 Lsun, Lmoon, V, fNormal;
-
 
 void
 main()
 {
-    vec3 lSun = normalize(Lsun);
-    vec3 lMoon = normalize(Lmoon);
-    float d = length(V);
-    vec3 v = normalize(V);
+	if (i == 1) {
+		gl_FragColor = fGridPos;
+	}
+	else if (i == 0) {
+        vec3 lSun = normalize(Lsun);
+        vec3 lMoon = normalize(Lmoon);
+        float d = length(V);
+        vec3 v = normalize(V);
 
-    vec4 ambient = sunAmbient + moonAmbient + torchAmbient;
+        vec4 ambient = sunAmbient + moonAmbient + torchAmbient;
 
-    float KdSun = max(dot(lSun, fNormal), 0.0);
-    vec4 diffuseSun = KdSun*sunDiffuse;
+        float KdSun = max(dot(lSun, fNormal), 0.0);
+        vec4 diffuseSun = KdSun*sunDiffuse;
 
-    float KdMoon = max(dot(lMoon, fNormal), 0.0);
-    vec4 diffuseMoon = KdMoon*moonDiffuse;
+        float KdMoon = max(dot(lMoon, fNormal), 0.0);
+        vec4 diffuseMoon = KdMoon*moonDiffuse;
 
-    float KdTorch = max(dot(v, fNormal), 0.0);
-    vec4 diffuseTorch = KdTorch*torchDiffuse;
+        float KdTorch = max(dot(v, fNormal), 0.0);
+        vec4 diffuseTorch = KdTorch*torchDiffuse;
 
-    vec3 Rsun = reflect(-lSun, fNormal);
-    vec3 Rmoon = reflect(-lMoon, fNormal);
-    vec3 Rtorch = reflect(-v, fNormal);
+        vec3 Rsun = reflect(-lSun, fNormal);
+        vec3 Rmoon = reflect(-lMoon, fNormal);
+        vec3 Rtorch = reflect(-v, fNormal);
 
-    float KsSun = pow(max(dot(Rsun, v), 0.0), shininess);
-    vec4 specularSun = KsSun * sunSpecular;
+        float KsSun = pow(max(dot(Rsun, v), 0.0), shininess);
+        vec4 specularSun = KsSun * sunSpecular;
 
-    float KsMoon = pow(max(dot(Rmoon, v), 0.0), shininess);
-    vec4 specularMoon = KsMoon * moonSpecular;
+        float KsMoon = pow(max(dot(Rmoon, v), 0.0), shininess);
+        vec4 specularMoon = KsMoon * moonSpecular;
 
-    float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
-    vec4 specularTorch = KsTorch * torchSpecular;
+        float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
+        vec4 specularTorch = KsTorch * torchSpecular;
 
-    vec4 torchResult = (1.0/(1.0+0.4*d+0.2*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
+        vec4 torchResult = (1.0/(1.0+0.4*d+0.2*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
 
-    vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
-    fColor.a = 1.0;
+        vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
+        fColor.a = 1.0;
 
-    gl_FragColor = fColor * texture2D(texture, fTexCoord);
+        gl_FragColor = fColor * texture2D(texture, fTexCoord);
+	}
+	else if (i == 2) {
+		// drawing cursor
+		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+	}
 }
 
 </script>
-
 <script src="initWebGL.js"></script>
 <script src="Block.js"></script>
 <script src="SpinningBlock.js"></script>
@@ -115,6 +143,7 @@ main()
 <script type="text/javascript" src="World.js"></script>
 <script type="text/javascript" src="WireFrame.js"></script>
 <script type="text/javascript" src="AxisDrawer.js"></script>
+<script type="text/javascript" src="CrosshairDrawer.js"></script>
 
 <style>
     img {
@@ -125,7 +154,7 @@ main()
 </head>
 
 <body>
-<canvas id="gl-canvas" width="1600" height="900">
+<canvas id="gl-canvas" width="1200" height="800">
     Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 <img id="texImage" src="mineTexture.png"></img>

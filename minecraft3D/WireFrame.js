@@ -5,8 +5,8 @@ var Wireframe = (function () {
   	vBuffer = gl.createBuffer();
   	cBuffer = gl.createBuffer();  
   	this.wireframeVertices = [];
-		this.wireframeColors = [];
-		this.createWireframeAtGridPos(0,0,0);
+	this.wireframeColors = [];
+	this.createWireframeAtGridPos(0,0,0);
   }
 
   Wireframe.prototype.render = function() {
@@ -22,6 +22,9 @@ var Wireframe = (function () {
   };
 
 	Wireframe.prototype.createWireframeAtGridPos = function(x, y, z) {
+
+    this.wireframeVertices = [];
+    this.wireframeColors = [];
 
     this.wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
     this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
@@ -55,7 +58,7 @@ var Wireframe = (function () {
     for (var i = 0; i < 24; i++) {
         this.wireframeColors.push(vec4(0,0,0,1));
     }
-	};
+  };
 
 
   return Wireframe;

@@ -8,9 +8,11 @@ var vModelViewMatrixLoc;
 var vSBRotationMatrix = mat4();
 var vSBRotationMatrixLoc;
 
+var CENTER_CURSOR_X;
+var CENTER_CURSOR_Y;
+
 var vPositionLoc;
 var vNormalLoc;
-
 
 var vTexCoordLoc;
 
@@ -65,6 +67,8 @@ var camera;
 var player;
 var texImage;
 var texture;
+var crosshairDrawer;
+
 
 var MOVEMENT_SPEED = 0.1;
 var ROTATION_SPEED = 0.1;
@@ -85,22 +89,68 @@ var wPressed = false;
 var spacePressed = false;
 var shiftPressed = false;
 
+// PICKING
+var fboTexture;
+var framebuffer;
+var vGridPosLoc;
+var color = new Uint8Array(4);
+var paintWireframe = false;
+var currWireframeX;
+var currWireframeY;
+var currWireframeZ;
+
+
 function init() {
+
 
   texImage = document.getElementById("texImage");
   configureTexture(texImage);
 
+    CENTER_CURSOR_X = canvas.width / 2;
+    CENTER_CURSOR_Y = canvas.height / 2;
 
-  gl.enable(gl.DEPTH_TEST);
-  // offsets the polygons defining the blocks from the lines outlining them
-  // result is smooth outlining
-  gl.enable(gl.POLYGON_OFFSET_FILL);
-  gl.polygonOffset(1, 1);
-  world = new World();
-  camera = new Camera();
-  player = new Player(WORLD_SIZE / 2, 5, WORLD_SIZE / 2, camera, world.world);
-  wireframe = new Wireframe();
-  axisDrawer = new AxisDrawer(0,0,0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.POLYGON_OFFSET_FILL);
+    gl.polygonOffset(0, 0);
+
+
+    // Initialize FBO
+    /*framebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    framebuffer.width = 1024;
+    framebuffer.height = 1024;
+
+    fboTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, fboTexture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, framebuffer.width, framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    var renderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, framebuffer.width, framebuffer.height);
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTexture, 0);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+    
+    var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+        alert('Framebuffer Not Complete');
+    }
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);*/
+
+
+
+    world = new World();
+    camera = new Camera();
+    player = new Player(WORLD_SIZE / 2, 5, WORLD_SIZE / 2, camera, world.world);
+    wireframe = new Wireframe();
+    // axisDrawer = new AxisDrawer(0,0,0);
+    crosshair = new CrosshairDrawer(0.02);
 
 
   window.onkeydown = handleKeyPress;
@@ -111,12 +161,16 @@ function init() {
   vPositionLoc = gl.getAttribLocation( program, "vPosition" );
   gl.enableVertexAttribArray( vPositionLoc );
 
+    vGridPosLoc = gl.getAttribLocation( program, "vGridPos" );
+    gl.enableVertexAttribArray( vGridPosLoc );
+
+
+    vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
+
 
   // Associate out shader variables with our data buffer
   vNormalLoc = gl.getAttribLocation( program, "vNormal" );
   gl.enableVertexAttribArray( vNormalLoc );
-
-  vSBRotationMatrixLoc = gl.getUniformLocation( program, "vSBRotationMatrix" );
 
   sunPositionLoc = gl.getUniformLocation( program, "sunPosition" );
   sunAmbientLoc = gl.getUniformLocation( program, "sunAmbient" );
@@ -147,21 +201,30 @@ function init() {
   lightsOut("torch");
 
   render();
-
 }
 
 function render() {
-  gl.clear( gl.COLOR_BUFFER_BIT );
+    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-  update();
-  world.render();
-  //wireframe.render();
-  axisDrawer.render();
-  player.render();
+    update();
+    world.render();
+    if (paintWireframe) {
+        wireframe.render();
+    }
+    // axisDrawer.render();
+    player.render();
 
 
-  window.requestAnimFrame(render);
+    gl.uniform1i(gl.getUniformLocation( program, "i" ), 2);
+    // TODO: change shader to avoid this uniform
+    crosshair.render();
+    gl.uniform1i(gl.getUniformLocation( program, "i" ), 0);
+
+
+    window.requestAnimFrame(render);
 }
+
+
 //The function driving our animations
 function update() {
   var currTime = new Date().getTime();
@@ -315,6 +378,12 @@ function handleKeyPress(event){
   }
 }
 
+function handleMouseClick(event) {
+
+    
+    
+}
+
 function handleKeyRelease(event){
   switch (event.keyCode) {
     //Movement
@@ -365,6 +434,55 @@ function handleMouseMove(event) {
       0;
 
   player.handleMouseMove(movementX, movementY);
+
+
+  if (elapsedTime > 0.5) {
+    updateCursorWireframe();
+  }
+
+}
+
+function updateCursorWireframe() {
+
+    // RENDER OFFBUFFER
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.uniform1i(gl.getUniformLocation( program, "i" ), 1);
+
+    // update();
+    world.render();
+
+    gl.readPixels(CENTER_CURSOR_X, CENTER_CURSOR_Y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
+
+    paintWireframe = true;
+    var face = color[3];
+    if (10 < face && face < 30) {
+        wireframe.createWireframeAtGridPos(color[0], color[1], color[2]);
+    }
+    else if (30 < face && face < 60) {
+        wireframe.createWireframeAtGridPos(color[0]+1, color[1], color[2]+1);
+    }
+    else if (60 < face && face < 90) {
+        wireframe.createWireframeAtGridPos(color[0], color[1], color[2]+2);
+    }
+    else if (90 < face && face < 120) {
+        wireframe.createWireframeAtGridPos(color[0]-1, color[1], color[2]+1);
+    }
+    else if (120 < face && face < 140) {
+        wireframe.createWireframeAtGridPos(color[0], color[1]+1, color[2]+1);
+    }
+    else if (140 < face && face < 170) {
+        wireframe.createWireframeAtGridPos(color[0], color[1]-1, color[2]+1);
+    } else {
+        paintWireframe = false;
+    }
+
+    // RENDER TO CANVAS
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.uniform1i(gl.getUniformLocation( program, "i" ), 0);
 }
 
 function multmv( m, v )

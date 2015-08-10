@@ -4,6 +4,9 @@ var World = (function () {
   var wcBuffer;
   var wNormalBuffer;
   var texBuffer;
+
+  var wvposBuffer;
+
   var wSBVBuffer;
   var wSBNBuffer;
 
@@ -20,6 +23,9 @@ var World = (function () {
     this.spinningBlocks = [];
     this.worldSpinningBlockVertices = [];
     this.worldSpinningBlockNormals = [];
+
+    this.worldVerticePos = [];
+
 
     this.initWorld();
     this.worldToVerticeArray();
@@ -52,6 +58,12 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
 
+
+    wvposBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvposBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVerticePos), gl.STATIC_DRAW );
+
+
   }
 
   World.prototype.render = function() {
@@ -66,6 +78,11 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
     gl.vertexAttribPointer( vTexCoordLoc, 2, gl.FLOAT, false, 0, 0 );
+
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvposBuffer );
+    gl.vertexAttribPointer( vGridPosLoc, 4, gl.FLOAT, false, 0, 0 );
+
 
     gl.drawArrays( gl.TRIANGLES, 0, this.worldVertices.length);
 
@@ -115,6 +132,17 @@ var World = (function () {
       }
     }
 
+
+    // for (var i = 0; i < WORLD_SIZE; i++) {
+    //   for (var j = 0; j < 2; j++) {
+    //     for (var k = 0; k < WORLD_SIZE; k++) {
+    //       this.world[i][j][k] = new Block(i,j,k,1,"someMat");
+    //     }
+    //   }
+    // }
+    // this.world[15][4][12] = new Block(15,4,12,1,"lol");
+
+
     var centerX = WORLD_SIZE/2;
     var centerY = WORLD_SIZE/2;
     var radius = WORLD_SIZE/2;
@@ -129,7 +157,7 @@ var World = (function () {
         }
       }
     }
-
+    
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
@@ -237,6 +265,11 @@ var World = (function () {
     this.worldSpinningBlockVertices = [];
     this.worldSpinningBlockNormals = [];
 
+
+    this.worldVerticePos = [];
+
+
+
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
@@ -257,21 +290,37 @@ var World = (function () {
             var trb = currBlockCorners[6];
             var lrb = currBlockCorners[7];
 
+
+            var currBlockPos = [vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
+                                vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
+                                vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
+                                vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
+                                vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
+                                vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
+                                vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
+                                vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
+                                vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
+                                vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
+                                vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6),
+                                vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6)];
+            this.worldVerticePos = this.worldVerticePos.concat(currBlockPos);
+
+
             // fill wireframe of block
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
-              llb, tlb, tlb, trb, trb, lrb, lrb, llb,
-              lrf, lrb, trf, trb, llf, llb, tlf, tlb];
+            llb, tlb, tlb, trb, trb, lrb, lrb, llb,
+            lrf, lrb, trf, trb, llf, llb, tlf, tlb];
             currBlock.frameIndex = this.worldWireframeVertices.length - 1;
             this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
             var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
             this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
@@ -373,12 +422,12 @@ var World = (function () {
         this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
         var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
         vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-          vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+        vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
         this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
       }
     }
@@ -395,7 +444,7 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
-}
+  }
 
   World.prototype.addBlock = function(x, y, z, block) {
     if(this.world[x][y][z] != undefined) {
@@ -411,13 +460,13 @@ var World = (function () {
     }
     this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
     var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-      vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+    vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
     this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
