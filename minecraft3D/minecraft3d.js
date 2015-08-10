@@ -443,11 +443,7 @@ function handleMouseMove(event) {
 
   player.handleMouseMove(movementX, movementY);
 
-
-  if (elapsedTime > 0.5) {
-    updateCursorWireframe();
-  }
-
+  updateCursorWireframe();
 }
 
 function updateCursorWireframe() {
