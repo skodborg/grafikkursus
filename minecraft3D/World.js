@@ -231,12 +231,8 @@ var World = (function () {
     // TREE 2
     treeX = 20;
     treeZ = 5;
-    treeHeight = 4;
-    treeCrownRadius = 2;
-
-    for (var i = 0; i < treeHeight; i++) {
-        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "wood");
-    }
+    treeHeight = 5;
+    treeCrownRadius = 4;    
 
     for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
         for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
@@ -249,6 +245,10 @@ var World = (function () {
                 }
             }
         }
+    }
+
+    for (var i = 0; i < treeHeight; i++) {
+        this.world[treeX][i][treeZ] = new Block(treeX,i,treeZ,1, "wood");
     }
 
 
