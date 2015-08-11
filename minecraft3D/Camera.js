@@ -23,7 +23,7 @@ var Camera = (function () {
                                      vec3(WORLD_SIZE/2,0,WORLD_SIZE/2), 
                                      vec3(0,0,-1));
     overviewProjectionMatrix = ortho(-WORLD_SIZE, WORLD_SIZE,
-                                     -WORLD_SIZE, WORLD_SIZE,
+                                     -WORLD_SIZE/(16/9), WORLD_SIZE/(16/9),
                                      0.0001,      WORLD_SIZE+10);
     overviewMode = false;
 
