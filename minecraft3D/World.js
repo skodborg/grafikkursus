@@ -589,7 +589,7 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
-
+    updateCursorWireframe();
   };
 
   World.prototype.hideIfHidden = function(block) {
