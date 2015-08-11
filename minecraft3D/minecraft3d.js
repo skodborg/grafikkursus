@@ -441,6 +441,7 @@ function handleMouseClick(event) {
   }
   else if (event.which == 3) {
     // right click, remove block
+    if (!paintWireframe) return;
     world.removeBlock(currWireframeX, currWireframeY, currWireframeZ);
   }    
     
@@ -521,6 +522,19 @@ function updateCursorWireframe() {
   currWireframeY = color[1];
   currWireframeZ = color[2];
   currWireframeFace = 0;
+
+  var playerPos = player.position;
+  if (Math.abs(Math.floor(playerPos[0]) - currWireframeX) > 4 ||
+      Math.abs(Math.floor(playerPos[1]) - currWireframeY) > 4 ||
+      Math.abs(Math.floor(playerPos[2]) - currWireframeZ) > 4) {
+    paintWireframe = false;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.uniform1i(gl.getUniformLocation( program, "i" ), 0);
+    return;
+  }
+
 
   paintWireframe = true;
   var face = color[3];

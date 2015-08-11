@@ -221,10 +221,10 @@ var World = (function () {
 
 
     // TREE 2
-    treeX = 20;
-    treeZ = 5;
-    treeHeight = 5;
-    treeCrownRadius = 4;    
+    treeX = WORLD_SIZE/2;
+    treeZ = WORLD_SIZE/2+2;
+    treeHeight = 10;
+    treeCrownRadius = 6;
 
     for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
         for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
