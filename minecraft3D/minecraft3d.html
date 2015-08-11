@@ -115,7 +115,7 @@ main()
         float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
         vec4 specularTorch = KsTorch * torchSpecular;
 
-        vec4 torchResult = (1.0/(1.0+0.4*d+0.2*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
+        vec4 torchResult = (1.0/(1.0+0.3*d+0.15*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
 
         vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
         fColor.a = 1.0;
@@ -154,7 +154,7 @@ main()
 </head>
 
 <body>
-<canvas id="gl-canvas" width="1200" height="800">
+<canvas id="gl-canvas" width="1600" height="900">
     Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 <img id="texImage" src="tex2.png"></img>
