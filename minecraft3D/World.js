@@ -120,7 +120,7 @@ var World = (function () {
       gl.bindBuffer(gl.ARRAY_BUFFER, wSBNBuffer);
       gl.vertexAttribPointer(vNormalLoc, 4, gl.FLOAT, false, 0, 0);
 
-      gl.drawArrays(gl.TRIANGLES, 0, this.worldSpinningBlockVertices.length);
+      gl.drawArrays(gl.TRIANGLES, i*36, 36);
     }
 
     vSBRotationMatrix = mat4();
@@ -256,6 +256,7 @@ var World = (function () {
 
 
     this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"wood");
+    this.world[8][9][8] = new SpinningBlock(8,9,8,0.25,1,"wood");
 
     this.world[15][6][15] = new SpinningBlock(15,6,15,0.25,1,"wood");
 

@@ -115,7 +115,7 @@ main()
         float KsTorch = pow(max(dot(Rtorch, v), 0.0), shininess);
         vec4 specularTorch = KsTorch * torchSpecular;
 
-        vec4 torchResult = (1.0/(1.0+0.3*d+0.15*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
+        vec4 torchResult = (1.0/(0.5+0.3*d+0.15*pow(d,2.0)))*torchDiffuse*diffuseTorch  + (1.0/(1.0+0.5*d+0.1*pow(d,2.0)))*specularTorch*torchSpecular;
 
         vec4 fColor = ambient + diffuseSun*sunDiffuse + diffuseMoon*moonDiffuse + torchResult + specularSun*sunSpecular + specularMoon*moonSpecular;
         fColor.a = 1.0;

@@ -37,7 +37,7 @@ var moonSpecularLoc;
 var moonIsVisible = true;
 
 var torchAmbient = vec4(0.0, 0.0, 0.0, 1);
-var torchDiffuse = vec4(1.0, 0.1, 0.0, 1);
+var torchDiffuse = vec4(1.0, 0.4, 0.4, 1);
 var torchSpecular = vec4(1.0, 0.05, 0.0, 1);
 var torchAmbientLoc;
 var torchDiffuseLoc;
@@ -100,6 +100,29 @@ var currWireframeY;
 var currWireframeZ;
 
 
+function initLight() {
+  sunPositionLoc = gl.getUniformLocation(program, "sunPosition");
+  sunAmbientLoc = gl.getUniformLocation(program, "sunAmbient");
+  sunDiffuseLoc = gl.getUniformLocation(program, "sunDiffuse");
+  sunSpecularLoc = gl.getUniformLocation(program, "sunSpecular");
+
+  moonPositionLoc = gl.getUniformLocation(program, "moonPosition");
+  moonAmbientLoc = gl.getUniformLocation(program, "moonAmbient");
+  moonDiffuseLoc = gl.getUniformLocation(program, "moonDiffuse");
+  moonSpecularLoc = gl.getUniformLocation(program, "moonSpecular");
+
+  torchAmbientLoc = gl.getUniformLocation(program, "torchAmbient");
+  torchDiffuseLoc = gl.getUniformLocation(program, "torchDiffuse");
+  torchSpecularLoc = gl.getUniformLocation(program, "torchSpecular");
+
+  shininessLoc = gl.getUniformLocation( program, "shininess" );
+  gl.uniform1f(shininessLoc, shininess);
+
+  lightsOn("sun");
+  lightsOut("moon");
+  lightsOut("torch");
+
+}
 function init() {
 
   CENTER_CURSOR_X = canvas.width / 2;
@@ -172,33 +195,13 @@ function init() {
   vNormalLoc = gl.getAttribLocation( program, "vNormal" );
   gl.enableVertexAttribArray( vNormalLoc );
 
-  sunPositionLoc = gl.getUniformLocation( program, "sunPosition" );
-  sunAmbientLoc = gl.getUniformLocation( program, "sunAmbient" );
-  sunDiffuseLoc = gl.getUniformLocation( program, "sunDiffuse" );
-  sunSpecularLoc = gl.getUniformLocation( program, "sunSpecular" );
-
-  moonPositionLoc = gl.getUniformLocation( program, "moonPosition" );
-  moonAmbientLoc = gl.getUniformLocation( program, "moonAmbient" );
-  moonDiffuseLoc = gl.getUniformLocation( program, "moonDiffuse" );
-  moonSpecularLoc = gl.getUniformLocation( program, "moonSpecular" );
-
-  torchAmbientLoc = gl.getUniformLocation( program, "torchAmbient" );
-  torchDiffuseLoc = gl.getUniformLocation( program, "torchDiffuse" );
-  torchSpecularLoc = gl.getUniformLocation( program, "torchSpecular" );
-
+  initLight();
 
   vTexCoordLoc = gl.getAttribLocation(program, "vTexCoord");
   gl.vertexAttribPointer( vTexCoordLoc, 2, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vTexCoordLoc );
 
-
-  shininessLoc = gl.getUniformLocation( program, "shininess" );
-
   vNormalMatrixLoc = gl.getUniformLocation( program, "vNormalMatrix");
-
-  lightsOn("sun");
-  lightsOut("moon");
-  lightsOut("torch");
 
   render();
 }
@@ -214,34 +217,26 @@ function render() {
   // axisDrawer.render();
   player.render();
 
-
   gl.uniform1i(gl.getUniformLocation( program, "i" ), 2);
   // TODO: change shader to avoid this uniform
   crosshair.render();
   gl.uniform1i(gl.getUniformLocation( program, "i" ), 0);
-
 
   window.requestAnimFrame(render);
 }
 
 
 //The function driving our animations
-function update() {
-  var currTime = new Date().getTime();
-  elapsedTime = (currTime - lastTime) / 40;
-  if(elapsedTime == 0) {
-    elapsedTime = 0.00001;
-  }
+function updateDayCycle() {
+  sunPosition = multmv(rotate(0.1 * elapsedTime, vec3(1, 0, 1)), sunPosition);
+  moonPosition = multmv(rotate(0.1 * elapsedTime, vec3(1, 0, 1)), moonPosition);
 
-  sunPosition = multmv(rotate(0.1*elapsedTime, vec3(1,0,1)), sunPosition);
-  moonPosition = multmv(rotate(0.1*elapsedTime, vec3(1,0,1)), moonPosition);
-
-  if(sunPosition[1] < -15) {
+  if (sunPosition[1] < -15) {
     lightsOut("sun");
   } else {
     lightsOn("sun");
   }
-  if(moonPosition[1] < -15) {
+  if (moonPosition[1] < -15) {
     lightsOut("moon");
     lightsOut("torch");
   } else {
@@ -249,18 +244,26 @@ function update() {
     lightsOn("torch");
   }
 
-  if(sunIsVisible && moonIsVisible){
-    gl.clearColor( 0.8, 0.2, 0.2, 1.0 );
-  }else if(sunIsVisible && !moonIsVisible){
-    gl.clearColor( 0.7, 0.8, 1.0, 1.0 );
-  }else if(!sunIsVisible && moonIsVisible){
-    gl.clearColor( 0.0, 0.1, 0.4, 1.0 );
+  if (sunIsVisible && moonIsVisible) {
+    gl.clearColor(0.8, 0.2, 0.2, 1.0);
+  } else if (sunIsVisible && !moonIsVisible) {
+    gl.clearColor(0.7, 0.8, 1.0, 1.0);
+  } else if (!sunIsVisible && moonIsVisible) {
+    gl.clearColor(0.0, 0.1, 0.4, 1.0);
   }
 
   gl.uniform4fv(sunPositionLoc, flatten(sunPosition));
   gl.uniform4fv(moonPositionLoc, flatten(moonPosition));
+}
 
-  gl.uniform1f(shininessLoc, shininess);
+function update() {
+  var currTime = new Date().getTime();
+  elapsedTime = (currTime - lastTime) / 40;
+  if(elapsedTime == 0) {
+    elapsedTime = 0.00001;
+  }
+
+  updateDayCycle();
 
   player.handleKeys();
   player.updatePosition();
