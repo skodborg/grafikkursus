@@ -46,7 +46,6 @@ var torchIsVisible = true;
 
 var dark = vec4(0,0,0,1);
 
-
 var shininess = 100;
 var shininessLoc;
 
@@ -141,7 +140,7 @@ function init() {
   framebuffer.width = 1024;
   framebuffer.height = 1024;
 
-  fboTexture = gl.createTexture();
+  var fboTexture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, fboTexture);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
@@ -161,7 +160,6 @@ function init() {
       alert('Framebuffer Not Complete');
   }
 
-  // gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 

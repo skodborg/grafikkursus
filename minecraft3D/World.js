@@ -262,7 +262,7 @@ var World = (function () {
     this.worldVerticePos = [];
 
 
-
+    var currBlockCorners;
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
@@ -289,19 +289,19 @@ var World = (function () {
 
             // fill wireframe of block
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
-            llb, tlb, tlb, trb, trb, lrb, lrb, llb,
-            lrf, lrb, trf, trb, llf, llb, tlf, tlb];
-            currBlock.frameIndex = this.worldWireframeVertices.length;
+              llb, tlb, tlb, trb, trb, lrb, lrb, llb,
+              lrf, lrb, trf, trb, llf, llb, tlf, tlb];
+            currBlock.frameIndex = this.worldWireframeVertices.length - 1;
             this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
             var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
-            vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
+              vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
             this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
