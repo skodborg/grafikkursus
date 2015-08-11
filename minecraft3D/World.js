@@ -15,6 +15,8 @@ var World = (function () {
   var wfvBuffer;
   var wfcBuffer;
 
+  var lastNeighbourBoxCount = 0;
+
   function World() {
     this.world = [];
     this.worldVertices = [];         // filled by worldToVerticeArray();
@@ -288,7 +290,7 @@ var World = (function () {
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
               llb, tlb, tlb, trb, trb, lrb, lrb, llb,
               lrf, lrb, trf, trb, llf, llb, tlf, tlb];
-            currBlock.frameIndex = this.worldWireframeVertices.length - 1;
+            currBlock.frameIndex = this.worldWireframeVertices.length;
             this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
             var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -383,6 +385,43 @@ var World = (function () {
       var currNeighbour = this.world[x][y][z-1];
       if (currNeighbour !== undefined) result.push(currNeighbour);
     }
+    lastNeighbourBoxCount = 0;
+    for(var i = 0; i < result.length; i++) {
+      if(result[i] instanceof SpinningBlock) {
+        lastNeighbourBoxCount++;
+      }
+    }
+
+    return result;
+  };
+
+  World.prototype.getNeighbourNonSpinBlocks = function(x, y, z) {
+    var result = [];
+    if (x < WORLD_SIZE-1) {
+      var currNeighbour = this.world[x+1][y][z];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+    if (x > 0) {
+      var currNeighbour = this.world[x-1][y][z];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+    if (y < WORLD_SIZE-1) {
+      var currNeighbour = this.world[x][y+1][z];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+    if (y > 0) {
+      var currNeighbour = this.world[x][y-1][z];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+    if (z < WORLD_SIZE-1) {
+      var currNeighbour = this.world[x][y][z+1];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+    if (z > 0) {
+      var currNeighbour = this.world[x][y][z-1];
+      if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
+    }
+
     return result;
   };
 
@@ -425,9 +464,9 @@ var World = (function () {
     }
     this.removeVerticesFromArray(currBlock.index, currBlock.frameIndex);
     this.world[x][y][z] = undefined;
-    var neighbours = this.getNeighbourBlocks(x,y,z);
+    var neighbours = this.getNeighbourNonSpinBlocks(x,y,z);
     for(var i = 0; i < neighbours.length; i++) {
-      if(this.getNeighbourBlocks(neighbours[i].llfx, neighbours[i].llfy, neighbours[i].llfz).length == 5) {
+      if(this.getNeighbourNonSpinBlocks(neighbours[i].llfx, neighbours[i].llfy, neighbours[i].llfz).length == 5) {
         
         neighbours[i].index = this.worldVertices.length;
         neighbours[i].frameIndex = this.worldWireframeColors.length;
