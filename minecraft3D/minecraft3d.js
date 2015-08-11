@@ -2,8 +2,12 @@ var gl;
 
 var world;
 
+var program2;
+
 var vModelViewMatrix = mat4();
 var vModelViewMatrixLoc;
+
+var vProjectionMatrix = mat4();
 
 var vSBRotationMatrix = mat4();
 var vSBRotationMatrixLoc;
@@ -100,6 +104,8 @@ var currWireframeZ;
 var currWireframeFace;
 var currMaterial = "grass";
 
+var uColorLoc;
+
 
 function initLight() {
   sunPositionLoc = gl.getUniformLocation(program, "sunPosition");
@@ -120,7 +126,8 @@ function initLight() {
   gl.uniform1f(shininessLoc, shininess);
 
   lightsOn("sun");
-  lightsOut("moon");
+  // lightsOut("moon");
+  lightsOut("sun");
   lightsOut("torch");
 
 }
@@ -132,6 +139,9 @@ function init() {
   gl.enable(gl.DEPTH_TEST);
   gl.enable(gl.POLYGON_OFFSET_FILL);
   gl.polygonOffset(0, 0);
+
+  program2 = initShaders( gl, "passing-vertex-shader", "uniformcolor-fragment-shader" );
+  uColorLoc = gl.getUniformLocation(program2, "uColor");
 
 
   // Initialize FBO
@@ -211,16 +221,29 @@ function render() {
 
   update();
   world.render();
-  if (paintWireframe) {
-      wireframe.render();
-  }
+  
   // axisDrawer.render();
   player.render();
 
-  gl.uniform1i(gl.getUniformLocation( program, "i" ), 2);
-  // TODO: change shader to avoid this uniform
+
+  gl.useProgram(program2);
+
+  uColorLoc = gl.getUniformLocation(program2, "uColor");
+  var modelView = gl.getUniformLocation(program2, "vModelViewMatrix");
+  gl.uniformMatrix4fv(modelView, false, flatten(vModelViewMatrix));
+  var perspective = gl.getUniformLocation(program2, "vProjectionMatrix");
+  gl.uniformMatrix4fv(perspective, false, flatten(vProjectionMatrix));
+  gl.uniform4fv(uColorLoc, vec4(1,1,1,1));
+  if (paintWireframe) {
+      wireframe.render();
+  }
+  
+  gl.uniformMatrix4fv(modelView, false, flatten(mat4()));
+  gl.uniformMatrix4fv(perspective, false, flatten(mat4()));
+  gl.uniform4fv(uColorLoc, vec4(0,1,0,1));
   crosshair.render();
-  gl.uniform1i(gl.getUniformLocation( program, "i" ), 0);
+
+  gl.useProgram(program);
 
   window.requestAnimFrame(render);
 }
