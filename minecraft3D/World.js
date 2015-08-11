@@ -295,19 +295,6 @@ var World = (function () {
             var trb = currBlockCorners[6];
             var lrb = currBlockCorners[7];
 
-
-            // var currBlockPos = [vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-            //                     vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6),
-            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6)];
             currBlock.gridPosIndex = this.worldVerticePos.length - 1;
             this.worldVerticePos = this.worldVerticePos.concat(currBlock.gridPos);
 
