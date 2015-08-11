@@ -221,10 +221,10 @@ var World = (function () {
 
 
     // TREE 2
-    treeX = 20;
-    treeZ = 5;
-    treeHeight = 5;
-    treeCrownRadius = 4;    
+    treeX = WORLD_SIZE/2;
+    treeZ = WORLD_SIZE/2+2;
+    treeHeight = 10;
+    treeCrownRadius = 6;
 
     for (var i = treeX-(treeCrownRadius); i <= treeX+(treeCrownRadius); i++) {
         for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
@@ -246,8 +246,6 @@ var World = (function () {
 
     this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"wood");
     this.world[8][9][8] = new SpinningBlock(8,9,8,0.25,1,"wood");
-
-    this.world[15][6][15] = new SpinningBlock(15,6,15,0.25,1,"wood");
 
   };
 
