@@ -303,7 +303,7 @@ var World = (function () {
               vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
             this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
-            this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
+            this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
             currBlock.index = this.worldVertices.length;
             currBlock.textureIndex = this.texCoordsArray.length;
             this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));

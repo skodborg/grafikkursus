@@ -7,7 +7,6 @@ var Block = (function () {
     this.llfz = llfz;
     this.size = size;
     this.corners = this.calculateCorners();
-    this.normals = this.calculateNormals();
     this.index = -1;
     this.frameIndex = -1;
     this.textureIndex = -1;
@@ -116,22 +115,6 @@ var Block = (function () {
     return result;
   };
 
-  Block.prototype.calculateNormals = function () {
-    var result = [];
-    var normal = BLOCK_NORMALS[0];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[1];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[2];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[3];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[4];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    normal = BLOCK_NORMALS[5];
-    result = result.concat([normal, normal, normal, normal, normal, normal]);
-    return result;
-  };
 
   return Block;
 })();
