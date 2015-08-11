@@ -10,8 +10,11 @@ var Block = (function () {
     this.normals = this.calculateNormals();
     this.index = -1;
     this.frameIndex = -1;
+    this.textureIndex = -1;
+    this.gridPosIndex = -1;
     this.material = this.getMaterial(mat);
     this.textureCoords = this.getTextureCoords();
+    this.gridPos = this.calculateGridPos();
     this.color = mat;
   }
 
@@ -77,6 +80,22 @@ var Block = (function () {
     }
     return result;
 
+  }
+
+  Block.prototype.calculateGridPos = function() {
+    var currBlockPos = [vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.1),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.2),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.3),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.4),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.5),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6),
+                        vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6), vec4(this.llfx/255,this.llfy/255,this.llfz/255,0.6)];
+    return currBlockPos;
   }
 
   //Return the corners of this block, in render list order

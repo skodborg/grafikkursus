@@ -154,6 +154,7 @@ function init() {
 
   window.onkeydown = handleKeyPress;
   window.onkeyup = handleKeyRelease;
+  window.onclick = handleMouseClick;
 
 
   // Associate out shader variables with our data buffer
@@ -386,8 +387,14 @@ function handleKeyPress(event){
 }
 
 function handleMouseClick(event) {
-
-    
+  if (event.which == 1) {
+    // left click
+    world.addBlock(16, 10, 16, new Block(16, 10, 16, 1, "wood"));
+  }
+  else if (event.which == 3) {
+    // right click
+    world.removeBlock(16,10,16);
+  }    
     
 }
 

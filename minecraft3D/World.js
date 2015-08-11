@@ -291,19 +291,21 @@ var World = (function () {
             var lrb = currBlockCorners[7];
 
 
-            var currBlockPos = [vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-                                vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-                                vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-                                vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-                                vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-                                vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-                                vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-                                vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-                                vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-                                vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-                                vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6),
-                                vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6)];
-            this.worldVerticePos = this.worldVerticePos.concat(currBlockPos);
+            // var currBlockPos = [vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
+            //                     vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
+            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
+            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
+            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
+            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
+            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
+            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
+            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
+            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
+            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6),
+            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6)];
+            currBlock.gridPosIndex = this.worldVerticePos.length - 1;
+            this.worldVerticePos = this.worldVerticePos.concat(currBlock.gridPos);
+
 
 
             // fill wireframe of block
@@ -325,6 +327,7 @@ var World = (function () {
 
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
             currBlock.index = this.worldVertices.length - 1;
+            currBlock.textureIndex = this.texCoordsArray.length - 1;
             this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
             this.texCoordsArray = this.texCoordsArray.concat(currBlock.textureCoords);
 
@@ -417,9 +420,17 @@ var World = (function () {
     var neighbours = this.getNeighbourBlocks(x,y,z);
     for(var i = 0; i < neighbours.length; i++) {
       if(this.getNeighbourBlocks(neighbours[i].llfx, neighbours[i].llfy, neighbours[i].llfz).length == 5) {
-        currBlock.index = this.worldVertices.length;
-        this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
+        
+        neighbours[i].index = this.worldVertices.length;
+        neighbours[i].frameIndex = this.worldWireframeColors.length;
+        neighbours[i].textureIndex = this.texCoordsArray.length;
+        neighbours[i].gridPosIndex = this.worldVerticePos.length;
+
+        this.worldVertices = this.worldVertices.concat(blockToVertices(neighbours[i]));
         this.worldBlockNormals = this.worldBlockNormals.concat(this.standardNormals());
+        this.texCoordsArray = this.texCoordsArray.concat(neighbours[i].textureCoords);
+        this.worldVerticePos = this.worldVerticePos.concat(neighbours[i].gridPos);
+
         var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
         vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
         vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -444,6 +455,12 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvposBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVerticePos), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
   }
 
   World.prototype.addBlock = function(x, y, z, block) {
@@ -453,7 +470,17 @@ var World = (function () {
     this.world[x][y][z] = block;
     block.index = this.worldVertices.length;
     block.frameIndex = this.worldWireframeColors.length;
+
+    block.textureIndex = this.texCoordsArray.length;
+    this.texCoordsArray = this.texCoordsArray.concat(block.textureCoords);
+    
+
+    block.gridPosIndex = this.worldVerticePos.length;
+    this.worldVerticePos = this.worldVerticePos.concat(block.gridPos);
+
     this.worldVertices = this.worldVertices.concat(blockToVertices(block));
+
+
     var neighbours = this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz);
     for(var i = 0; i < neighbours.length; i++) {
       this.hideIfHidden(neighbours[i]);
@@ -469,6 +496,7 @@ var World = (function () {
     vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1)];
     this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
+
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
 
@@ -481,19 +509,27 @@ var World = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, wfcBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldWireframeColors), gl.STATIC_DRAW );
 
+    gl.bindBuffer( gl.ARRAY_BUFFER, wvposBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVerticePos), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
+
   };
 
   World.prototype.hideIfHidden = function(block) {
     if(this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz).length > 5) {
-      this.removeVerticesFromArray(block.index, block.frameIndex);
+      this.removeVerticesFromArray(block.index, block.frameIndex, block.textureIndex, block.gridPosIndex);
     }
   };
 
-  World.prototype.removeVerticesFromArray = function(index, frameIndex) {
+  World.prototype.removeVerticesFromArray = function(index, frameIndex, textureIndex, gridPosIndex) {
     this.worldVertices.splice(index, 36);
     this.worldWireframeVertices.splice(frameIndex, 24);
     this.worldBlockNormals.splice(0, 36);
     this.worldWireframeColors.splice(0, 24);
+    this.texCoordsArray.splice(index, 36);
+    this.worldVerticePos.splice(index, 36);
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
@@ -507,6 +543,8 @@ var World = (function () {
           if(currBlock.index >= index) {
             currBlock.index = currBlock.index - 36;
             currBlock.frameIndex = currBlock.frameIndex - 24;
+            currBlock.textureIndex -= 36;
+            currBlock.gridPosIndex -= 36;
           }
         }
       }
