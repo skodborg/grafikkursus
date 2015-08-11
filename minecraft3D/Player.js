@@ -99,6 +99,10 @@ var Player = (function () {
         if(this.world[gridPos[0]]) {
             if(this.world[gridPos[0]][gridPos[1] - 1]) {
                 if(this.world[gridPos[0]][gridPos[1] - 1][gridPos[2]]) {
+                    if(this.world[gridPos[0]][gridPos[1] - 1][gridPos[2]] instanceof SpinningBlock) {
+                        world.removeSpinningBlock(gridPos[0], gridPos[1] - 1, gridPos[2]);
+                        return false;
+                    }
                     this.velocity[1] = 0;
                     return true;
                 }
@@ -112,6 +116,10 @@ var Player = (function () {
         if(this.world[gridPos[0]]) {
             if(this.world[gridPos[0]][gridPos[1] + 1]) {
                 if(this.world[gridPos[0]][gridPos[1] + 1][gridPos[2]]) {
+                    if(this.world[gridPos[0]][gridPos[1] + 1][gridPos[2]] instanceof SpinningBlock) {
+                        world.removeSpinningBlock(gridPos[0], gridPos[1] + 1, gridPos[2]);
+                        return false;
+                    }
                     this.velocity[1] = 0;
                     return true;
                 }
@@ -127,6 +135,10 @@ var Player = (function () {
             if(this.world[gridPos[0] + 1]) {
                 if(this.world[gridPos[0] + 1][gridPos[1]]) {
                     if(this.world[gridPos[0] + 1][gridPos[1]][gridPos[2]]) {
+                        if(this.world[gridPos[0] + 1][gridPos[1]][gridPos[2]] instanceof SpinningBlock) {
+                            world.removeSpinningBlock(gridPos[0] + 1, gridPos[1], gridPos[2]);
+                            return false;
+                        }
                         this.velocity[0] = 0;
                         return true;
                     }
@@ -138,6 +150,10 @@ var Player = (function () {
             if(this.world[gridPos[0] - 1]) {
                 if(this.world[gridPos[0] - 1][gridPos[1]]) {
                     if(this.world[gridPos[0] - 1][gridPos[1]][gridPos[2]]) {
+                        if(this.world[gridPos[0] - 1][gridPos[1]][gridPos[2]] instanceof SpinningBlock) {
+                            world.removeSpinningBlock(gridPos[0] - 1, gridPos[1], gridPos[2]);
+                            return false;
+                        }
                         this.velocity[0] = 0;
                         return true;
                     }
@@ -149,6 +165,10 @@ var Player = (function () {
             if(this.world[gridPos[0]]) {
                 if(this.world[gridPos[0]][gridPos[1]]) {
                     if(this.world[gridPos[0]][gridPos[1]][gridPos[2] + 1]) {
+                        if(this.world[gridPos[0]][gridPos[1]][gridPos[2] + 1] instanceof SpinningBlock) {
+                            world.removeSpinningBlock(gridPos[0], gridPos[1], gridPos[2] + 1);
+                            return false;
+                        }
                         this.velocity[2] = 0;
                         return true;
                     }
@@ -160,6 +180,10 @@ var Player = (function () {
             if(this.world[gridPos[0]]) {
                 if(this.world[gridPos[0]][gridPos[1]]) {
                     if(this.world[gridPos[0]][gridPos[1]][gridPos[2] - 1]) {
+                        if(this.world[gridPos[0]][gridPos[1]][gridPos[2] - 1] instanceof SpinningBlock) {
+                            world.removeSpinningBlock(gridPos[0], gridPos[1], gridPos[2] - 1);
+                            return false;
+                        }
                         this.velocity[2] = 0;
                         return true;
                     }

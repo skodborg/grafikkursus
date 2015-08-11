@@ -1,17 +1,20 @@
 //World Class
 var World = (function () {
+  //Block buffers
   var wvBuffer;
   var wcBuffer;
   var wNormalBuffer;
+  
   var texBuffer;
-
   var wvposBuffer;
 
+  //Spinning block buffers
   var wSBVBuffer;
   var wSBNBuffer;
-
+  //Wireframe Buffers
   var wfvBuffer;
   var wfcBuffer;
+
   function World() {
     this.world = [];
     this.worldVertices = [];         // filled by worldToVerticeArray();
@@ -117,7 +120,7 @@ var World = (function () {
       gl.bindBuffer(gl.ARRAY_BUFFER, wSBNBuffer);
       gl.vertexAttribPointer(vNormalLoc, 4, gl.FLOAT, false, 0, 0);
 
-      gl.drawArrays(gl.TRIANGLES, 0, this.worldSpinningBlockVertices.length);
+      gl.drawArrays(gl.TRIANGLES, i*36, 36);
     }
 
     vSBRotationMatrix = mat4();
@@ -131,17 +134,6 @@ var World = (function () {
         this.world[i][j] = [];
       }
     }
-
-
-    // for (var i = 0; i < WORLD_SIZE; i++) {
-    //   for (var j = 0; j < 2; j++) {
-    //     for (var k = 0; k < WORLD_SIZE; k++) {
-    //       this.world[i][j][k] = new Block(i,j,k,1,"someMat");
-    //     }
-    //   }
-    // }
-    // this.world[15][4][12] = new Block(15,4,12,1,"lol");
-
 
     var centerX = WORLD_SIZE/2;
     var centerY = WORLD_SIZE/2;
@@ -253,6 +245,9 @@ var World = (function () {
 
 
     this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"wood");
+    this.world[8][9][8] = new SpinningBlock(8,9,8,0.25,1,"wood");
+
+    this.world[15][6][15] = new SpinningBlock(15,6,15,0.25,1,"wood");
 
   };
 
@@ -290,10 +285,9 @@ var World = (function () {
             var trb = currBlockCorners[6];
             var lrb = currBlockCorners[7];
 
-
             currBlock.gridPosIndex = this.worldVerticePos.length;
-            this.worldVerticePos = this.worldVerticePos.concat(currBlock.gridPos);
 
+            this.worldVerticePos = this.worldVerticePos.concat(currBlock.gridPos);
 
             // fill wireframe of block
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
@@ -396,6 +390,38 @@ var World = (function () {
     }
     return result;
   };
+
+  World.prototype.removeSpinningBlock = function(x, y, z) {
+    if(!this.world[x] || !this.world[y] || !this.world[z]){
+      return;
+    }
+    var currBlock = this.world[x][y][z];
+    if (!(currBlock instanceof SpinningBlock)) {
+      return;
+    }
+    this.world[x][y][z] = undefined;
+    this.worldSpinningBlockVertices = [];
+    this.spinningBlocks = [];
+    this.worldSpinningBlockNormals = [];
+
+    for (var i = 0; i < WORLD_SIZE; i++) {
+      for (var j = 0; j < WORLD_SIZE; j++) {
+        for (var k = 0; k < WORLD_SIZE; k++) {
+          var currBlock = this.world[i][j][k];
+          if (!(currBlock instanceof SpinningBlock)) continue;
+          this.worldSpinningBlockVertices = this.worldSpinningBlockVertices.concat(blockToVertices(currBlock));
+          this.spinningBlocks.push(currBlock);
+          this.worldSpinningBlockNormals = this.worldSpinningBlockNormals.concat(currBlock.normals);
+          }
+        }
+      }
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBVBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBNBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockNormals), gl.STATIC_DRAW );
+  }
 
   World.prototype.removeBlock = function(x, y, z) {
     var currBlock = this.world[x][y][z];
