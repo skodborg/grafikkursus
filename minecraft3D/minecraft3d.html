@@ -129,6 +129,39 @@ main()
 }
 
 </script>
+
+
+<script id="passing-vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+
+uniform mat4 vModelViewMatrix;
+uniform mat4 vProjectionMatrix;
+
+void
+main()
+{
+	gl_Position = vProjectionMatrix * vModelViewMatrix * vPosition;
+}
+
+</script>
+
+
+<script id="uniformcolor-fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform vec4 uColor;
+
+void
+main()
+{
+	gl_FragColor = uColor;
+}
+
+</script>
+
+
+
 <script src="initWebGL.js"></script>
 <script src="Block.js"></script>
 <script src="SpinningBlock.js"></script>

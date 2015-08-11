@@ -7,7 +7,7 @@ var Camera = (function () {
   var overviewModelViewMatrix;
   var overviewProjectionMatrix;
 
-  var vProjectionMatrix;
+  // var vProjectionMatrix;
   var vProjectionMatrixLoc;
 
   var overviewMode;

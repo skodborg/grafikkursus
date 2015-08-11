@@ -26,7 +26,6 @@ var Wireframe = (function () {
     this.wireframeVertices = [];
     this.wireframeColors = [];
 
-
     var llf = vec4(x, y, z, 1);
     var tlf = vec4(x, y + BLOCK_SIZE, z, 1);
     var trf = vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1);
@@ -42,36 +41,6 @@ var Wireframe = (function () {
     lrf, lrb, trf, trb, llf, llb, tlf, tlb];
 
     this.wireframeVertices = wflines;
-    
-
-    // this.wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-    // this.wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z, 1));                     // #4
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));        // #8
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z + BLOCK_SIZE, 1));                     // #7
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z, 1));                                  // #3
-
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z + BLOCK_SIZE, 1));                     // #7
-    // this.wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
-    // this.wireframeVertices.push(vec4(x, y, z - BLOCK_SIZE, 1));                                  // #5
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));                     // #6
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));                     // #6
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));        // #8
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));        // #8
-    // this.wireframeVertices.push(vec4(x + BLOCK_SIZE, y, z + BLOCK_SIZE, 1));                     // #7
-
-    // this.wireframeVertices.push(vec4(x, y, z + BLOCK_SIZE, 1));                                  // #5
-    // this.wireframeVertices.push(vec4(x, y, z, 1));                                               // #1
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z, 1));                                  // #2
-    // this.wireframeVertices.push(vec4(x, y + BLOCK_SIZE, z + BLOCK_SIZE, 1));                     // #6
-
     
     for (var i = 0; i < 24; i++) {
         this.wireframeColors.push(vec4(0,0,0,1));
