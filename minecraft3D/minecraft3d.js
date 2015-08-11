@@ -136,8 +136,8 @@ function initLight() {
   lightsOut("torch");
 
   vPlanetBuffer = gl.createBuffer();
-  sunShape = new Planet(sunPosition[0], sunPosition[1], sunPosition[2], 1.3, 6);
-  moonShape = new Planet(moonPosition[0], moonPosition[1], moonPosition[2], 1, 6);
+  sunShape = new Planet(sunPosition[0], sunPosition[1], sunPosition[2], 1.3, 5);
+  moonShape = new Planet(moonPosition[0], moonPosition[1], moonPosition[2], 1, 3);
 }
 function init() {
 
