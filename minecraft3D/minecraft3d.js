@@ -98,6 +98,8 @@ var paintWireframe = false;
 var currWireframeX;
 var currWireframeY;
 var currWireframeZ;
+var currWireframeFace;
+var currMaterial = "stone";
 
 
 function init() {
@@ -345,6 +347,7 @@ function updateNormalMatrix() {
 
 
 function handleKeyPress(event){
+  updateCursorWireframe()
   switch (event.keyCode) {
     //Movement
     case 37:
@@ -383,17 +386,61 @@ function handleKeyPress(event){
       // C pressed
       camera.toggleViewMode();
       break;
+    //Material selection
+    case 49:
+      currMaterial = "grass";
+      break;
+    case 50:
+      currMaterial = "dirt";
+      break;
+    case 51:
+      currMaterial = "stone";
+      break;
+    case 52:
+      currMaterial = "wood";
+      break;
   }
 }
 
 function handleMouseClick(event) {
   if (event.which == 1) {
-    // left click
-    world.addBlock(16, 10, 16, new Block(16, 10, 16, 1, "wood"));
+
+    if (!paintWireframe) return;
+
+    // left click, add block relative to the face pointed at
+    var x = currWireframeX;
+    var y = currWireframeY;
+    var z = currWireframeZ;
+
+    if (currWireframeFace == 1) {
+      // front
+      z--;
+    }
+    else if (currWireframeFace == 2) {
+      // right
+      x++;
+    }
+    else if (currWireframeFace == 3) {
+      // back
+      z++;
+    }
+    else if (currWireframeFace == 4) {
+      // left
+      x--;
+    }
+    else if (currWireframeFace == 5) {
+      // top
+      y++;
+    }
+    else if (currWireframeFace == 6) {
+      // bottom
+      y--;
+    }
+    world.addBlock(x, y, z, new Block(x, y, z, 1, currMaterial));
   }
   else if (event.which == 3) {
-    // right click
-    world.removeBlock(16,10,16);
+    // right click, remove block
+    world.removeBlock(currWireframeX, currWireframeY, currWireframeZ);
   }    
     
 }
@@ -468,27 +515,39 @@ function updateCursorWireframe() {
 
   gl.readPixels(CENTER_CURSOR_X, CENTER_CURSOR_Y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
 
+
+  currWireframeX = color[0];
+  currWireframeY = color[1];
+  currWireframeZ = color[2];
+  currWireframeFace = 0;
+
   paintWireframe = true;
   var face = color[3];
   if (10 < face && face < 30) {
-      wireframe.createWireframeAtGridPos(color[0], color[1], color[2]);
+    wireframe.createWireframeAtGridPos(color[0], color[1], color[2]-1);
+    currWireframeFace = 1;
   }
   else if (30 < face && face < 60) {
-      wireframe.createWireframeAtGridPos(color[0]+1, color[1], color[2]+1);
+    wireframe.createWireframeAtGridPos(color[0]+1, color[1], color[2]);
+    currWireframeFace = 2;
   }
   else if (60 < face && face < 90) {
-      wireframe.createWireframeAtGridPos(color[0], color[1], color[2]+2);
+    wireframe.createWireframeAtGridPos(color[0], color[1], color[2]+1);
+    currWireframeFace = 3;
   }
   else if (90 < face && face < 120) {
-      wireframe.createWireframeAtGridPos(color[0]-1, color[1], color[2]+1);
+    wireframe.createWireframeAtGridPos(color[0]-1, color[1], color[2]);
+    currWireframeFace = 4;
   }
   else if (120 < face && face < 140) {
-      wireframe.createWireframeAtGridPos(color[0], color[1]+1, color[2]+1);
+    wireframe.createWireframeAtGridPos(color[0], color[1]+1, color[2]);
+    currWireframeFace = 5;
   }
   else if (140 < face && face < 170) {
-      wireframe.createWireframeAtGridPos(color[0], color[1]-1, color[2]+1);
+    wireframe.createWireframeAtGridPos(color[0], color[1]-1, color[2]);
+    currWireframeFace = 6;
   } else {
-      paintWireframe = false;
+    paintWireframe = false;
   }
 
   // RENDER TO CANVAS

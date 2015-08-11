@@ -291,28 +291,15 @@ var World = (function () {
             var lrb = currBlockCorners[7];
 
 
-            // var currBlockPos = [vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-            //                     vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1), vec4(i/255,j/255,k/255,0.1),
-            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-            //                     vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2), vec4(i/255,j/255,k/255,0.2),
-            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-            //                     vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3), vec4(i/255,j/255,k/255,0.3),
-            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-            //                     vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4), vec4(i/255,j/255,k/255,0.4),
-            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-            //                     vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5), vec4(i/255,j/255,k/255,0.5),
-            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6),
-            //                     vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6), vec4(i/255,j/255,k/255,0.6)];
-            currBlock.gridPosIndex = this.worldVerticePos.length - 1;
+            currBlock.gridPosIndex = this.worldVerticePos.length;
             this.worldVerticePos = this.worldVerticePos.concat(currBlock.gridPos);
-
 
 
             // fill wireframe of block
             var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
             llb, tlb, tlb, trb, trb, lrb, lrb, llb,
             lrf, lrb, trf, trb, llf, llb, tlf, tlb];
-            currBlock.frameIndex = this.worldWireframeVertices.length - 1;
+            currBlock.frameIndex = this.worldWireframeVertices.length;
             this.worldWireframeVertices = this.worldWireframeVertices.concat(wflines);
 
             var wfcolors = [vec4(0, 0, 0, 1), vec4(0, 0, 0, 1), vec4(0, 0, 0, 1),
@@ -326,8 +313,8 @@ var World = (function () {
             this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
 
             this.worldBlockNormals = this.worldBlockNormals.concat(currBlock.normals);
-            currBlock.index = this.worldVertices.length - 1;
-            currBlock.textureIndex = this.texCoordsArray.length - 1;
+            currBlock.index = this.worldVertices.length;
+            currBlock.textureIndex = this.texCoordsArray.length;
             this.worldVertices = this.worldVertices.concat(blockToVertices(currBlock));
             this.texCoordsArray = this.texCoordsArray.concat(currBlock.textureCoords);
 
@@ -442,7 +429,6 @@ var World = (function () {
         this.worldWireframeColors = this.worldWireframeColors.concat(wfcolors);
       }
     }
-    
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );

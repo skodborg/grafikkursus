@@ -25,8 +25,11 @@ var Block = (function () {
     if(mat == "dirt") {
         return [0.5,0.5];
     }
-    if(mat == "dirt") {
+    if(mat == "stone") {
         return [0.5,0];
+    }
+    if(mat == "wood") {
+      return [0,0];
     }
     return [0,0];
   };
