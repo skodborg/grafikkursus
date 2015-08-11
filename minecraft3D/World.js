@@ -2,7 +2,6 @@
 var World = (function () {
   //Block buffers
   var wvBuffer;
-  var wcBuffer;
   var wNormalBuffer;
   
   var texBuffer;
@@ -74,11 +73,9 @@ var World = (function () {
   World.prototype.render = function() {
     // draw boxes
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
-    // gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wNormalBuffer );
-    // gl.bufferData( gl.ARRAY_BUFFER, flatten(worldVerticeColors), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
@@ -165,7 +162,6 @@ var World = (function () {
             var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
-                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
                 this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
 
@@ -178,7 +174,6 @@ var World = (function () {
             var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
-                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
                 this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
 
@@ -191,7 +186,6 @@ var World = (function () {
             var y = Math.sin((1/2 - (cx/worldDiag)) * Math.PI)*hillHeight;
             if (Math.pow(i-centerX, 2) + Math.pow(k-centerY, 2) <= Math.pow(radius,2) &&
                 j <= y) {
-                // j <= Math.abs(Math.sin((i+k) * Math.PI / (WORLD_SIZE*2))) * 4) {
                 this.world[i][j][k] = new Block(i,j,k,1, "dirt");
             }
         }
@@ -212,8 +206,6 @@ var World = (function () {
         for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
             for (var k = treeZ-(treeCrownRadius); k <= treeZ+(treeCrownRadius); k++) {
 
-
-                // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
                     this.world[i][j][k] = new Block(i,j,k,1, "grass");
                 }
@@ -232,8 +224,6 @@ var World = (function () {
         for (var j = treeHeight-treeCrownRadius; j <= treeHeight+treeCrownRadius+10; j++) {
             for (var k = treeZ-(treeCrownRadius); k <= treeZ+(treeCrownRadius); k++) {
 
-
-                // center = treeX, treeHeight-(treeCrownRadius/2), treeZ
                 if (Math.pow(i - treeX, 2) + Math.pow(j - treeHeight-(treeCrownRadius/2), 2) + Math.pow(k-treeZ , 2) <= Math.pow(treeCrownRadius,2)) {
                     this.world[i][j][k] = new Block(i,j,k,1, "grass");
                 }
@@ -461,7 +451,7 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wSBNBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockNormals), gl.STATIC_DRAW );
-  }
+  };
 
   World.prototype.removeBlock = function(x, y, z) {
     if(!this.world[x] || !this.world[y] || !this.world[z]){
@@ -521,7 +511,7 @@ var World = (function () {
     this.addSpinCube(x,y,z);
     updateCursorWireframe();
 
-  }
+  };
 
   World.prototype.addSpinCube = function(x,y,z) {
     //Add spinning cube
@@ -536,7 +526,7 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, wSBNBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockNormals), gl.STATIC_DRAW );
-  }
+  };
 
   World.prototype.addBlock = function(x, y, z, block) {
     if(this.world[x][y][z] != undefined) {
@@ -605,17 +595,18 @@ var World = (function () {
     this.worldWireframeColors.splice(0, 24);
     this.texCoordsArray.splice(index, 36);
     this.worldVerticePos.splice(index, 36);
+    var currBlock;
     for (var i = 0; i < WORLD_SIZE; i++) {
       for (var j = 0; j < WORLD_SIZE; j++) {
         for (var k = 0; k < WORLD_SIZE; k++) {
           currBlock = this.world[i][j][k];
-          if(currBlock == undefined) {
+          if (currBlock == undefined) {
             continue;
           }
-          if(!(currBlock instanceof Block)) {
+          if (!(currBlock instanceof Block)) {
             continue;
           }
-          if(currBlock.index >= index) {
+          if (currBlock.index >= index) {
             currBlock.index = currBlock.index - 36;
             currBlock.frameIndex = currBlock.frameIndex - 24;
             currBlock.textureIndex -= 36;

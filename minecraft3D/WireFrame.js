@@ -1,6 +1,6 @@
 //Wireframe Class
 var Wireframe = (function () {
-	var vBuffer, cBuffer;
+	var vBuffer;//, cBuffer;
   function Wireframe() {
   	vBuffer = gl.createBuffer();  
   	this.wireframeVertices = [];
@@ -18,7 +18,7 @@ var Wireframe = (function () {
 	Wireframe.prototype.createWireframeAtGridPos = function(x, y, z) {
 
     this.wireframeVertices = [];
-    this.wireframeColors = [];
+    //this.wireframeColors = [];
 
     var llf = vec4(x, y, z, 1);
     var tlf = vec4(x, y + BLOCK_SIZE, z, 1);
@@ -30,15 +30,9 @@ var Wireframe = (function () {
     var lrb = vec4(x + BLOCK_SIZE, y, z + BLOCK_SIZE, 1);
 
     // fill wireframe of block
-    var wflines = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
-    llb, tlb, tlb, trb, trb, lrb, lrb, llb,
-    lrf, lrb, trf, trb, llf, llb, tlf, tlb];
-
-    this.wireframeVertices = wflines;
-    
-    for (var i = 0; i < 24; i++) {
-        //this.wireframeColors.push(vec4(0,0,0,1));
-    }
+    this.wireframeVertices = [llf, tlf, tlf, trf, trf, lrf, lrf, llf,
+      llb, tlb, tlb, trb, trb, lrb, lrb, llb,
+      lrf, lrb, trf, trb, llf, llb, tlf, tlb];
   };
 
 

@@ -3,7 +3,6 @@ var gl;
 var world;
 
 var program2;
-var ligthProgram;
 
 var vModelViewMatrix = mat4();
 var vModelViewMatrixLoc;
@@ -73,9 +72,10 @@ var BLOCK_NORMALS = [vec4(0, 0, -1, 0),
 
 var camera;
 var player;
+var wireframe;
+var crosshair;
 var texImage;
 var texture;
-var crosshairDrawer;
 
 
 var MOVEMENT_SPEED = 0.1;
@@ -131,8 +131,7 @@ function initLight() {
   gl.uniform1f(shininessLoc, shininess);
 
   lightsOn("sun");
-  // lightsOut("moon");
-  lightsOut("sun");
+  lightsOut("moon");
   lightsOut("torch");
 
   vPlanetBuffer = gl.createBuffer();
@@ -396,7 +395,7 @@ function updateNormalMatrix() {
 
 
 function handleKeyPress(event){
-  updateCursorWireframe()
+  updateCursorWireframe();
   switch (event.keyCode) {
     //Movement
     case 37:
@@ -546,9 +545,7 @@ function handleMouseMove(event) {
 
   player.handleMouseMove(movementX, movementY);
 
-  // if (elapsedTime > 0.5) {
-    updateCursorWireframe();
-  // }
+  updateCursorWireframe();
 }
 
 //WHT IS THIS NOT IN THE WIREFRAME CLASS??
@@ -560,7 +557,6 @@ function updateCursorWireframe() {
 
   gl.uniform1i(gl.getUniformLocation( program, "i" ), 1);
 
-  // update();
   world.render();
 
   gl.readPixels(CENTER_CURSOR_X, CENTER_CURSOR_Y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
@@ -636,10 +632,6 @@ function multmv( m, v ) {
   return vec4(result);
 }
 
-function calcNormal( u, v ) {
-  return normalize(cross(v, u));
-}
-
 function configureTexture(image) {
   texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -648,6 +640,5 @@ function configureTexture(image) {
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  //gl.activeTexture(gl.TEXTURE0);
   gl.uniform1i(gl.getUniformLocation(program, "texture"),0);
 }

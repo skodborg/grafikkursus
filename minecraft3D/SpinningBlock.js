@@ -23,8 +23,7 @@ var SpinningBlock = (function () {
     var trb = vec4(this.llfx + this.size, this.llfy + this.size, this.llfz - this.size, 1);
     var lrb = vec4(this.llfx + this.size, this.llfy, this.llfz - this.size, 1);
 
-    var result = [llf, tlf, trf, lrf, llb, tlb, trb, lrb];
-    return result;
+    return [llf, tlf, trf, lrf, llb, tlb, trb, lrb];
   };
 
   SpinningBlock.prototype.calculateNormals = function () {
