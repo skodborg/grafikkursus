@@ -244,11 +244,6 @@ var World = (function () {
     }
 
 
-    this.world[9][9][9] = new SpinningBlock(9,9,9,0.25,1,"wood");
-    this.world[8][9][8] = new SpinningBlock(8,9,8,0.25,1,"wood");
-
-    this.world[15][6][15] = new SpinningBlock(15,6,15,0.25,1,"wood");
-
   };
 
   // rebuilds the current world state as an array of vertices, vec4
@@ -456,6 +451,7 @@ var World = (function () {
       }
     }
 
+    //Update Buffers
     gl.bindBuffer( gl.ARRAY_BUFFER, wvBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldVertices), gl.STATIC_DRAW );
 
@@ -473,6 +469,24 @@ var World = (function () {
 
     gl.bindBuffer( gl.ARRAY_BUFFER, texBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
+
+    this.addSpinCube(x,y,z);
+
+  }
+
+  World.prototype.addSpinCube = function(x,y,z) {
+    //Add spinning cube
+    var spinBlock = new SpinningBlock(x,y,z,0.25,1, "grass");
+    this.world[x][y][z] = spinBlock;
+    this.worldSpinningBlockVertices = this.worldSpinningBlockVertices.concat(blockToVertices(spinBlock));
+    this.spinningBlocks.push(spinBlock);
+    this.worldSpinningBlockNormals = this.worldSpinningBlockNormals.concat(spinBlock.normals);
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBVBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockVertices), gl.STATIC_DRAW );
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, wSBNBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.worldSpinningBlockNormals), gl.STATIC_DRAW );
   }
 
   World.prototype.addBlock = function(x, y, z, block) {
