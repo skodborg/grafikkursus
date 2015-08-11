@@ -76,9 +76,9 @@ function divideTriangle(a, b, c, count) {
         var ac = mix( a, c, 0.5);
         var bc = mix( b, c, 0.5);
                 
-        ab = normalize(ab, true);
-        ac = normalize(ac, true);
-        bc = normalize(bc, true);
+        ab = scale(this.radius, normalize(ab, true));
+        ac = scale(this.radius, normalize(ac, true));
+        bc = scale(this.radius, normalize(bc, true));
                                 
         divideTriangle( a, ab, ac, count - 1 );
         divideTriangle( ab, b, bc, count - 1 );

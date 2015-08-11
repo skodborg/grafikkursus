@@ -18,7 +18,7 @@ var Camera = (function () {
     translationMatrix = mat4();
     vModelViewMatrix = mat4();
 
-    perspectiveMatrix = perspective(60,16/9, 0.01, 40);
+    perspectiveMatrix = perspective(60,16/9, 0.01, 150);
     overviewModelViewMatrix = lookAt(vec3(WORLD_SIZE/2,WORLD_SIZE+10,WORLD_SIZE/2), 
                                      vec3(WORLD_SIZE/2,0,WORLD_SIZE/2), 
                                      vec3(0,0,-1));

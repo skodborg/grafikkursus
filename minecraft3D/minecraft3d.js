@@ -3,6 +3,7 @@ var gl;
 var world;
 
 var program2;
+var ligthProgram;
 
 var vModelViewMatrix = mat4();
 var vModelViewMatrixLoc;
@@ -20,7 +21,7 @@ var vNormalLoc;
 
 var vTexCoordLoc;
 
-var sunPosition = vec4(60, 0, -60, 1);
+var sunPosition = vec4(40, 0, -40, 1);
 var sunPositionLoc;
 var sunAmbient = vec4(0.2,0.2,0.2,1);
 var sunDiffuse = vec4(1,1,1,1);
@@ -52,6 +53,10 @@ var dark = vec4(0,0,0,1);
 
 var shininess = 100;
 var shininessLoc;
+
+var sunShape;
+var moonShape;
+var vPlanetBuffer;
 
 var vNormalMatrix;
 var vNormalMatrixLoc;
@@ -130,6 +135,9 @@ function initLight() {
   lightsOut("sun");
   lightsOut("torch");
 
+  vPlanetBuffer = gl.createBuffer();
+  sunShape = new Planet(sunPosition[0], sunPosition[1], sunPosition[2], 1.3, 6);
+  moonShape = new Planet(moonPosition[0], moonPosition[1], moonPosition[2], 1, 6);
 }
 function init() {
 
@@ -142,7 +150,6 @@ function init() {
 
   program2 = initShaders( gl, "passing-vertex-shader", "uniformcolor-fragment-shader" );
   uColorLoc = gl.getUniformLocation(program2, "uColor");
-
 
   // Initialize FBO
   framebuffer = gl.createFramebuffer();
@@ -184,7 +191,6 @@ function init() {
   // axisDrawer = new AxisDrawer(0,0,0);
   crosshair = new CrosshairDrawer(0.02);
 
-
   window.onkeydown = handleKeyPress;
   window.onkeyup = handleKeyRelease;
   window.onclick = handleMouseClick;
@@ -216,6 +222,24 @@ function init() {
   render();
 }
 
+function renderSunAndMoon() {
+  gl.bindBuffer( gl.ARRAY_BUFFER, vPlanetBuffer );
+  gl.bufferData( gl.ARRAY_BUFFER, flatten(sunShape.vertices.concat(moonShape.vertices)), gl.STATIC_DRAW );
+  gl.vertexAttribPointer( program2, 4, gl.FLOAT, false, 0, 0 );
+
+  var mv = mult(vModelViewMatrix, translate(sunPosition[0],sunPosition[1], sunPosition[2]));
+
+  gl.uniformMatrix4fv( gl.getUniformLocation(program2, "vModelViewMatrix"), false, flatten(mv));
+  gl.uniformMatrix4fv( gl.getUniformLocation(program2, "vProjectionMatrix"), false, flatten(vProjectionMatrix));
+
+  gl.drawArrays( gl.TRIANGLES, 0, sunShape.vertices.length );
+
+  mv = mult(vModelViewMatrix, translate(moonPosition[0],moonPosition[1], moonPosition[2]));
+  gl.uniformMatrix4fv( gl.getUniformLocation(program2, "vModelViewMatrix"), false, flatten(mv));
+
+  gl.drawArrays( gl.TRIANGLES, sunShape.vertices.length, moonShape.vertices.length);
+}
+
 function render() {
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
@@ -237,7 +261,8 @@ function render() {
   if (paintWireframe) {
       wireframe.render();
   }
-  
+  renderSunAndMoon();
+
   gl.uniformMatrix4fv(modelView, false, flatten(mat4()));
   gl.uniformMatrix4fv(perspective, false, flatten(mat4()));
   gl.uniform4fv(uColorLoc, vec4(0,1,0,1));
