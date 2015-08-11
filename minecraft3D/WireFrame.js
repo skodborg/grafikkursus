@@ -2,10 +2,8 @@
 var Wireframe = (function () {
 	var vBuffer, cBuffer;
   function Wireframe() {
-  	vBuffer = gl.createBuffer();
-  	cBuffer = gl.createBuffer();  
+  	vBuffer = gl.createBuffer();  
   	this.wireframeVertices = [];
-	this.wireframeColors = [];
 	this.createWireframeAtGridPos(0,0,0);
   }
 
@@ -13,10 +11,6 @@ var Wireframe = (function () {
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.wireframeVertices), gl.STATIC_DRAW );
     gl.vertexAttribPointer( vPositionLoc, 4, gl.FLOAT, false, 0, 0 );
-
-    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.wireframeColors), gl.STATIC_DRAW );
-    gl.vertexAttribPointer( vNormalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.drawArrays( gl.LINES, 0, this.wireframeVertices.length);
   };
@@ -43,7 +37,7 @@ var Wireframe = (function () {
     this.wireframeVertices = wflines;
     
     for (var i = 0; i < 24; i++) {
-        this.wireframeColors.push(vec4(0,0,0,1));
+        //this.wireframeColors.push(vec4(0,0,0,1));
     }
   };
 
