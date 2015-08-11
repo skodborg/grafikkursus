@@ -361,6 +361,9 @@ var World = (function () {
 
   World.prototype.getNeighbourBlocks = function(x, y, z) {
     var result = [];
+    if(!this.world[x] || !this.world[y] || !this.world[z]){
+      return result;
+    }
     if (x < WORLD_SIZE-1) {
       var currNeighbour = this.world[x+1][y][z];
       if (currNeighbour !== undefined) result.push(currNeighbour);
@@ -397,6 +400,9 @@ var World = (function () {
 
   World.prototype.getNeighbourNonSpinBlocks = function(x, y, z) {
     var result = [];
+    if(!this.world[x] || !this.world[y] || !this.world[z]){
+      return result;
+    }
     if (x < WORLD_SIZE-1) {
       var currNeighbour = this.world[x+1][y][z];
       if (!(currNeighbour instanceof SpinningBlock) && currNeighbour != undefined) result.push(currNeighbour);
@@ -458,6 +464,9 @@ var World = (function () {
   }
 
   World.prototype.removeBlock = function(x, y, z) {
+    if(!this.world[x] || !this.world[y] || !this.world[z]){
+      return;
+    }
     var currBlock = this.world[x][y][z];
     if (currBlock == undefined) {
       return;
@@ -510,6 +519,7 @@ var World = (function () {
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.texCoordsArray), gl.STATIC_DRAW );
 
     this.addSpinCube(x,y,z);
+    updateCursorWireframe();
 
   }
 
@@ -583,7 +593,7 @@ var World = (function () {
   };
 
   World.prototype.hideIfHidden = function(block) {
-    if(this.getNeighbourBlocks(block.llfx, block.llfy, block.llfz).length > 5) {
+    if(this.getNeighbourNonSpinBlocks(block.llfx, block.llfy, block.llfz).length > 5) {
       this.removeVerticesFromArray(block.index, block.frameIndex, block.textureIndex, block.gridPosIndex);
     }
   };
